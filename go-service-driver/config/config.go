@@ -5,18 +5,48 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"gopkg.in/yaml.v3"
 )
 
-func loadConfig() {
-	// 配置加载逻辑
-	err := godotenv.Load()
+type Config struct {
+	Server struct {
+		Port string `yaml:"port"`
+	} `yaml:"server"`
+	Database struct {
+		DSN string `yaml:"dsn"`
+	} `yaml:"database"`
+	JWT struct {
+		Key string `yaml:"key"`
+	} `yaml:"jwt"`
+}
+
+var AppConfig *Config
+
+func LoadConfig() *Config {
+	var cfg Config
+
+	yamlFile, err := os.ReadFile("config.yaml")
 	if err != nil {
-		log.Println("无法加载 .env 文件，使用默认配置")
+		log.Fatalf("读取配置文件失败: %v", err)
 	}
+	if err := yaml.Unmarshal(yamlFile, &cfg); err != nil {
+		log.Fatalf("解析配置文件失败: %v", err)
+	}
+
+	if err := godotenv.Load(); err != nil {
+		if dsn := os.Getenv("DB_DSN"); dsn != "" {
+			cfg.Database.DSN = dsn
+		}
+		if key := os.Getenv("JWT_KEY"); key != "" {
+			cfg.JWT.Key = key
+		}
+	}
+
+	AppConfig = &cfg
+	return &cfg
 }
 
 func GetDSN() string {
-	loadConfig()
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASS")
 	host := os.Getenv("DB_HOST")
@@ -27,15 +57,5 @@ func GetDSN() string {
 }
 
 func GetJWTKey() []byte {
-	loadConfig()
 	return []byte(os.Getenv("JWT_KEY"))
-}
-
-func GetServerPort() string {
-	loadConfig()
-	port := os.Getenv("SERVER_PORT")
-	if port == "" {
-		port = "8080" // 默认端口
-	}
-	return port
 }

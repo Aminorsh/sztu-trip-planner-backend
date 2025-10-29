@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
+	config.LoadConfig()
 	database.InitDB()
 
 	r := route.InitRoute(database.DB)
 
-	port := config.GetServerPort()
-	r.Run(":" + port)
+	r.Run(config.AppConfig.Server.Port)
 }
