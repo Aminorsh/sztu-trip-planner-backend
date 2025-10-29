@@ -1,19 +1,14 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/Aminorsh/sztu-trip-planner-backend/config"
+	"github.com/Aminorsh/sztu-trip-planner-backend/route"
 )
 
 func main() {
-	r := gin.Default()
+	config.InitDB()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "SZTU Trip Planner Backend is running 🚀",
-		})
-	})
+	r := route.InitRoute(config.DB)
 
 	r.Run(":8080")
 }
