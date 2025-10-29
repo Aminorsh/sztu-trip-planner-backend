@@ -18,6 +18,9 @@ type Config struct {
 	JWT struct {
 		Key string `yaml:"key"`
 	} `yaml:"jwt"`
+	Cors struct {
+		AllowedOrigins []string `yaml:"allowed_origins"`
+	} `yaml:"cors"`
 }
 
 var AppConfig *Config
