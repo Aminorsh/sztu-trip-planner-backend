@@ -13,9 +13,9 @@ Golang + Gin 后端服务
 
 ```bash
 git clone https://github.com/Aminorsh/sztu-trip-planner-backend.git
-cd sztu-trip-planner-backend
+cd sztu-trip-planner-backend/go-service-driver
 go mod tidy
-go run main.go
+go run cmd/server/main.go
 ```
 
 访问：[SZTU-Trip-Planner Backend](http://localhost:8080/)

@@ -5,30 +5,37 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func InitDB() error {
+func loadConfig() {
+	// 配置加载逻辑
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("无法加载 .env 文件，使用默认配置")
 	}
+}
 
+func GetDSN() string {
+	loadConfig()
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASS")
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	name := os.Getenv("DB_NAME")
 
-	dsn := user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("数据库连接错误：" + err.Error())
+	return user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
+}
+
+func GetJWTKey() []byte {
+	loadConfig()
+	return []byte(os.Getenv("JWT_KEY"))
+}
+
+func GetServerPort() string {
+	loadConfig()
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080" // 默认端口
 	}
-	log.Println("数据库连接成功")
-	DB = db
-	return nil
+	return port
 }
