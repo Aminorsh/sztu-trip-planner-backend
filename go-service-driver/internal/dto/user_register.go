@@ -11,3 +11,17 @@ type RegisterUser struct {
 	Username    string `json:"username" binding:"required"`
 	DisplayName string `json:"display_name"`
 }
+
+type UserResponse struct {
+	ID          int    `json:"id"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	DisplayName string `json:"display_name"`
+	AvatarURL   string `json:"avatar_url"`
+}
+
+type RegisterResponse struct {
+	Message string       `json:"message"`
+	User    UserResponse `json:"user"`
+	Token   string       `json:"token"`
+}

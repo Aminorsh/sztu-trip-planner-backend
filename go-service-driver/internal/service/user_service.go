@@ -24,7 +24,7 @@ func NewUserService(db *gorm.DB) *UserService {
 	}
 }
 
-func (s *UserService) SendVerificationEmail(ctx context.Context, email string) error {
+func (s *UserService) SendVerificationCode(ctx context.Context, email string) error {
 	// Generate verification code
 	code := utils.GenerateVerificationCode()
 
