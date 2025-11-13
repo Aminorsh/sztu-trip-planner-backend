@@ -2,13 +2,34 @@ package utils
 
 import (
 	"crypto/rand"
-	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/resend/resend-go/v2"
 )
 
-func GenerateCode() string {
+// EmailService handles email operations
+type EmailService struct {
+	client *resend.Client
+}
+
+// NewEmailService creates a new email service instance
+func NewEmailService() *EmailService {
+	apiKey := config.GetMailAPIKey()
+	return &EmailService{
+		client: resend.NewClient(apiKey),
+	}
+}
+
+// EmailType represents different types of emails
+type EmailType int
+
+const (
+	VerificationEmail EmailType = iota
+	PasswordResetEmail
+)
+
+// GenerateVerificationCode generates a 6-digit verification code
+func GenerateVerificationCode() string {
 	const codeLength = 6
 	const charset = "0123456789"
 
@@ -18,18 +39,39 @@ func GenerateCode() string {
 		panic(err)
 	}
 
-	for i := 0; i < codeLength; i++ {
+	for i := range codeLength {
 		b[i] = charset[int(b[i])%len(charset)]
 	}
 
 	return string(b)
 }
 
-func GenerateVerificationCodeExpiry() time.Time {
-	return time.Now().Add(15 * time.Minute)
+// SendEmail sends an email based on the email type
+func (e *EmailService) SendEmail(toEmail, code string, emailType EmailType) error {
+	var subject, html string
+
+	switch emailType {
+	case VerificationEmail:
+		subject = "验证码 - SZTU Trip Planner"
+		html = generateVerificationEmailHTML(code)
+	case PasswordResetEmail:
+		subject = "密码重置请求 - SZTU Trip Planner"
+		html = generatePasswordResetEmailHTML(code)
+	}
+
+	params := &resend.SendEmailRequest{
+		From:    "onboarding@resend.dev",
+		To:      []string{toEmail},
+		Subject: subject,
+		Html:    html,
+	}
+
+	_, err := e.client.Emails.Send(params)
+	return err
 }
 
-func GenerateVerificationEmailHTML(code string) string {
+// generateEmailHTML creates the base HTML template
+func generateEmailHTML(code, title, description string) string {
 	return `<!DOCTYPE html>
 <html>
 <head>
@@ -122,48 +164,42 @@ func GenerateVerificationEmailHTML(code string) string {
             <h1>SZTU Trip Planner</h1>
         </div>
         <div class="content">
-            <h2>Email Verification</h2>
-            <p>Hello,</p>
-            <p>Thank you for using SZTU Trip Planner. Please use the following verification code to complete your registration:</p>
+            <h2>` + title + `</h2>
+            <p>您好，</p>
+            <p>` + description + `</p>
             
             <div class="verification-code">` + code + `</div>
             
             <div class="expiry-notice">
-                ⚠️ This code will expire in 15 minutes
+                ⚠️ 此验证码将在15分钟后过期
             </div>
             
             <div class="instructions">
-                <strong>Instructions:</strong>
+                <strong>使用说明：</strong>
                 <ul style="margin: 10px 0; padding-left: 20px;">
-                    <li>Enter this code in the verification field</li>
-                    <li>Do not share this code with anyone</li>
-                    <li>If you didn't request this code, please ignore this email</li>
+                    <li>在验证字段中输入此验证码</li>
+                    <li>不要与任何人分享此验证码</li>
+                    <li>如果您没有请求此验证码，请忽略此邮件</li>
                 </ul>
             </div>
             
-            <p>If you have any questions, please contact our support team.</p>
+            <p>如果您有任何问题，请联系客户支持团队。</p>
         </div>
         <div class="footer">
-            <p>&copy; 2024 SZTU Trip Planner. All rights reserved.</p>
-            <p>This is an automated message, please do not reply to this email.</p>
+            <p>&copy; 2025 SZTU Trip Planner. All rights reserved.</p>
+            <p>这是一封自动发送的邮件，请勿回复。</p>
         </div>
     </div>
 </body>
 </html>`
 }
 
-func SendVerificationEmail(toEmail, code string) error {
-	apiKey := config.GetMailAPIKey()
+// generateVerificationEmailHTML generates HTML for email verification
+func generateVerificationEmailHTML(code string) string {
+	return generateEmailHTML(code, "邮箱验证", "感谢您使用SZTU Trip Planner。请使用以下验证码完成您的注册：")
+}
 
-	client := resend.NewClient(apiKey)
-
-	params := &resend.SendEmailRequest{
-		From:    "onboarding@resend.dev",
-		To:      []string{toEmail},
-		Subject: "Your SZTU Trip Planner Verification Code",
-		Html:    GenerateVerificationEmailHTML(code),
-	}
-
-	_, err := client.Emails.Send(params)
-	return err
+// generatePasswordResetEmailHTML generates HTML for password reset
+func generatePasswordResetEmailHTML(code string) string {
+	return generateEmailHTML(code, "密码重置请求", "我们收到了您的密码重置请求。请使用以下验证码来重置您的密码：")
 }

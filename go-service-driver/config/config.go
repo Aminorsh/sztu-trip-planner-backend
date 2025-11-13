@@ -66,3 +66,7 @@ func GetJWTKey() []byte {
 func GetMailAPIKey() string {
 	return os.Getenv("MAIL_API_KEY")
 }
+
+func GetJWTExpirationDuration() int64 {
+	return 24 // 24 hours
+}
