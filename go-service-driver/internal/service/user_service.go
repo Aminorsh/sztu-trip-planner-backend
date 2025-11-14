@@ -98,3 +98,58 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 
 	return newUser, nil
 }
+<<<<<<< HEAD
+=======
+
+func (s *UserService) LoginUser(ctx context.Context, req dto.UsernameLogin) (*dto.UserLoginResponse, error) {
+	// Find user by username
+	var user model.User
+	if err := s.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("invalid username or password")
+		}
+		return nil, err
+	}
+
+	// Compare password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
+		return nil, errors.New("invalid username or password")
+	}
+
+	// Generate JWT token
+	token, err := utils.GenerateToken(uint64(user.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserLoginResponse{
+		Token: token,
+	}, nil
+}
+
+func (s *UserService) LoginUserByEmail(ctx context.Context, req dto.EmailLogin) (*dto.UserLoginResponse, error) {
+	// Find user by email
+	var user model.User
+	if err := s.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("invalid email or password")
+		}
+		return nil, err
+	}
+
+	// Compare password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// Generate JWT token
+	token, err := utils.GenerateToken(uint64(user.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserLoginResponse{
+		Token: token,
+	}, nil
+}
+>>>>>>> ef157c0 (Reinitialize repository and keep local changes)

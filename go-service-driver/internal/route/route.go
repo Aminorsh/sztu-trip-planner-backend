@@ -27,6 +27,10 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		{
 			auth.POST("/send-code", userController.SendVerificationCode)
 			auth.POST("/register", userController.RegisterUser)
+<<<<<<< HEAD
+=======
+			auth.POST("/login", userController.LoginUser)
+>>>>>>> ef157c0 (Reinitialize repository and keep local changes)
 		}
 	}
 

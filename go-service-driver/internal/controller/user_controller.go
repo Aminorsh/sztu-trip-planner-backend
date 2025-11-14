@@ -89,3 +89,25 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 		Token: token,
 	})
 }
+<<<<<<< HEAD
+=======
+
+func (uc *UserController) LoginUser(c *gin.Context) {
+	var req dto.UsernameLogin
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	user, err := uc.userService.LoginUser(ctx, req)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, dto.UserLoginResponse{
+		Token: user.Token,
+	})
+}
+>>>>>>> ef157c0 (Reinitialize repository and keep local changes)
