@@ -150,3 +150,98 @@ func (s *UserService) LoginUserByEmail(ctx context.Context, req dto.EmailLogin) 
 		Token: token,
 	}, nil
 }
+
+func (s *UserService) SendForgetPasswordCode(ctx context.Context, email string) error {
+	// Check if user exists
+	var user model.User
+	if err := s.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user with this email does not exist")
+		}
+		return err
+	}
+
+	// Generate verification code
+	code := utils.GenerateVerificationCode()
+
+	// Store code in Redis with expiration
+	key := fmt.Sprintf("forget_password:%s", email)
+	if err := database.RedisClient.Set(ctx, key, code, 15*time.Minute).Err(); err != nil {
+		return err
+	}
+
+	// Send verification email
+	if err := utils.NewEmailService().SendEmail(email, code, 1); err != nil {
+		_ = database.RedisClient.Del(ctx, key).Err()
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) SendForgetPasswordCodeByUsername(ctx context.Context, username string) error {
+	// Find user by username
+	var user model.User
+	if err := s.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user with this username does not exist")
+		}
+		return err
+	}
+
+	// Generate verification code
+	code := utils.GenerateVerificationCode()
+
+	// Store code in Redis with expiration
+	key := fmt.Sprintf("forget_password:%s", user.Email)
+	if err := database.RedisClient.Set(ctx, key, code, 15*time.Minute).Err(); err != nil {
+		return err
+	}
+
+	// Send verification email
+	if err := utils.NewEmailService().SendEmail(user.Email, code, 1); err != nil {
+		_ = database.RedisClient.Del(ctx, key).Err()
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPasswordVerifyRequest) error {
+	// Verify code from Redis
+	key := fmt.Sprintf("forget_password:%s", req.Email)
+	storedCode, err := database.RedisClient.Get(ctx, key).Result()
+	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return err
+		}
+		return errors.New("verification code expired or not found")
+	}
+	if storedCode != req.Code {
+		return errors.New("invalid verification code")
+	}
+
+	// Find user by email
+	var user model.User
+	if err := s.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user with this email does not exist")
+		}
+		return err
+	}
+
+	// Update user's password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.PasswordHash = string(hashedPassword)
+	if err := s.DB.Save(&user).Error; err != nil {
+		return err
+	}
+
+	// Delete verification code from Redis
+	_ = database.RedisClient.Del(ctx, key).Err()
+
+	return nil
+}

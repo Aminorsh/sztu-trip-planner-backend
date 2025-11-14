@@ -129,3 +129,60 @@ func (uc *UserController) LoginUserByEmail(c *gin.Context) {
 		Token: user.Token,
 	})
 }
+
+// POST /api/auth/send-forget-code
+func (uc *UserController) SendForgetPasswordCode(c *gin.Context) {
+	var req dto.ForgetPasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	if err := uc.userService.SendForgetPasswordCode(ctx, req.Email); err != nil {
+		c.JSON(500, gin.H{"error": "Failed to send forget password code"})
+		return
+	}
+
+	c.JSON(200, dto.ForgetPasswordResponse{
+		Message: "Forget password code sent",
+	})
+}
+
+// POST /api/auth/send-forget-code-by-username
+func (uc *UserController) SendForgetPasswordCodeByUsername(c *gin.Context) {
+	var req dto.ForgetPasswordByUsernameRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	if err := uc.userService.SendForgetPasswordCodeByUsername(ctx, req.Username); err != nil {
+		c.JSON(500, gin.H{"error": "Failed to send forget password code"})
+		return
+	}
+
+	c.JSON(200, dto.ForgetPasswordResponse{
+		Message: "Forget password code sent",
+	})
+}
+
+// POST /api/auth/verify-forget-password
+func (uc *UserController) VerifyForgetPassword(c *gin.Context) {
+	var req dto.ForgetPasswordVerifyRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	if err := uc.userService.VerifyForgetPassword(ctx, req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, dto.ForgetPasswordResponse{
+		Message: "Password reset successfully",
+	})
+}

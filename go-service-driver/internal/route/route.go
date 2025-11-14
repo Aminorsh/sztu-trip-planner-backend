@@ -29,6 +29,9 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			auth.POST("/register", userController.RegisterUser)
 			auth.POST("/login", userController.LoginUser)
 			auth.POST("/login-email", userController.LoginUserByEmail)
+			auth.POST("/send-forget-code", userController.SendForgetPasswordCode)
+			auth.POST("/send-forget-code-by-username", userController.SendForgetPasswordCodeByUsername)
+			auth.POST("/verify-forget-password", userController.VerifyForgetPassword)
 		}
 	}
 
