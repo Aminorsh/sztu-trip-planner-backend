@@ -90,6 +90,7 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 	})
 }
 
+// POST /api/auth/login
 func (uc *UserController) LoginUser(c *gin.Context) {
 	var req dto.UsernameLogin
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -99,6 +100,26 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 
 	ctx := context.Background()
 	user, err := uc.userService.LoginUser(ctx, req)
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, dto.UserLoginResponse{
+		Token: user.Token,
+	})
+}
+
+// POST /api/auth/login-email
+func (uc *UserController) LoginUserByEmail(c *gin.Context) {
+	var req dto.EmailLogin
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	user, err := uc.userService.LoginUserByEmail(ctx, req)
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
