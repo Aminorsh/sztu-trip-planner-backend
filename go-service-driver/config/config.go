@@ -62,3 +62,11 @@ func GetDSN() string {
 func GetJWTKey() []byte {
 	return []byte(os.Getenv("JWT_KEY"))
 }
+
+func GetMailAPIKey() string {
+	return os.Getenv("MAIL_API_KEY")
+}
+
+func GetJWTExpirationDuration() int64 {
+	return 24 // 24 hours
+}
