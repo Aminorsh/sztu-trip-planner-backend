@@ -98,8 +98,6 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 
 	return newUser, nil
 }
-<<<<<<< HEAD
-=======
 
 func (s *UserService) LoginUser(ctx context.Context, req dto.UsernameLogin) (*dto.UserLoginResponse, error) {
 	// Find user by username
@@ -152,4 +150,3 @@ func (s *UserService) LoginUserByEmail(ctx context.Context, req dto.EmailLogin) 
 		Token: token,
 	}, nil
 }
->>>>>>> ef157c0 (Reinitialize repository and keep local changes)

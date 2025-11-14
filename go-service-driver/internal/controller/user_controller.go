@@ -89,8 +89,6 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 		Token: token,
 	})
 }
-<<<<<<< HEAD
-=======
 
 func (uc *UserController) LoginUser(c *gin.Context) {
 	var req dto.UsernameLogin
@@ -110,4 +108,3 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 		Token: user.Token,
 	})
 }
->>>>>>> ef157c0 (Reinitialize repository and keep local changes)
