@@ -4,15 +4,18 @@
 *.so
 *.test
 *.out
+*.bak
 
 *.db
 
 .vscode/
+.vs/
 
 *.log
 
 /bin/
 /build/
 /dist/
+vendor/
 
 .env

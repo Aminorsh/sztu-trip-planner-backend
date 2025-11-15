@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    container_name: trip-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./config.yaml:/app/config.yaml  # Mount config file
+    depends_on:
+      - redis
+      - mysql
+
+
+  redis:
+    image: m.daocloud.io/docker.io/library/redis:7
+    container_name: trip-redis
+    ports:
+      - "6378:6379"
+  
+  mysql:
+    image: m.daocloud.io/docker.io/library/mysql:8.0
+    container_name: trip-mysql
+    ports:
+      - "3305:3306"

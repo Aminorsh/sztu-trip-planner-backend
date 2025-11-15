@@ -59,6 +59,12 @@ func GetDSN() string {
 	return user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
 }
 
+func GetRedisAddr() string {
+	host := os.Getenv("REDIS_HOST")
+	port := os.Getenv("REDIS_PORT")
+	return host + ":" + port
+}
+
 func GetJWTKey() []byte {
 	return []byte(os.Getenv("JWT_KEY"))
 }

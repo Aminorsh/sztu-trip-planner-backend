@@ -3,6 +3,7 @@ package database
 import (
 	"log"
 
+	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/go-redis/redis/v8"
 	"golang.org/x/net/context"
 )
@@ -14,7 +15,7 @@ var (
 
 func InitRedis() error {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     config.GetRedisAddr(),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

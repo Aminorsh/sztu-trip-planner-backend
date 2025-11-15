@@ -6,23 +6,15 @@ Golang + Gin 后端服务
 ## 🚀 快速启动
 
 ### 准备环境
-- [Go](https://go.dev/dl/) 1.24+
-- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/get-started/)
 
 ### 运行
 
 ```bash
-git clone https://github.com/Aminorsh/sztu-trip-planner-backend.git
-cd sztu-trip-planner-backend/go-service-driver
-go mod tidy
-go run cmd/server/main.go
+docker compose up -d
 ```
 
-访问：[SZTU-Trip-Planner Backend](http://localhost:8080/)
+### Postman Documentation:
+- [SZTU Trip Planner Backend Go](https://api.postman.com/collections/46795840-46224da1-23c5-42bf-a604-78a61e0cf16c?access_key=YOUR_ACCESS_KEY_HERE)
 
-返回：
-
-```json
-{"message":"SZTU Trip Planner Backend is running 🚀"}
-```
-
+**Note:** Replace `YOUR_ACCESS_KEY_HERE` with the actual Postman access key.
