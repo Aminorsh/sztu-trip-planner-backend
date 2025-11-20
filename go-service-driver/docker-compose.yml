@@ -13,6 +13,9 @@ services:
     depends_on:
       - redis
       - mysql
+    # dns: # if needed, uncomment and set custom DNS servers
+    #   - 8.8.8.8
+    #   - 8.8.4.4
 
 
   redis:

@@ -12,12 +12,6 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.CORS())
 
-	// r.GET("/", func(c *gin.Context) {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"message": "SZTU Trip Planner Backend is running 🚀",
-	// 	})
-	// })
-
 	userService := service.NewUserService(db)
 	userController := controller.NewUserController(userService)
 
@@ -32,6 +26,12 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			auth.POST("/send-forget-code", userController.SendForgetPasswordCode)
 			auth.POST("/send-forget-code-by-username", userController.SendForgetPasswordCodeByUsername)
 			auth.POST("/verify-forget-password", userController.VerifyForgetPassword)
+		}
+
+		trip := api.Group("/trip")
+		trip.Use(middleware.AuthMiddleware())
+		{
+			// Trip-related routes would go here
 		}
 	}
 

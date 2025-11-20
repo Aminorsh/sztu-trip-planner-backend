@@ -13,6 +13,7 @@ type User struct {
 	UpdatedAt    time.Time  `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;comment:更新时间"`
 	LastLoginAt  *time.Time `json:"last_login_at" gorm:"comment:最后登录时间"`
 	Status       string     `json:"status" gorm:"default:'active';comment:用户状态"`
+	DeletedAt    *time.Time `json:"deleted_at,omitempty" gorm:"comment:软删除时间"`
 }
 
 func (User) TableName() string {

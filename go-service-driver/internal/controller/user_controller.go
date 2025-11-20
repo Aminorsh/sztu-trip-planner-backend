@@ -41,7 +41,7 @@ func (uc *UserController) SendVerificationCode(c *gin.Context) {
 	}
 
 	if err := uc.userService.SendVerificationCode(ctx, req.Email); err != nil {
-		c.JSON(500, gin.H{"error": "Failed to send verification code"})
+		c.JSON(500, gin.H{"error": "Failed to send verification code: " + err.Error()})
 		return
 	}
 
@@ -73,7 +73,7 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 
 	token, err := utils.GenerateToken(uint64(user.ID))
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to generate token"})
+		c.JSON(500, gin.H{"error": "Failed to generate token: " + err.Error()})
 		return
 	}
 
@@ -140,7 +140,7 @@ func (uc *UserController) SendForgetPasswordCode(c *gin.Context) {
 
 	ctx := context.Background()
 	if err := uc.userService.SendForgetPasswordCode(ctx, req.Email); err != nil {
-		c.JSON(500, gin.H{"error": "Failed to send forget password code"})
+		c.JSON(500, gin.H{"error": "Failed to send forget password code: " + err.Error()})
 		return
 	}
 
@@ -159,7 +159,7 @@ func (uc *UserController) SendForgetPasswordCodeByUsername(c *gin.Context) {
 
 	ctx := context.Background()
 	if err := uc.userService.SendForgetPasswordCodeByUsername(ctx, req.Username); err != nil {
-		c.JSON(500, gin.H{"error": "Failed to send forget password code"})
+		c.JSON(500, gin.H{"error": "Failed to send forget password code: " + err.Error()})
 		return
 	}
 
