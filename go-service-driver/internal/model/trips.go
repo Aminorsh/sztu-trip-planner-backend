@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Trip struct {
+type Trips struct {
 	ID          int       `json:"id" gorm:"primaryKey;autoIncrement;comment:行程ID"`
 	UserID      int       `json:"user_id" gorm:"not null;comment:创建用户ID"`
 	Title       string    `json:"title" gorm:"not null;comment:行程标题"`
@@ -30,6 +30,6 @@ type Trip struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"comment:软删除时间"`
 }
 
-func (Trip) TableName() string {
+func (Trips) TableName() string {
 	return "trips"
 }

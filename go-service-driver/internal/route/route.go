@@ -28,10 +28,15 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			auth.POST("/verify-forget-password", userController.VerifyForgetPassword)
 		}
 
-		trip := api.Group("/trip")
-		trip.Use(middleware.AuthMiddleware())
+		trips := api.Group("/trips")
+		trips.Use(middleware.AuthMiddleware())
 		{
-			// Trip-related routes would go here
+			// // Trip-related routes would go here
+			// trips.GET("/")    // Get trip list
+			// trips.GET("/")    // Search trips
+			// trips.GET("/")    // Get trip details
+			// trips.POST("/")   // Create a new trip
+			// trips.DELETE("/") // Delete a trip
 		}
 	}
 
