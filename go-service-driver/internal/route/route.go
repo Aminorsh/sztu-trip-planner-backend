@@ -15,6 +15,9 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	userService := service.NewUserService(db)
 	userController := controller.NewUserController(userService)
 
+	tripService := service.NewTripService(db)
+	tripController := controller.NewTripController(tripService)
+
 	api := r.Group("/api")
 	{
 		auth := api.Group("/auth")
@@ -31,12 +34,9 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		trips := api.Group("/trips")
 		trips.Use(middleware.AuthMiddleware())
 		{
-			// // Trip-related routes would go here
-			// trips.GET("/")    // Get trip list
-			// trips.GET("/")    // Search trips
-			// trips.GET("/")    // Get trip details
-			// trips.POST("/")   // Create a new trip
-			// trips.DELETE("/") // Delete a trip
+			trips.POST("", tripController.CreateTrip)
+			trips.GET("", tripController.ListTrips)
+			trips.DELETE("/:id", tripController.DeleteTrip)
 		}
 	}
 

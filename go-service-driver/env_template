@@ -7,6 +7,9 @@ DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_NAME=trip_planner
 
+REDIS_HOST=
+REDIS_PORT=
+
 JWT_KEY=trip_planner_secret_key
 MAIL_API_KEY=
 
