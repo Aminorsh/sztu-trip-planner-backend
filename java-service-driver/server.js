@@ -15,21 +15,35 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 数据库连接
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB连接成功'))
-.catch(err => console.error('MongoDB连接错误:', err));
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sztu-trip-planner')
+  .then(() => console.log('MongoDB连接成功'))
+  .catch(err => {
+    console.error('MongoDB连接失败:', err);
+    process.exit(1);
+  });
+//mongoose.connect(process.env.MONGODB_URI, {
+  //useNewUrlParser: true,
+  //useUnifiedTopology: true,
+//})
+//.then(() => console.log('MongoDB连接成功'))
+//.catch(err => console.error('MongoDB连接错误:', err));
 
 // 路由
-app.use('/api/users', require('./routes/userRoutes'));
+const userRoutes = require('./routes/userRoutes');
+const tripRoutes = require('./routes/tripRoutes');
+const placeRoutes = require('./routes/placeRoutes');
+//app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', userRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/places', placeRoutes);
 
 // 健康检查端点
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
+    status: 'OK',
     message: '旅行规划后端服务运行正常',
+    service: 'SZTU Trip Planner API',
     timestamp: new Date().toISOString()
   });
 });
@@ -47,7 +61,21 @@ app.use((error, req, res, next) => {
   console.error('服务器错误:', error);
   res.status(500).json({
     success: false,
-    message: '内部服务器错误'
+    message: '内部服务器错误',
+    ...(process.env.NODE_ENV === 'development' && { error: err.message })
+  });
+});
+
+// 根路径
+app.get('/', (req, res) => {
+  res.json({
+    message: '欢迎使用 SZTU Trip Planner API',
+    version: '1.0.0',
+    endpoints: {
+      users: '/api/users',
+      trips: '/api/trips',
+      places: '/api/places'
+    }
   });
 });
 
@@ -56,4 +84,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`服务器运行在端口 ${PORT}`);
   console.log(`环境: ${process.env.NODE_ENV}`);
+  console.log(`地址: http://localhost:${PORT}`);
 });
+
+module.exports = app;
