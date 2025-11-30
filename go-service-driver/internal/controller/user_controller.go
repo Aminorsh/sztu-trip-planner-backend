@@ -186,3 +186,75 @@ func (uc *UserController) VerifyForgetPassword(c *gin.Context) {
 		Message: "Password reset successfully",
 	})
 }
+
+// GET /api/v2/users/profile
+func (uc *UserController) GetUserProfile(c *gin.Context) {
+	userID := c.GetUint64("userID")
+
+	ctx := context.Background()
+	profile, err := uc.userService.GetUserProfile(ctx, userID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to get user profile: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, profile)
+}
+
+// PUT /api/v2/users/profile
+func (uc *UserController) UpdateUserProfile(c *gin.Context) {
+	userID := c.GetUint64("userID")
+
+	var req dto.UpdateUserProfile
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	profile, err := uc.userService.UpdateUserProfile(ctx, userID, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to update user profile: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, profile)
+}
+
+// PUT /api/v2/users/change-password
+func (uc *UserController) ChangePassword(c *gin.Context) {
+	userID := c.GetUint64("userID")
+
+	var req dto.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	if err := uc.userService.ChangePassword(ctx, userID, req); err != nil {
+		c.JSON(400, gin.H{"error": "Failed to change password: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Password changed successfully"})
+}
+
+// DELETE /api/v2/users/delete-account
+func (uc *UserController) DeleteAccount(c *gin.Context) {
+	userID := c.GetUint64("userID")
+
+	var req dto.DeleteAccountRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request data"})
+		return
+	}
+
+	ctx := context.Background()
+	if err := uc.userService.DeleteAccount(ctx, userID, req); err != nil {
+		c.JSON(400, gin.H{"error": "Failed to delete account: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Account deleted successfully"})
+}
