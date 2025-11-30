@@ -287,9 +287,9 @@ func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPa
 	return nil
 }
 
-func (s *UserService) GetUserProfile(ctx context.Context, userID uint) (*model.User, error) {
+func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (*model.User, error) {
 	var user model.User
-	if err := s.DB.First(&user, userID).Error; err != nil {
+	if err := s.DB.First(&user, int(userID)).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
 		}
@@ -306,9 +306,9 @@ func (s *UserService) GetUserProfile(ctx context.Context, userID uint) (*model.U
 	return &user, nil
 }
 
-func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint, req dto.UpdateUserProfile) (*model.User, error) {
+func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (*model.User, error) {
 	var user model.User
-	if err := s.DB.First(&user, userID).Error; err != nil {
+	if err := s.DB.First(&user, int(userID)).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
 		}
@@ -341,9 +341,9 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint, req dt
 	return &user, nil
 }
 
-func (s *UserService) ChangePassword(ctx context.Context, userID uint, req dto.ChangePasswordRequest) error {
+func (s *UserService) ChangePassword(ctx context.Context, userID uint64, req dto.ChangePasswordRequest) error {
 	var user model.User
-	if err := s.DB.First(&user, userID).Error; err != nil {
+	if err := s.DB.First(&user, int(userID)).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("user not found")
 		}
@@ -377,9 +377,9 @@ func (s *UserService) ChangePassword(ctx context.Context, userID uint, req dto.C
 	return nil
 }
 
-func (s *UserService) DeleteAccount(ctx context.Context, userID uint, req dto.DeleteAccountRequest) error {
+func (s *UserService) DeleteAccount(ctx context.Context, userID uint64, req dto.DeleteAccountRequest) error {
 	var user model.User
-	if err := s.DB.First(&user, userID).Error; err != nil {
+	if err := s.DB.First(&user, int(userID)).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("user not found")
 		}

@@ -192,7 +192,7 @@ func (uc *UserController) GetUserProfile(c *gin.Context) {
 	userID := c.GetUint64("userID")
 
 	ctx := context.Background()
-	profile, err := uc.userService.GetUserProfile(ctx, uint(userID))
+	profile, err := uc.userService.GetUserProfile(ctx, userID)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to get user profile: " + err.Error()})
 		return
@@ -212,7 +212,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 	}
 
 	ctx := context.Background()
-	profile, err := uc.userService.UpdateUserProfile(ctx, uint(userID), req)
+	profile, err := uc.userService.UpdateUserProfile(ctx, userID, req)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to update user profile: " + err.Error()})
 		return
@@ -232,7 +232,7 @@ func (uc *UserController) ChangePassword(c *gin.Context) {
 	}
 
 	ctx := context.Background()
-	if err := uc.userService.ChangePassword(ctx, uint(userID), req); err != nil {
+	if err := uc.userService.ChangePassword(ctx, userID, req); err != nil {
 		c.JSON(400, gin.H{"error": "Failed to change password: " + err.Error()})
 		return
 	}
@@ -251,7 +251,7 @@ func (uc *UserController) DeleteAccount(c *gin.Context) {
 	}
 
 	ctx := context.Background()
-	if err := uc.userService.DeleteAccount(ctx, uint(userID), req); err != nil {
+	if err := uc.userService.DeleteAccount(ctx, userID, req); err != nil {
 		c.JSON(400, gin.H{"error": "Failed to delete account: " + err.Error()})
 		return
 	}
