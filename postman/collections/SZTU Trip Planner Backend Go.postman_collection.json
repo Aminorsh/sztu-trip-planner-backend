@@ -1,0 +1,1925 @@
+{
+  "info": {
+    "_postman_id": "46224da1-23c5-42bf-a604-78a61e0cf16c",
+    "name": "SZTU Trip Planner Backend Go",
+    "description": "Golang + Gin 后端服务\n\n提供注册登录、行程管理、路线规划等 RESTful API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46795840"
+  },
+  "item": [
+    {
+      "name": "API",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Send Code",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "9410670a-e0a2-40e3-8ab2-f89c833bb10c",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "bc11572d-d5b6-45cc-84e4-b81a31fab849",
+                    "exec": [
+                      "pm.test(\"Status is 200\", function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response success is true\", function () {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "c156a6a9-f5f5-498a-a3b1-de95fdefb4d0",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/send-code",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "send-code"
+                  ]
+                },
+                "description": "向指定邮箱发送验证码（用于注册）"
+              },
+              "response": [
+                {
+                  "id": "c1c4abc7-4da5-418d-ab35-08f8947ff09f",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/send-code",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "send-code"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 15:46:51 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "36"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"Verification code sent\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Register",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "8182c2ff-4447-43f5-9f08-93d699a1bab8",
+                    "exec": [
+                      "pm.test(\"status is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "var json = pm.response.json();",
+                      "if (json.token) {",
+                      "    pm.environment.set(\"JWT_TOKEN\", json.token);",
+                      "}",
+                      "pm.test(\"token exists\", function () {",
+                      "    pm.expect(json.token).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "c5a31ce5-b6dd-48ea-9057-2dc9644fc414",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"211747\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/register",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "使用邮箱 + 验证码注册，注册后返回 JWT"
+              },
+              "response": [
+                {
+                  "id": "1953f10e-20cf-4a8f-bf1d-2120307f1f56",
+                  "name": "201 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"547272\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/register?Content-Type=application/json",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "register"
+                      ],
+                      "query": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:09:26 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "337"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"User registered successfully\",\n    \"user\": {\n        \"id\": 2,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"aminorsh\",\n        \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMjk2Nn0._gp3fmVLMZysEKC4SAtvh6S70R-F5Ek1E2BtvxO2fP8\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "43e50aa9-a964-4447-8a6b-33a39a160a49",
+                    "exec": [
+                      "pm.test(\"status is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var json = pm.response.json();",
+                      "if (json.token) {",
+                      "    pm.environment.set(\"JWT_TOKEN\", json.token);",
+                      "}",
+                      "pm.test(\"token exists\", function () {",
+                      "    pm.expect(json.token).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "7d19292c-e558-451b-b615-10812ffd0577",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"{{TEST_USERNAME}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/login",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "使用用户名和密码登录"
+              },
+              "response": [
+                {
+                  "id": "3fea3939-6cb2-4021-bd39-328b4fb3064d",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"username\": \"{{TEST_USERNAME}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/login",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:24:12 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "132"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzg1Mn0.Q5kIs9gkVQO_QFW8uOcQBSaIoeW7uhyX0_znHpq-OV8\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Login Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "fc5fb086-a5ec-4b7f-b5b8-b3ec8aa57104",
+                    "exec": [
+                      "pm.test(\"status is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "var json = pm.response.json();",
+                      "if (json.token) {",
+                      "    pm.environment.set(\"JWT_TOKEN\", json.token);",
+                      "}",
+                      "pm.test(\"token exists\", function () {",
+                      "    pm.expect(json.token).to.be.a('string');",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "ed89a15b-bea8-4a69-9f92-8cdf67f23303",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/login-email",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login-email"
+                  ]
+                },
+                "description": "使用邮箱和密码登录"
+              },
+              "response": [
+                {
+                  "id": "8c42d881-f76f-4011-b039-9965dff44bfe",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/login-email",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "login-email"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:19:42 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "132"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzU4Mn0.kOK0xlMjysmooa1rJzCsN4iqN2NVal2FCD9j69W_Noo\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Send Forget Code",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "73e8f335-8414-490d-8490-69163f19bb64",
+                    "exec": [
+                      "pm.test(\"Status is 200\", function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response success is true\", function () {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "b2015069-5fe7-4724-bdad-f898cb989f14",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/send-forget-code",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "send-forget-code"
+                  ]
+                },
+                "description": "向指定邮箱发送验证码（用于重置密码）"
+              },
+              "response": [
+                {
+                  "id": "ecaea810-c5e7-4d63-a1f3-4fed4fb21e6b",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/send-forget-code",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "send-forget-code"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:38:06 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "39"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"Forget password code sent\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Send Forget Code by Username",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "b692547e-fe58-4e33-b19f-4bd8cef946f8",
+                    "exec": [
+                      "pm.test(\"Status is 200\", function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response success is true\", function () {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "8161e885-9e50-4a46-a279-e35edbc47f14",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"{{TEST_USERNAME}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/send-forget-code-by-username",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "send-forget-code-by-username"
+                  ]
+                },
+                "description": "向指定用户名的邮箱发送验证码（用于重置密码）"
+              },
+              "response": [
+                {
+                  "id": "f7a5bfa4-31c7-48a3-b5bb-ebc721693a60",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"username\": \"{{TEST_USERNAME}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/send-forget-code-by-username",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "send-forget-code-by-username"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:41:13 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "39"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"Forget password code sent\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Verify Forget Password",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "5601a077-1129-4645-be7c-e1acd442bfb1",
+                    "exec": [
+                      "pm.test(\"Status is 200\", function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response success is true\", function () {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "id": "ca0913fe-c3ac-4644-98e8-f4e6252d5bf9",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"new_password\": \"{{TEST_NEWPASSWORD}}\",\n\t\"code\": \"230158\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/auth/verify-forget-password",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "verify-forget-password"
+                  ]
+                },
+                "description": "检查验证码，验证成功后重置密码"
+              },
+              "response": [
+                {
+                  "id": "e0320d16-23f3-4e6f-a9bb-62ee3f453990",
+                  "name": "200 OK - Success Example",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"new_password\": \"{{TEST_NEWPASSWORD}}\",\n\t\"code\": \"230158\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/auth/verify-forget-password",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "auth",
+                        "verify-forget-password"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 14 Nov 2025 16:38:41 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "41"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"Password reset successfully\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "0edefb94-b036-4f38-820c-943a0affabc1",
+          "description": "提供注册、登录及重置密码等API"
+        },
+        {
+          "name": "V2",
+          "item": [
+            {
+              "name": "Trips",
+              "item": [
+                {
+                  "name": "Create Trip",
+                  "id": "a59bb731-1187-4f70-a28c-b5161501d388",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"title\": \"{{TEST_TITLE}}\",\n    \"description\": \"{{TEST_DESCRIPTION}}\",\n    \"start_date\": \"{{START_DATE}}\",\n    \"end_date\": \"{{END_DATE}}\",\n    \"origin_address\": \"{{TEST_ORIGIN}}\",\n    \"destination_address\": \"{{TEST_DESTINATION}}\",\n    \"destination_city\": \"{{TEST_DESTINATION_CITY}}\",\n    \"description_country\": \"{{TEST_DESTINATION_COUNTRY}}\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/trips",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "trips"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "c8513a2d-1256-4b2d-bbe1-0e78df3554e7",
+                      "name": "201 OK - Success Example",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"title\": \"{{TEST_TITLE}}\",\n    \"description\": \"{{TEST_DESCRIPTION}}\",\n    \"start_date\": \"{{START_DATE}}\",\n    \"end_date\": \"{{END_DATE}}\",\n    \"origin_address\": \"{{TEST_ORIGIN}}\",\n    \"destination_address\": \"{{TEST_DESTINATION}}\",\n    \"destination_city\": \"{{TEST_DESTINATION_CITY}}\",\n    \"description_country\": \"{{TEST_DESTINATION_COUNTRY}}\"\n}"
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/trips",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "trips"
+                          ]
+                        }
+                      },
+                      "status": "Created",
+                      "code": 201,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 05:43:08 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "303"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"id\": 1,\n    \"user_id\": 1,\n    \"title\": \"test_title\",\n    \"description\": \"description\",\n    \"start_date\": \"2025-12-01T09:00:00Z\",\n    \"end_date\": \"2025-12-05T09:00:00Z\",\n    \"days\": 5,\n    \"is_public\": false,\n    \"destination_city\": \"Shenzhen\",\n    \"destination_country\": \"\",\n    \"created_at\": \"2025-11-30T13:43:08+08:00\",\n    \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "List Trips",
+                  "id": "cfb124b5-655e-4f44-be9a-f9005fafb1fa",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/trips",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "trips"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "98ce4788-d101-444c-a6e7-cf30351d5a50",
+                      "name": "200 OK - Success Example",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/trips",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "trips"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 05:45:28 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "334"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Search Trips",
+                  "id": "1ac34caa-e691-4f10-bb24-b50d3b61b3f4",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/trips?search={{TEST_TITLE}}",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "trips"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "{{TEST_TITLE}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "efe52cff-bf82-4d95-a939-b727dd36c672",
+                      "name": "200 OK - Success Example",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/trips?search={{TEST_TITLE}}",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "trips"
+                          ],
+                          "query": [
+                            {
+                              "key": "search",
+                              "value": "{{TEST_TITLE}}"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 05:49:13 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "334"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "List Trips Copy",
+                  "id": "82eeef1d-2669-4f25-b7ba-aba964b1f557",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/trips/:id",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "trips",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "7df8f594-829f-4269-891e-6a2aa54bbebb",
+                      "name": "200 OK - Success Example",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/trips/:id",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "trips",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "1"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 05:51:49 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "39"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"message\": \"Trip deleted successfully\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "d6fb555a-f639-408d-93b9-5c4ca9d32f90",
+              "description": "提供行程创建、软删除、查询等功能",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "efa802ef-9efe-4e21-9553-9f0976b6a476",
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {},
+                    "exec": [
+                      ""
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "afeeb018-5164-438f-b81e-0346b8bf629c",
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {},
+                    "exec": [
+                      ""
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "New Folder",
+              "item": [
+                {
+                  "name": "Get Profile",
+                  "id": "d5c2339a-4262-4dbd-a276-fd582f0eaf9d",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/users/profile",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "users",
+                        "profile"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "bb8bdf31-e613-4524-acba-71e79c277244",
+                      "name": "Get Profile",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/users/profile",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "users",
+                            "profile"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 07:48:48 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "275"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T12:48:06+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Update Profile",
+                  "id": "b852dddb-eb93-426c-9259-8712f9657ee6",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/users/profile",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "users",
+                        "profile"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "98e33833-1c7d-45a1-ae67-39f37e28df3a",
+                      "name": "Update Profile",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/users/profile",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "users",
+                            "profile"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 07:50:58 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "361"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnbxCgxGiF3h5XMJx7Mcj82kesZyuqG2aJgxxdxxia_Y9p_aF1HvP1gPG28i1FoPBEJfI&usqp=CAU\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T15:50:58.434+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Change Password",
+                  "id": "0bd5a8ef-310f-4f78-af34-490697041681",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/users/change-password",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "users",
+                        "change-password"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "5b306bbb-2514-46ac-8917-1b03f65413df",
+                      "name": "New Request",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/users/change-password",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "users",
+                            "change-password"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 07:51:15 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "43"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"message\": \"Password changed successfully\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Delete Account",
+                  "id": "179c9e7c-f25b-445c-9cfc-49d4322e5227",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/users/delete-account",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "users",
+                        "delete-account"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "6313048c-318d-40b5-bb04-f1132e95b41e",
+                      "name": "New Request",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/users/delete-account",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "users",
+                            "delete-account"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 30 Nov 2025 07:51:44 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "42"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"message\": \"Account deleted successfully\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "949b4751-8214-4420-893d-231bd7af9d7f"
+            },
+            {
+              "name": "Health",
+              "id": "bbd4b05b-ec83-4210-80c9-20c8f6f9d475",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v2/health",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v2",
+                    "health"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "30139abd-1f8d-4f9b-929c-cdf70c48e60b",
+                  "name": "Health",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/health",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "health"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Headers",
+                      "value": "Content-Type, Authorization"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Methods",
+                      "value": "GET, POST, PUT, DELETE, OPTIONS"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "http://localhost:5173"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 30 Nov 2025 07:36:40 GMT"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "15"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": \"ok\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "a865cfb2-a41d-490c-ac30-4dff654b1a3c",
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDU3NTU1OH0.18uvlkGSf6fo8jCXor0i31DAvLKv24yIbBIhl8F_-Ns",
+                "type": "string"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "9fbbf58a-253f-4d74-b653-776f4653a998",
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "df18d434-bc1f-48c2-9679-b808e13f21f0",
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Health",
+          "id": "144027f8-472b-450c-98f4-7ff8d43523e2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/health",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "4acf67b5-fac3-4c0a-b813-5711f4fa4fec",
+              "name": "Health",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/health",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "health"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Authorization"
+                },
+                {
+                  "key": "Access-Control-Allow-Methods",
+                  "value": "GET, POST, PUT, DELETE, OPTIONS"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sun, 30 Nov 2025 07:36:14 GMT"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "15"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"ok\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "New Request",
+          "id": "c63fc693-9e47-4421-9f9c-6108d2979396",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ],
+      "id": "27817eb5-2278-4518-b4a2-4285db6cb6b2"
+    }
+  ]
+}
