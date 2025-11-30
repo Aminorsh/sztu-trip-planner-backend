@@ -63,7 +63,7 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
-	} else {
+	} else if existingUser.Status != "inactive" {
 		return nil, errors.New("user with this email or username already exists")
 	}
 
@@ -71,6 +71,27 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
+	}
+
+	// If existing user is found but inactive, update that record instead of creating a new one
+	if existingUser.Status == "inactive" {
+		existingUser.Username = req.Username
+		existingUser.PasswordHash = string(hashedPassword)
+		existingUser.DisplayName = req.DisplayName
+		existingUser.Status = "active"
+		existingUser.UpdatedAt = time.Now()
+
+		if err := s.DB.Save(&existingUser).Error; err != nil {
+			return nil, err
+		}
+
+		// Delete verification code from Redis
+		_ = database.RedisClient.Del(ctx, key).Err()
+
+		// Zero out password hash before returning
+		existingUser.PasswordHash = ""
+
+		return &existingUser, nil
 	}
 
 	defaultAvatar := fmt.Sprintf("https://api.dicebear.com/6.x/initials/svg?seed=%s", req.Username)
@@ -102,11 +123,15 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 func (s *UserService) LoginUser(ctx context.Context, req dto.UsernameLogin) (*dto.UserLoginResponse, error) {
 	// Find user by username
 	var user model.User
-	if err := s.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
+	if err := s.DB.Where("username = ? AND status != ?", req.Username, "inactive").First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("invalid username or password")
 		}
 		return nil, err
+	}
+
+	if user.Status == "suspended" {
+		return nil, errors.New("account is suspended")
 	}
 
 	// Compare password
@@ -128,11 +153,15 @@ func (s *UserService) LoginUser(ctx context.Context, req dto.UsernameLogin) (*dt
 func (s *UserService) LoginUserByEmail(ctx context.Context, req dto.EmailLogin) (*dto.UserLoginResponse, error) {
 	// Find user by email
 	var user model.User
-	if err := s.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+	if err := s.DB.Where("email = ? AND status != ?", req.Email, "inactive").First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("invalid email or password")
 		}
 		return nil, err
+	}
+
+	if user.Status == "suspended" {
+		return nil, errors.New("account is suspended")
 	}
 
 	// Compare password
@@ -154,11 +183,15 @@ func (s *UserService) LoginUserByEmail(ctx context.Context, req dto.EmailLogin) 
 func (s *UserService) SendForgetPasswordCode(ctx context.Context, email string) error {
 	// Check if user exists
 	var user model.User
-	if err := s.DB.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := s.DB.Where("email = ? AND status != ?", email, "inactive").First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("user with this email does not exist")
 		}
 		return err
+	}
+
+	if user.Status == "suspended" {
+		return errors.New("account is suspended")
 	}
 
 	// Generate verification code
@@ -182,11 +215,15 @@ func (s *UserService) SendForgetPasswordCode(ctx context.Context, email string) 
 func (s *UserService) SendForgetPasswordCodeByUsername(ctx context.Context, username string) error {
 	// Find user by username
 	var user model.User
-	if err := s.DB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := s.DB.Where("username = ? AND status != ?", username, "inactive").First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("user with this username does not exist")
 		}
 		return err
+	}
+
+	if user.Status == "suspended" {
+		return errors.New("account is suspended")
 	}
 
 	// Generate verification code
@@ -223,11 +260,15 @@ func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPa
 
 	// Find user by email
 	var user model.User
-	if err := s.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
+	if err := s.DB.Where("email = ? AND status != ?", req.Email, "inactive").First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("user with this email does not exist")
 		}
 		return err
+	}
+
+	if user.Status == "suspended" {
+		return errors.New("account is suspended")
 	}
 
 	// Update user's password
@@ -242,6 +283,128 @@ func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPa
 
 	// Delete verification code from Redis
 	_ = database.RedisClient.Del(ctx, key).Err()
+
+	return nil
+}
+
+func (s *UserService) GetUserProfile(ctx context.Context, userID uint) (*model.User, error) {
+	var user model.User
+	if err := s.DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+
+	if user.Status == "inactive" {
+		return nil, errors.New("user not found")
+	}
+
+	// Zero out password hash before returning
+	user.PasswordHash = ""
+
+	return &user, nil
+}
+
+func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint, req dto.UpdateUserProfile) (*model.User, error) {
+	var user model.User
+	if err := s.DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+
+	if user.Status == "inactive" {
+		return nil, errors.New("user not found")
+	}
+	if user.Status == "suspended" {
+		return nil, errors.New("account is suspended")
+	}
+
+	if req.DisplayName != nil {
+		user.DisplayName = *req.DisplayName
+	}
+	if req.AvatarURL != nil {
+		user.AvatarURL = *req.AvatarURL
+	}
+
+	user.UpdatedAt = time.Now()
+
+	if err := s.DB.Save(&user).Error; err != nil {
+		return nil, err
+	}
+
+	// Zero out password hash before returning
+	user.PasswordHash = ""
+
+	return &user, nil
+}
+
+func (s *UserService) ChangePassword(ctx context.Context, userID uint, req dto.ChangePasswordRequest) error {
+	var user model.User
+	if err := s.DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user not found")
+		}
+		return err
+	}
+
+	if user.Status == "inactive" {
+		return errors.New("user not found")
+	}
+	if user.Status == "suspended" {
+		return errors.New("account is suspended")
+	}
+
+	// Verify current password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.OldPassword)); err != nil {
+		return errors.New("current password is incorrect")
+	}
+
+	// Update to new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.PasswordHash = string(hashedPassword)
+	user.UpdatedAt = time.Now()
+
+	if err := s.DB.Save(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) DeleteAccount(ctx context.Context, userID uint, req dto.DeleteAccountRequest) error {
+	var user model.User
+	if err := s.DB.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user not found")
+		}
+		return err
+	}
+
+	if user.Status == "inactive" {
+		return errors.New("user not found")
+	}
+	if user.Status == "suspended" {
+		return errors.New("account is suspended")
+	}
+
+	// Verify password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
+		return errors.New("password is incorrect")
+	}
+
+	// Soft delete: set status to inactive
+	user.Status = "inactive"
+	user.UpdatedAt = time.Now()
+
+	if err := s.DB.Save(&user).Error; err != nil {
+		return err
+	}
 
 	return nil
 }

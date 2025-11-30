@@ -20,6 +20,12 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 
 	api := r.Group("/api")
 	{
+		api.GET("/health", func(ctx *gin.Context) {
+			ctx.JSON(200, gin.H{
+				"status": "ok",
+			})
+		})
+
 		auth := api.Group("/auth")
 		{
 			auth.POST("/send-code", userController.SendVerificationCode)
@@ -31,12 +37,29 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			auth.POST("/verify-forget-password", userController.VerifyForgetPassword)
 		}
 
-		trips := api.Group("/trips")
-		trips.Use(middleware.AuthMiddleware())
+		v2 := api.Group("/v2")
+		v2.Use(middleware.AuthMiddleware())
 		{
-			trips.POST("", tripController.CreateTrip)
-			trips.GET("", tripController.ListTrips)
-			trips.DELETE("/:id", tripController.DeleteTrip)
+			v2.GET("/health", func(ctx *gin.Context) {
+				ctx.JSON(200, gin.H{
+					"status": "ok",
+				})
+			})
+
+			users := v2.Group("/users")
+			{
+				users.GET("/profile", userController.GetUserProfile)
+				users.PUT("/profile", userController.UpdateUserProfile)
+				users.PUT("/change-password", userController.ChangePassword)
+				users.DELETE("/delete-account", userController.DeleteAccount)
+			}
+
+			trips := v2.Group("/trips")
+			{
+				trips.POST("", tripController.CreateTrip)
+				trips.GET("", tripController.ListTrips)
+				trips.DELETE("/:id", tripController.DeleteTrip)
+			}
 		}
 	}
 
