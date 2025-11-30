@@ -3,9 +3,7 @@
     "id": "c2b28f49-9343-4656-86fa-f10fe9293b2c"
   },
   "entities": {
-    "collections": [
-      "../postman/collections/SZTU Trip Planner Backend Go.postman_collection.json"
-    ],
+    "collections": [],
     "environments": [
       "../postman/environments/sztu-trip-planner-backend.postman_environment.json"
     ],

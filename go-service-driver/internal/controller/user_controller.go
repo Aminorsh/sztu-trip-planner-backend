@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/database"
@@ -55,7 +56,8 @@ func (uc *UserController) SendVerificationCode(c *gin.Context) {
 func (uc *UserController) RegisterUser(c *gin.Context) {
 	var req dto.RegisterUser
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request data"})
+		log.Println("raw request:", c.Request.Body)
+		c.JSON(400, gin.H{"error": "Invalid request data: " + err.Error()})
 		return
 	}
 

@@ -1,22 +1,21 @@
-version: "3.8"
-
 services:
   backend:
     build: .
+    environment:
+      - GIN_MODE=debug
     container_name: trip-backend
     ports:
       - "8080:8080"
     env_file:
       - .env
     volumes:
-      - ./config.yaml:/app/config.yaml  # Mount config file
+      - ./config.yaml:/app/config.yaml # Mount config file
     depends_on:
-      - redis
       - mysql
-    # dns: # if needed, uncomment and set custom DNS servers
-    #   - 8.8.8.8
-    #   - 8.8.4.4
-
+      - redis
+    dns: 
+      - 114.114.114.114 # 国内通用DNS
+      - 8.8.8.8 # 备用（Google DNS）
 
   redis:
     image: m.daocloud.io/docker.io/library/redis:7
@@ -29,3 +28,16 @@ services:
     container_name: trip-mysql
     ports:
       - "3305:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    env_file:
+      - .env
+    volumes:
+      - ../database/dev:/docker-entrypoint-initdb.d/ # 初始化脚本
+      - mysql_data:/var/lib/mysql  # 数据持久化
+
+volumes:
+  mysql_data:

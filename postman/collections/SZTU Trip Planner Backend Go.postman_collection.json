@@ -1,10 +1,9 @@
 {
   "info": {
-    "_postman_id": "46224da1-23c5-42bf-a604-78a61e0cf16c",
+    "_postman_id": "603f668d-d43a-497b-b02f-098b8a2d1fe5",
     "name": "SZTU Trip Planner Backend Go",
     "description": "Golang + Gin 后端服务\n\n提供注册登录、行程管理、路线规划等 RESTful API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46795840"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -19,19 +18,17 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "id": "9410670a-e0a2-40e3-8ab2-f89c833bb10c",
+                    "id": "74a877f8-547a-4cc4-9bed-a0aff63f01d8",
                     "exec": [
                       ""
                     ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "type": "text/javascript"
                   }
                 },
                 {
                   "listen": "test",
                   "script": {
-                    "id": "bc11572d-d5b6-45cc-84e4-b81a31fab849",
+                    "id": "2fa691fa-f08f-473d-a4bb-a0fec6ef6e55",
                     "exec": [
                       "pm.test(\"Status is 200\", function () {",
                       "  pm.response.to.have.status(200);",
@@ -43,13 +40,11 @@
                       "});",
                       ""
                     ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "type": "text/javascript"
                   }
                 }
               ],
-              "id": "c156a6a9-f5f5-498a-a3b1-de95fdefb4d0",
+              "id": "12fe5f62-ba0f-42a8-a1e5-87063ab4a8c3",
               "request": {
                 "method": "POST",
                 "header": [
@@ -83,7 +78,7 @@
               },
               "response": [
                 {
-                  "id": "c1c4abc7-4da5-418d-ab35-08f8947ff09f",
+                  "id": "f8c82af7-eb68-4227-b429-51a8019a80ed",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -117,7 +112,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -148,7 +144,6 @@
                       "value": "36"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"message\": \"Verification code sent\"\n}"
                 }
               ]
@@ -159,7 +154,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "8182c2ff-4447-43f5-9f08-93d699a1bab8",
+                    "id": "da3e0091-3be4-43fe-a2ae-ed0387c40c30",
                     "exec": [
                       "pm.test(\"status is 201\", function () {",
                       "    pm.response.to.have.status(201);",
@@ -172,13 +167,21 @@
                       "    pm.expect(json.token).to.be.a('string');",
                       "});"
                     ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "id": "1db97096-c7ba-445f-9144-b7410a51fb8c",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
                   }
                 }
               ],
-              "id": "c5a31ce5-b6dd-48ea-9057-2dc9644fc414",
+              "id": "7a580dfb-cc92-45a5-9e73-5e02d582647e",
               "request": {
                 "method": "POST",
                 "header": [
@@ -190,7 +193,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"211747\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"283042\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -212,11 +215,10 @@
               },
               "response": [
                 {
-                  "id": "1953f10e-20cf-4a8f-bf1d-2120307f1f56",
+                  "id": "9af4c75c-95ea-442c-9a37-f5844a42a005",
                   "name": "201 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
-                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"547272\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
@@ -246,7 +248,8 @@
                   },
                   "status": "Created",
                   "code": 201,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -277,7 +280,6 @@
                       "value": "337"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"message\": \"User registered successfully\",\n    \"user\": {\n        \"id\": 2,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"aminorsh\",\n        \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMjk2Nn0._gp3fmVLMZysEKC4SAtvh6S70R-F5Ek1E2BtvxO2fP8\"\n}"
                 }
               ]
@@ -288,7 +290,6 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "43e50aa9-a964-4447-8a6b-33a39a160a49",
                     "exec": [
                       "pm.test(\"status is 200\", function () {",
                       "    pm.response.to.have.status(200);",
@@ -302,12 +303,11 @@
                       "});"
                     ],
                     "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "id": "0a0df502-d279-4793-93f9-b91c0bd624e0"
                   }
                 }
               ],
-              "id": "7d19292c-e558-451b-b615-10812ffd0577",
+              "id": "9d1f73dc-c6ca-47f9-b73a-0d5552a30983",
               "request": {
                 "method": "POST",
                 "header": [
@@ -341,7 +341,7 @@
               },
               "response": [
                 {
-                  "id": "3fea3939-6cb2-4021-bd39-328b4fb3064d",
+                  "id": "bbe09438-3341-49e7-a988-ad4f265be805",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -375,7 +375,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -406,7 +407,6 @@
                       "value": "132"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzg1Mn0.Q5kIs9gkVQO_QFW8uOcQBSaIoeW7uhyX0_znHpq-OV8\"\n}"
                 }
               ]
@@ -417,7 +417,6 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "fc5fb086-a5ec-4b7f-b5b8-b3ec8aa57104",
                     "exec": [
                       "pm.test(\"status is 200\", function () {",
                       "    pm.response.to.have.status(200);",
@@ -431,12 +430,11 @@
                       "});"
                     ],
                     "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "id": "81db0988-cef3-41af-a027-ad6d80d00ea7"
                   }
                 }
               ],
-              "id": "ed89a15b-bea8-4a69-9f92-8cdf67f23303",
+              "id": "21702cb4-0372-4428-b697-b764751264fe",
               "request": {
                 "method": "POST",
                 "header": [
@@ -470,7 +468,7 @@
               },
               "response": [
                 {
-                  "id": "8c42d881-f76f-4011-b039-9965dff44bfe",
+                  "id": "1561bcaa-dfc5-4337-a85b-34f7816c7f2c",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -504,7 +502,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -535,7 +534,6 @@
                       "value": "132"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzU4Mn0.kOK0xlMjysmooa1rJzCsN4iqN2NVal2FCD9j69W_Noo\"\n}"
                 }
               ]
@@ -546,7 +544,6 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "73e8f335-8414-490d-8490-69163f19bb64",
                     "exec": [
                       "pm.test(\"Status is 200\", function () {",
                       "  pm.response.to.have.status(200);",
@@ -559,12 +556,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "id": "f9937a1b-c6ad-4807-be91-7b34ea4ad73e"
                   }
                 }
               ],
-              "id": "b2015069-5fe7-4724-bdad-f898cb989f14",
+              "id": "1fc306d3-8a51-463f-89e9-834ed4a6ceb1",
               "request": {
                 "method": "POST",
                 "header": [
@@ -598,7 +594,7 @@
               },
               "response": [
                 {
-                  "id": "ecaea810-c5e7-4d63-a1f3-4fed4fb21e6b",
+                  "id": "599cf668-f6b8-46e3-b148-e23c24de7284",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -632,7 +628,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -663,7 +660,6 @@
                       "value": "39"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"message\": \"Forget password code sent\"\n}"
                 }
               ]
@@ -674,7 +670,6 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "b692547e-fe58-4e33-b19f-4bd8cef946f8",
                     "exec": [
                       "pm.test(\"Status is 200\", function () {",
                       "  pm.response.to.have.status(200);",
@@ -687,12 +682,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "id": "64810ab4-9292-4457-9b66-3c5f0b1456bb"
                   }
                 }
               ],
-              "id": "8161e885-9e50-4a46-a279-e35edbc47f14",
+              "id": "cae3e4b5-a766-43dc-967c-25afc769df68",
               "request": {
                 "method": "POST",
                 "header": [
@@ -726,7 +720,7 @@
               },
               "response": [
                 {
-                  "id": "f7a5bfa4-31c7-48a3-b5bb-ebc721693a60",
+                  "id": "c1ca66bd-0b10-4671-a0a4-bc38e9b48b22",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -760,7 +754,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -791,7 +786,6 @@
                       "value": "39"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"message\": \"Forget password code sent\"\n}"
                 }
               ]
@@ -802,7 +796,6 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "5601a077-1129-4645-be7c-e1acd442bfb1",
                     "exec": [
                       "pm.test(\"Status is 200\", function () {",
                       "  pm.response.to.have.status(200);",
@@ -815,12 +808,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
+                    "id": "3d392af5-b3ce-4b58-9672-a4eea45f90f3"
                   }
                 }
               ],
-              "id": "ca0913fe-c3ac-4644-98e8-f4e6252d5bf9",
+              "id": "2864d0d4-c63a-48af-8e5b-c73d4090f232",
               "request": {
                 "method": "POST",
                 "header": [
@@ -854,7 +846,7 @@
               },
               "response": [
                 {
-                  "id": "e0320d16-23f3-4e6f-a9bb-62ee3f453990",
+                  "id": "b82e7ee8-65f4-4956-b462-466831a1f771",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -888,7 +880,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -919,13 +912,12 @@
                       "value": "41"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"message\": \"Password reset successfully\"\n}"
                 }
               ]
             }
           ],
-          "id": "0edefb94-b036-4f38-820c-943a0affabc1",
+          "id": "35c942d6-3f8e-4460-90ef-5ffc2ffdd918",
           "description": "提供注册、登录及重置密码等API"
         },
         {
@@ -936,7 +928,7 @@
               "item": [
                 {
                   "name": "Create Trip",
-                  "id": "a59bb731-1187-4f70-a28c-b5161501d388",
+                  "id": "2e1bb5e2-14cc-4cb0-b0e8-265b04e505d8",
                   "request": {
                     "method": "POST",
                     "header": [
@@ -964,7 +956,7 @@
                   },
                   "response": [
                     {
-                      "id": "c8513a2d-1256-4b2d-bbe1-0e78df3554e7",
+                      "id": "edad44de-7770-426d-8575-9f545b2192aa",
                       "name": "201 OK - Success Example",
                       "originalRequest": {
                         "method": "POST",
@@ -992,7 +984,8 @@
                       },
                       "status": "Created",
                       "code": 201,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1023,14 +1016,13 @@
                           "value": "303"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"user_id\": 1,\n    \"title\": \"test_title\",\n    \"description\": \"description\",\n    \"start_date\": \"2025-12-01T09:00:00Z\",\n    \"end_date\": \"2025-12-05T09:00:00Z\",\n    \"days\": 5,\n    \"is_public\": false,\n    \"destination_city\": \"Shenzhen\",\n    \"destination_country\": \"\",\n    \"created_at\": \"2025-11-30T13:43:08+08:00\",\n    \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "List Trips",
-                  "id": "cfb124b5-655e-4f44-be9a-f9005fafb1fa",
+                  "id": "2c85cf5d-8925-4599-9051-decdedb141a9",
                   "request": {
                     "method": "GET",
                     "header": [
@@ -1054,7 +1046,7 @@
                   },
                   "response": [
                     {
-                      "id": "98ce4788-d101-444c-a6e7-cf30351d5a50",
+                      "id": "10f11f2c-1d40-4985-8769-04ac94fb63bb",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "GET",
@@ -1078,7 +1070,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1109,14 +1102,13 @@
                           "value": "334"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
                     }
                   ]
                 },
                 {
                   "name": "Search Trips",
-                  "id": "1ac34caa-e691-4f10-bb24-b50d3b61b3f4",
+                  "id": "36645aa6-32af-43a4-9b32-69f6f4e2a764",
                   "request": {
                     "method": "GET",
                     "header": [
@@ -1146,7 +1138,7 @@
                   },
                   "response": [
                     {
-                      "id": "efe52cff-bf82-4d95-a939-b727dd36c672",
+                      "id": "157eccf3-7264-4374-b8b5-0785850dff27",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "GET",
@@ -1176,7 +1168,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1207,14 +1200,13 @@
                           "value": "334"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
                     }
                   ]
                 },
                 {
-                  "name": "List Trips Copy",
-                  "id": "82eeef1d-2669-4f25-b7ba-aba964b1f557",
+                  "name": "Delete Trip",
+                  "id": "84dec0e8-e8e6-4f94-981f-c2b2dc083e78",
                   "request": {
                     "method": "DELETE",
                     "header": [
@@ -1245,7 +1237,7 @@
                   },
                   "response": [
                     {
-                      "id": "7df8f594-829f-4269-891e-6a2aa54bbebb",
+                      "id": "b06ac3b6-d471-47c3-92c8-fe08094178e4",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "DELETE",
@@ -1276,7 +1268,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1307,50 +1300,22 @@
                           "value": "39"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"message\": \"Trip deleted successfully\"\n}"
                     }
                   ]
                 }
               ],
-              "id": "d6fb555a-f639-408d-93b9-5c4ca9d32f90",
-              "description": "提供行程创建、软删除、查询等功能",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "id": "efa802ef-9efe-4e21-9553-9f0976b6a476",
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {},
-                    "exec": [
-                      ""
-                    ]
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "id": "afeeb018-5164-438f-b81e-0346b8bf629c",
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {},
-                    "exec": [
-                      ""
-                    ]
-                  }
-                }
-              ]
+              "id": "4c212445-9e18-4ac5-8e8c-7823ce92c2e6",
+              "description": "提供行程创建、软删除、查询等功能"
             },
             {
-              "name": "New Folder",
+              "name": "Users",
               "item": [
                 {
                   "name": "Get Profile",
-                  "id": "d5c2339a-4262-4dbd-a276-fd582f0eaf9d",
+                  "id": "75daa27c-852a-46a5-97b9-4df91eb10d72",
                   "request": {
                     "method": "GET",
-                    "header": [],
                     "url": {
                       "raw": "{{BASE_URL}}/api/v2/users/profile",
                       "host": [
@@ -1366,11 +1331,10 @@
                   },
                   "response": [
                     {
-                      "id": "bb8bdf31-e613-4524-acba-71e79c277244",
+                      "id": "b9f54d8c-2d64-4643-81e5-af58a8c78d3f",
                       "name": "Get Profile",
                       "originalRequest": {
                         "method": "GET",
-                        "header": [],
                         "url": {
                           "raw": "{{BASE_URL}}/api/v2/users/profile",
                           "host": [
@@ -1386,7 +1350,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1417,17 +1382,15 @@
                           "value": "275"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T12:48:06+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Update Profile",
-                  "id": "b852dddb-eb93-426c-9259-8712f9657ee6",
+                  "id": "2c643517-e27d-4a79-aa3b-5a1a8d45ff8b",
                   "request": {
                     "method": "PUT",
-                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
@@ -1452,11 +1415,10 @@
                   },
                   "response": [
                     {
-                      "id": "98e33833-1c7d-45a1-ae67-39f37e28df3a",
+                      "id": "3184b423-cb68-4ee4-963d-2b89c78f3001",
                       "name": "Update Profile",
                       "originalRequest": {
                         "method": "PUT",
-                        "header": [],
                         "body": {
                           "mode": "raw",
                           "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
@@ -1481,7 +1443,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1512,17 +1475,15 @@
                           "value": "361"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnbxCgxGiF3h5XMJx7Mcj82kesZyuqG2aJgxxdxxia_Y9p_aF1HvP1gPG28i1FoPBEJfI&usqp=CAU\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T15:50:58.434+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Change Password",
-                  "id": "0bd5a8ef-310f-4f78-af34-490697041681",
+                  "id": "b345b084-e795-4088-91ef-0900d001ed37",
                   "request": {
                     "method": "PUT",
-                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
@@ -1547,11 +1508,10 @@
                   },
                   "response": [
                     {
-                      "id": "5b306bbb-2514-46ac-8917-1b03f65413df",
+                      "id": "041202fa-5168-4d21-a647-900896eab2e3",
                       "name": "New Request",
                       "originalRequest": {
                         "method": "PUT",
-                        "header": [],
                         "body": {
                           "mode": "raw",
                           "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
@@ -1576,7 +1536,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1607,14 +1568,13 @@
                           "value": "43"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"message\": \"Password changed successfully\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Delete Account",
-                  "id": "179c9e7c-f25b-445c-9cfc-49d4322e5227",
+                  "id": "f15f5c05-aa1f-4ced-abcd-3b42bf391d9f",
                   "request": {
                     "method": "DELETE",
                     "header": [
@@ -1648,7 +1608,7 @@
                   },
                   "response": [
                     {
-                      "id": "6313048c-318d-40b5-bb04-f1132e95b41e",
+                      "id": "6b419497-98fa-4101-ae69-ee1bb8202b60",
                       "name": "New Request",
                       "originalRequest": {
                         "method": "DELETE",
@@ -1683,7 +1643,8 @@
                       },
                       "status": "OK",
                       "code": 200,
-                      "_postman_previewlanguage": null,
+                      "_postman_previewlanguage": "Text",
+                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1714,20 +1675,18 @@
                           "value": "42"
                         }
                       ],
-                      "cookie": [],
                       "body": "{\n    \"message\": \"Account deleted successfully\"\n}"
                     }
                   ]
                 }
               ],
-              "id": "949b4751-8214-4420-893d-231bd7af9d7f"
+              "id": "a77a9cc2-64b8-4f1a-b355-15ee31d46f7e"
             },
             {
               "name": "Health",
-              "id": "bbd4b05b-ec83-4210-80c9-20c8f6f9d475",
+              "id": "09efe3e5-dfbf-4ad7-9286-72d4ced8a81c",
               "request": {
                 "method": "GET",
-                "header": [],
                 "url": {
                   "raw": "{{BASE_URL}}/api/v2/health",
                   "host": [
@@ -1742,11 +1701,10 @@
               },
               "response": [
                 {
-                  "id": "30139abd-1f8d-4f9b-929c-cdf70c48e60b",
+                  "id": "c7e516e0-547f-4bd7-9404-73d017b27b67",
                   "name": "Health",
                   "originalRequest": {
                     "method": "GET",
-                    "header": [],
                     "url": {
                       "raw": "{{BASE_URL}}/api/v2/health",
                       "host": [
@@ -1761,7 +1719,8 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
+                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -1792,56 +1751,28 @@
                       "value": "15"
                     }
                   ],
-                  "cookie": [],
                   "body": "{\n    \"status\": \"ok\"\n}"
                 }
               ]
             }
           ],
-          "id": "a865cfb2-a41d-490c-ac30-4dff654b1a3c",
+          "id": "94cf34e3-5fa8-4ad6-93ec-ba2a11da7bad",
           "auth": {
             "type": "bearer",
             "bearer": [
               {
                 "key": "token",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDU3NTU1OH0.18uvlkGSf6fo8jCXor0i31DAvLKv24yIbBIhl8F_-Ns",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDU4NTg3MH0.lkBIqQjKtzA8-d-FkpPJThR7Kokmuz-F5WSnLA9vpHk",
                 "type": "string"
               }
             ]
-          },
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "id": "9fbbf58a-253f-4d74-b653-776f4653a998",
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "exec": [
-                  ""
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "id": "df18d434-bc1f-48c2-9679-b808e13f21f0",
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "exec": [
-                  ""
-                ]
-              }
-            }
-          ]
+          }
         },
         {
           "name": "Health",
-          "id": "144027f8-472b-450c-98f4-7ff8d43523e2",
+          "id": "11cc87b4-d93a-4501-899d-24df70e878a9",
           "request": {
             "method": "GET",
-            "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/health",
               "host": [
@@ -1855,11 +1786,10 @@
           },
           "response": [
             {
-              "id": "4acf67b5-fac3-4c0a-b813-5711f4fa4fec",
+              "id": "9624a977-bec3-42e0-96e2-8189b9b43329",
               "name": "Health",
               "originalRequest": {
                 "method": "GET",
-                "header": [],
                 "url": {
                   "raw": "{{BASE_URL}}/api/health",
                   "host": [
@@ -1873,7 +1803,8 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
+              "_postman_previewtype": "html",
               "header": [
                 {
                   "key": "Access-Control-Allow-Credentials",
@@ -1904,22 +1835,12 @@
                   "value": "15"
                 }
               ],
-              "cookie": [],
               "body": "{\n    \"status\": \"ok\"\n}"
             }
           ]
-        },
-        {
-          "name": "New Request",
-          "id": "c63fc693-9e47-4421-9f9c-6108d2979396",
-          "request": {
-            "method": "GET",
-            "header": []
-          },
-          "response": []
         }
       ],
-      "id": "27817eb5-2278-4518-b4a2-4285db6cb6b2"
+      "id": "ca0aadb9-fca5-4f4d-bfd8-03dfa6bd7ca6"
     }
   ]
 }
