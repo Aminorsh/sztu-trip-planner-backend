@@ -36,13 +36,9 @@ func LoadConfig() *Config {
 		log.Fatalf("解析配置文件失败: %v", err)
 	}
 
-	if err := godotenv.Load(); err != nil {
-		if dsn := os.Getenv("DB_DSN"); dsn != "" {
-			cfg.Database.DSN = dsn
-		}
-		if key := os.Getenv("JWT_KEY"); key != "" {
-			cfg.JWT.Key = key
-		}
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("加载 .env 文件失败: %v", err)
 	}
 
 	AppConfig = &cfg

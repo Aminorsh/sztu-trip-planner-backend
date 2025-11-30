@@ -60,7 +60,7 @@ func (e *EmailService) SendEmail(toEmail, code string, emailType EmailType) erro
 	}
 
 	params := &resend.SendEmailRequest{
-		From:    config.GetDomain() + " <no-reply@" + config.GetDomain() + ">",
+		From:    config.GetDomain(),
 		To:      []string{toEmail},
 		Subject: subject,
 		Html:    html,

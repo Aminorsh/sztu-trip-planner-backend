@@ -15,14 +15,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token := strings.TrimPrefix(auth, "Bearer")
+		token := strings.TrimPrefix(auth, "Bearer ")
 		claims, err := utils.ParseToken(token)
 		if err != nil {
-			ctx.AbortWithStatusJSON(401, gin.H{"error": "invalid or expired token"})
+			ctx.AbortWithStatusJSON(401, gin.H{"error": "invalid or expired token: " + err.Error()})
 			return
 		}
 
-		ctx.Set("userID", claims.UserID)
+		ctx.Set("userID", int(claims.UserID))
 		ctx.Next()
 	}
 }

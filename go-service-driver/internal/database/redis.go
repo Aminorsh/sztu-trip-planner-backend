@@ -15,19 +15,6 @@ var (
 )
 
 func InitRedis() error {
-	// RedisClient = redis.NewClient(&redis.Options{
-	// 	Addr:     config.GetRedisAddr(),
-	// 	Password: "", // no password set
-	// 	DB:       0,  // use default DB
-	// })
-
-	// _, err := RedisClient.Ping(Ctx).Result()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// log.Println("Redis连接成功")
-	// return nil
 	for i := range 10 {
 		RedisClient = redis.NewClient(&redis.Options{
 			Addr:     config.GetRedisAddr(),

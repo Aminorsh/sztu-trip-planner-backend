@@ -5,8 +5,8 @@ import "time"
 type CreateTripRequest struct {
 	Title              string     `json:"title" binding:"required"`
 	Description        string     `json:"description"`
-	StartDate          *time.Time `json:"start_date"`
-	EndDate            *time.Time `json:"end_date"`
+	StartDate          *time.Time `json:"start_date" binding:"required"`
+	EndDate            *time.Time `json:"end_date" binding:"required"`
 	IsPublic           *bool      `json:"is_public"`
 	OriginAddress      string     `json:"origin_address"`
 	DestinationAddress string     `json:"destination_address"`
