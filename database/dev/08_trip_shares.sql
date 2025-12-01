@@ -1,10 +1,10 @@
 USE trip_planner;
 
 CREATE TABLE IF NOT EXISTS trip_shares (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    trip_id INT NOT NULL COMMENT '关联行程ID（确定分享的行程）',
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    trip_id BIGINT UNSIGNED NOT NULL COMMENT '关联行程ID（确定分享的行程）',
     share_token VARCHAR(32) NOT NULL COMMENT '分享令牌（与trips表share_token关联，用于通过链接验证访问权限）',
-    shared_by INT NOT NULL COMMENT '分享者用户ID（关联users表，记录分享操作人）',
+    shared_by BIGINT UNSIGNED NOT NULL COMMENT '分享者用户ID（关联users表，记录分享操作人）',
     shared_to_email VARCHAR(100) COMMENT '分享目标邮箱（可选，定向分享时填写；公开分享时为空）',
     permission ENUM('view', 'edit') DEFAULT 'view' COMMENT '分享权限：view-仅查看，edit-可编辑（控制被分享者操作范围）',
     expire_time TIMESTAMP COMMENT '分享链接过期时间（可选，如“2024-11-01 23:59:59”，过期后链接失效；永久有效时为空）',

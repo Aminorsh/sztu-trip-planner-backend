@@ -1,8 +1,8 @@
 USE trip_planner;
 
 CREATE TABLE IF NOT EXISTS trips (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL COMMENT '行程创建者ID（关联users表，确定行程归属）',
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL COMMENT '行程创建者ID（关联users表，确定行程归属）',
     title VARCHAR(200) NOT NULL COMMENT '行程标题（如“2024国庆北京5日游”，用于列表展示）',
     description TEXT COMMENT '行程描述（补充行程背景、目的等信息，关联TripDetail.vue概览区）',
     start_date DATE COMMENT '行程开始日期（关联TripDetail.vue日历视图）',

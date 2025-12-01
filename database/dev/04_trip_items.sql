@@ -1,9 +1,9 @@
 USE trip_planner;
 
 CREATE TABLE IF NOT EXISTS trip_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    trip_id INT NOT NULL COMMENT '关联行程ID（确定行程项归属的行程）',
-    place_id INT NOT NULL COMMENT '关联地点ID（确定行程项对应的地点）',
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    trip_id BIGINT UNSIGNED NOT NULL COMMENT '关联行程 ID（确定行程项归属的行程）',
+    place_id BIGINT UNSIGNED NOT NULL COMMENT '关联地点ID（确定行程项对应的地点）',
     day_number INT NOT NULL COMMENT '行程项所属天数（如“1”代表行程第1天，关联TripDetail.vue天数切换按钮）',
     start_time TIME COMMENT '行程项开始时间（如“09:00”，关联TripDetail.vue行程项列表、日历视图）',
     end_time TIME COMMENT '行程项结束时间（如“11:30”，关联TripDetail.vue行程项列表、日历视图）',

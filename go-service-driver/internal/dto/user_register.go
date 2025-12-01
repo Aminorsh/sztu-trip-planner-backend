@@ -13,7 +13,7 @@ type RegisterUser struct {
 }
 
 type UserResponse struct {
-	ID          int    `json:"id"`
+	ID          uint64 `json:"id"`
 	Username    string `json:"username"`
 	Email       string `json:"email"`
 	DisplayName string `json:"display_name"`

@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS trip_planner CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE trip_planner;
 
 CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL COMMENT '用户名（唯一标识，用于登录）',
     email VARCHAR(100) UNIQUE NOT NULL COMMENT '用户邮箱（唯一，用于登录、找回密码）',
     password_hash VARCHAR(255) NOT NULL COMMENT '加密后的密码（不存储明文，保障安全）',

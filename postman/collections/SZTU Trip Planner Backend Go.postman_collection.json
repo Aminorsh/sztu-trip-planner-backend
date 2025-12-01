@@ -193,7 +193,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"283042\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"661255\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1762,7 +1762,7 @@
             "bearer": [
               {
                 "key": "token",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDU4NTg3MH0.lkBIqQjKtzA8-d-FkpPJThR7Kokmuz-F5WSnLA9vpHk",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDY0NjMwNX0.DA9Je8gxD7PgLuO15faCPDo0WU94DS9gqqp-Gs5e32Y",
                 "type": "string"
               }
             ]
