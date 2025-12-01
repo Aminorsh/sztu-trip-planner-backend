@@ -3,6 +3,7 @@ package route
 import (
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/controller"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/middleware"
+	"github.com/Aminorsh/sztu-trip-planner-backend/internal/repository"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,10 +13,12 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.CORS())
 
-	userService := service.NewUserService(db)
-	userController := controller.NewUserController(userService)
+	userRepo := repository.NewUserRepository(db)
 
+	userService := service.NewUserService(userRepo)
 	tripService := service.NewTripService(db)
+
+	userController := controller.NewUserController(userService)
 	tripController := controller.NewTripController(tripService)
 
 	api := r.Group("/api")

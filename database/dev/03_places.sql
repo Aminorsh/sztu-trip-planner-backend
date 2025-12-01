@@ -1,7 +1,7 @@
 USE trip_planner;
 
 CREATE TABLE IF NOT EXISTS places (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL COMMENT '地点名称（如“故宫博物院”，用于搜索结果、详情页展示）',
     category ENUM('scenic', 'restaurant', 'hotel', 'other') NOT NULL COMMENT '地点类别：scenic-景点，restaurant-餐饮，hotel-酒店，other-其他（关联PlaceSearch.vue类别筛选）',
     address VARCHAR(255) NOT NULL COMMENT '地点详细地址（关联PlaceDetail.vue地址展示、地图定位）',

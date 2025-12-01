@@ -19,7 +19,7 @@ func NewTripService(db *gorm.DB) *TripService {
 	}
 }
 
-func (s *TripService) CreateTrip(userID int, req dto.CreateTripRequest) (dto.TripResponse, error) {
+func (s *TripService) CreateTrip(userID uint64, req dto.CreateTripRequest) (dto.TripResponse, error) {
 	trip := model.Trips{
 		UserID:             userID,
 		Title:              req.Title,

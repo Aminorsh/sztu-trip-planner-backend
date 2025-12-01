@@ -30,7 +30,7 @@ func (tc *TripController) CreateTrip(c *gin.Context) {
 		c.JSON(401, gin.H{"error": "Unauthorized"})
 		return
 	}
-	userID := userIDValue.(int)
+	userID := userIDValue.(uint64)
 
 	tripResponse, err := tc.TripService.CreateTrip(userID, req)
 	if err != nil {

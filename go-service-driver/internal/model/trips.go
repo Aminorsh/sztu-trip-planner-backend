@@ -3,8 +3,8 @@ package model
 import "time"
 
 type Trips struct {
-	ID          int       `json:"id" gorm:"primaryKey;autoIncrement;comment:行程ID"`
-	UserID      int       `json:"user_id" gorm:"not null;comment:创建用户ID"`
+	ID          uint64    `json:"id" gorm:"primaryKey;autoIncrement;comment:行程ID"`
+	UserID      uint64    `json:"user_id" gorm:"not null;comment:创建用户ID"`
 	Title       string    `json:"title" gorm:"not null;comment:行程标题"`
 	Description string    `json:"description,omitempty" gorm:"type:text;comment:行程描述"`
 	StartDate   time.Time `json:"start_date,omitempty" gorm:"type:date;comment:开始日期"`
