@@ -1,39 +1,66 @@
-const mongoose = require('mongoose');
+// models/User.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
   username: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING(50),
+    allowNull: false,
     unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 30
+    validate: {
+      len: [3, 50]
+    }
   },
   email: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING(100),
+    allowNull: false,
     unique: true,
-    trim: true,
-    lowercase: true
+    validate: {
+      isEmail: true
+    }
   },
   password: {
-    type: String,
-    required: true,
-    minlength: 6
+    type: DataTypes.STRING(255),
+    allowNull: false
   },
   avatar: {
-    type: String,
-    default: null
+    type: DataTypes.STRING(255),
+    defaultValue: ''
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  role: {
+    type: DataTypes.ENUM('user', 'admin'),
+    defaultValue: 'user'
   }
 }, {
-  timestamps: true
+  tableName: 'users',
+  timestamps: true,
+  paranoid: true,
+  hooks: {
+    beforeCreate: async (user) => {
+      if (user.password) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
+    },
+    beforeUpdate: async (user) => {
+      if (user.changed('password')) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
+    }
+  }
 });
 
+// 实例方法：验证密码
+User.prototype.validPassword = async function(password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+module.exports = User;
 // 密码加密中间件
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();

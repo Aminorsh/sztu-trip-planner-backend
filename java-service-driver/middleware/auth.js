@@ -1,21 +1,58 @@
+// middleware/auth.js
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { User } = require('../models/index');
 
 const auth = async (req, res, next) => {
   try {
-    // 从请求头获取Token
+    // 从请求头获取token
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    
     if (!token) {
-      return res.status(401).json({ success: false, message: '请提供认证Token' });
+      return res.status(401).json({
+        success: false,
+        message: '请提供认证令牌'
+      });
     }
 
-    // 验证Token
+    // 验证token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // 将解码出的用户ID（我们之后会存到token里）挂载到req对象上，方便后续使用
-    req.userId = decoded.userId;
-    next(); // 验证通过，放行到下一个处理函数
+    
+    // 查找用户
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['password'] }
+    });
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: '用户不存在或令牌无效'
+      });
+    }
+
+    req.user = user;
+    req.userId = user.id;
+    next();
   } catch (error) {
-    res.status(401).json({ success: false, message: 'Token无效或已过期' });
+    console.error('认证错误:', error.message);
+    
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: '无效的令牌'
+      });
+    }
+    
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: '令牌已过期'
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: '认证失败'
+    });
   }
 };
 
