@@ -1,7 +1,9 @@
 package route
 
 import (
+	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/controller"
+	"github.com/Aminorsh/sztu-trip-planner-backend/internal/database"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/middleware"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/repository"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/service"
@@ -16,9 +18,16 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	userRepo := repository.NewUserRepository(db)
 
 	userService := service.NewUserService(userRepo)
+	placeService := service.NewPlaceService(
+		config.GetAmapAPIKey(),
+		config.GetAmapAPIURL(),
+		database.RedisClient,
+		db,
+	)
 	tripService := service.NewTripService(db)
 
 	userController := controller.NewUserController(userService)
+	placeController := controller.NewPlaceController(placeService)
 	tripController := controller.NewTripController(tripService)
 
 	api := r.Group("/api")
@@ -55,6 +64,11 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				users.PUT("/profile", userController.UpdateUserProfile)
 				users.PUT("/change-password", userController.ChangePassword)
 				users.DELETE("/delete-account", userController.DeleteAccount)
+			}
+
+			places := v2.Group("/places")
+			{
+				places.POST("/search", placeController.SearchPlaces)
 			}
 
 			trips := v2.Group("/trips")

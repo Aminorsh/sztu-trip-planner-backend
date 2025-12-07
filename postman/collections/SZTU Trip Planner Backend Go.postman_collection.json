@@ -113,7 +113,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -193,7 +192,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"661255\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"599077\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -249,7 +248,6 @@
                   "status": "Created",
                   "code": 201,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -376,7 +374,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -503,7 +500,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -629,7 +625,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -755,7 +750,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -881,7 +875,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -985,7 +978,6 @@
                       "status": "Created",
                       "code": 201,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1071,7 +1063,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1169,7 +1160,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1269,7 +1259,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1351,7 +1340,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1444,7 +1432,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1537,7 +1524,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1644,7 +1630,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1681,6 +1666,105 @@
                 }
               ],
               "id": "a77a9cc2-64b8-4f1a-b355-15ee31d46f7e"
+            },
+            {
+              "name": "Place",
+              "item": [
+                {
+                  "name": "Search Place",
+                  "id": "d5769b67-0794-47b3-91ea-c941431f546a",
+                  "request": {
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"keyword\": \"广州塔\",\n    \"city\": \"广州\",\n    \"category\": \"scenic\",\n    \"page\": 1,\n    \"page_size\": 5\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/places/search",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "places",
+                        "search"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "ec68c042-dcc4-4f1f-876a-9ef86e347f0f",
+                      "name": "Search Place",
+                      "originalRequest": {
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"keyword\": \"广州塔\",\n    \"city\": \"广州\",\n    \"category\": \"scenic\",\n    \"page\": 1,\n    \"page_size\": 5\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/places/search",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "places",
+                            "search"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 07 Dec 2025 06:59:28 GMT"
+                        },
+                        {
+                          "key": "Transfer-Encoding",
+                          "value": "chunked"
+                        }
+                      ],
+                      "responseTime": "2025-12-07T06:59:54.083Z",
+                      "body": "{\n    \"success\": true,\n    \"data\": {\n        \"total\": 10,\n        \"page\": 1,\n        \"page_size\": 5,\n        \"places\": [\n            {\n                \"id\": 1,\n                \"amap_poi_id\": \"B00140BNNF\",\n                \"name\": \"越秀公园\",\n                \"address\": \"解放北路988号\",\n                \"location\": {\n                    \"lng\": 113.265561,\n                    \"lat\": 23.140096\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;公园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 2,\n                \"amap_poi_id\": \"B0FFF06EOH\",\n                \"name\": \"沙湾古镇\",\n                \"address\": \"福北路2号\",\n                \"location\": {\n                    \"lng\": 113.334288,\n                    \"lat\": 22.900653\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 3,\n                \"amap_poi_id\": \"B00140UDHU\",\n                \"name\": \"莲花山旅游区\",\n                \"address\": \"西门路123号\",\n                \"location\": {\n                    \"lng\": 113.502804,\n                    \"lat\": 22.987262\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 4,\n                \"amap_poi_id\": \"B00140UEO1\",\n                \"name\": \"广州动物园\",\n                \"address\": \"先烈中路120号\",\n                \"location\": {\n                    \"lng\": 113.305342,\n                    \"lat\": 23.140884\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;动物园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 5,\n                \"amap_poi_id\": \"B00140UEO5\",\n                \"name\": \"华南国家植物园\",\n                \"address\": \"天源路1190号\",\n                \"location\": {\n                    \"lng\": 113.367139,\n                    \"lat\": 23.181902\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"天河区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;植物园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 6,\n                \"amap_poi_id\": \"B00140UFHC\",\n                \"name\": \"中山纪念堂\",\n                \"address\": \"东风中路299号\",\n                \"location\": {\n                    \"lng\": 113.264692,\n                    \"lat\": 23.13286\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;纪念馆|风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 7,\n                \"amap_poi_id\": \"B00140W71L\",\n                \"name\": \"岭南印象园\",\n                \"address\": \"大学城外环西路\",\n                \"location\": {\n                    \"lng\": 113.406209,\n                    \"lat\": 23.036038\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 8,\n                \"amap_poi_id\": \"B00140WBI1\",\n                \"name\": \"广州塔\",\n                \"address\": \"赤岗街道新鸿社区滨江东路222号\",\n                \"location\": {\n                    \"lng\": 113.324521,\n                    \"lat\": 23.106428\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"海珠区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 9,\n                \"amap_poi_id\": \"B00141KFJH\",\n                \"name\": \"广东科学中心\",\n                \"address\": \"科普路168号\",\n                \"location\": {\n                    \"lng\": 113.362465,\n                    \"lat\": 23.039403\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜相关;旅游景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 10,\n                \"amap_poi_id\": \"B00141V5TB\",\n                \"name\": \"正佳极地海洋世界\",\n                \"address\": \"天河路228号正佳广场2层2D126\",\n                \"location\": {\n                    \"lng\": 113.327025,\n                    \"lat\": 23.132143\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"天河区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;水族馆\",\n                \"review_count\": 0\n            }\n        ]\n    }\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "c9ccb76b-1628-4084-95e6-7a664ba81186"
             },
             {
               "name": "Health",
@@ -1720,7 +1804,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -1762,7 +1845,7 @@
             "bearer": [
               {
                 "key": "token",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDY0NjMwNX0.DA9Je8gxD7PgLuO15faCPDo0WU94DS9gqqp-Gs5e32Y",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NTE3Mzc3Mn0.R6xvfonqpHR06n2RRIyLAilfJ069e75by1mpHfY-lqk",
                 "type": "string"
               }
             ]
@@ -1804,7 +1887,6 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "Text",
-              "_postman_previewtype": "html",
               "header": [
                 {
                   "key": "Access-Control-Allow-Credentials",
