@@ -1,6 +1,5 @@
 // controllers/tripController.js
-const { Trip, TripItem, User } = require('../models/index');
-const { Op } = require('sequelize');
+const DB = require('../utils/db');
 const crypto = require('crypto');
 
 class TripController {
@@ -10,35 +9,31 @@ class TripController {
       const { id } = req.params;
       const userId = req.userId;
 
-      const trip = await Trip.findByPk(id, {
-        include: [
-          {
-            model: User,
-            as: 'user',
-            attributes: ['id', 'username', 'avatar']
-          },
-          {
-            model: TripItem,
-            as: 'items',
-            order: [['sort_order', 'ASC']]
-          }
-        ]
-      });
+      // 查询行程
+      const trip = await DB.queryOne(`
+        SELECT t.*, u.username, u.avatar 
+        FROM trips t 
+        LEFT JOIN users u ON t.user_id = u.id 
+        WHERE t.id = ? AND t.deleted_at IS NULL 
+        AND (t.is_public = TRUE OR t.user_id = ?)
+      `, [id, userId]);
 
       if (!trip) {
         return res.status(404).json({
           success: false,
-          message: '行程不存在'
+          message: '行程不存在或无权访问'
         });
       }
 
-      // 检查权限：非公开行程只能由创建者访问
-      if (!trip.is_public && trip.user_id !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: '无权访问此行程'
-        });
-      }
+      // 查询行程项
+      const items = await DB.query(`
+        SELECT * FROM trip_items 
+        WHERE trip_id = ? AND deleted_at IS NULL 
+        ORDER BY sort_order ASC
+      `, [id]);
+
+      // 将行程项添加到行程对象中
+      trip.items = items;
 
       res.json({
         success: true,
@@ -60,48 +55,52 @@ class TripController {
       const userId = req.userId;
       const { title, description, start_date, end_date, is_public, status } = req.body;
 
-      // 查找行程
-      let trip = await Trip.findByPk(id);
+      // 检查行程是否存在且属于当前用户
+      const existingTrip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
-      if (!trip) {
+      if (!existingTrip) {
         return res.status(404).json({
           success: false,
-          message: '行程不存在'
-        });
-      }
-
-      // 检查权限：只能更新自己的行程
-      if (trip.user_id !== userId) {
-        return res.status(403).json({
-          success: false,
-          message: '无权修改此行程'
+          message: '行程不存在或无权修改'
         });
       }
 
       // 更新行程
-      trip = await trip.update({
+      const updateData = {
         title,
         description,
         start_date,
         end_date,
         is_public: is_public || false,
         status: status || 'planning'
-      });
+      };
+
+      await DB.update('trips', id, updateData);
+
+      // 获取更新后的行程
+      const updatedTrip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ?',
+        [id]
+      );
 
       res.json({
         success: true,
         message: '行程保存成功',
-        data: { trip }
+        data: { trip: updatedTrip }
       });
     } catch (error) {
       console.error('保存行程错误:', error);
-      if (error.name === 'SequelizeValidationError') {
+      
+      if (error.code === 'ER_TRUNCATED_WRONG_VALUE') {
         return res.status(400).json({
           success: false,
-          message: '数据验证失败',
-          errors: error.errors.map(err => err.message)
+          message: '日期格式不正确'
         });
       }
+      
       res.status(500).json({
         success: false,
         message: '服务器错误'
@@ -117,9 +116,10 @@ class TripController {
       const itemData = req.body;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      const trip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
       if (!trip) {
         return res.status(404).json({
@@ -129,19 +129,37 @@ class TripController {
       }
 
       // 获取当前最大排序值
-      const lastItem = await TripItem.findOne({
-        where: { trip_id: id },
-        order: [['sort_order', 'DESC']]
-      });
+      const result = await DB.queryOne(
+        'SELECT MAX(sort_order) as max_order FROM trip_items WHERE trip_id = ?',
+        [id]
+      );
 
-      const sortOrder = lastItem ? lastItem.sort_order + 1 : 0;
+      const sortOrder = (result?.max_order || 0) + 1;
 
-      // 创建行程项
-      const tripItem = await TripItem.create({
-        ...itemData,
+      // 插入行程项
+      const insertData = {
+        title: itemData.title,
+        description: itemData.description || null,
+        location: itemData.location,
+        address: itemData.address || null,
+        latitude: itemData.latitude || null,
+        longitude: itemData.longitude || null,
+        start_time: itemData.start_time || null,
+        end_time: itemData.end_time || null,
         sort_order: sortOrder,
+        category: itemData.category || 'other',
+        cost: itemData.cost || 0,
+        notes: itemData.notes || null,
         trip_id: id
-      });
+      };
+
+      const insertResult = await DB.insert('trip_items', insertData);
+
+      // 获取刚插入的行程项
+      const tripItem = await DB.queryOne(
+        'SELECT * FROM trip_items WHERE id = ?',
+        [insertResult.id]
+      );
 
       res.status(201).json({
         success: true,
@@ -150,13 +168,14 @@ class TripController {
       });
     } catch (error) {
       console.error('新增行程项错误:', error);
-      if (error.name === 'SequelizeValidationError') {
+      
+      if (error.code === 'ER_DATA_TOO_LONG') {
         return res.status(400).json({
           success: false,
-          message: '数据验证失败',
-          errors: error.errors.map(err => err.message)
+          message: '输入数据过长'
         });
       }
+      
       res.status(500).json({
         success: false,
         message: '服务器错误'
@@ -172,9 +191,10 @@ class TripController {
       const updateData = req.body;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      const trip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
       if (!trip) {
         return res.status(404).json({
@@ -183,20 +203,21 @@ class TripController {
         });
       }
 
-      // 查找行程项
-      const tripItem = await TripItem.findOne({
-        where: { id: itemId, trip_id: id }
-      });
+      // 更新行程项
+      const result = await DB.update('trip_items', itemId, updateData);
 
-      if (!tripItem) {
+      if (result.affectedRows === 0) {
         return res.status(404).json({
           success: false,
           message: '行程项不存在'
         });
       }
 
-      // 更新行程项
-      await tripItem.update(updateData);
+      // 获取更新后的行程项
+      const tripItem = await DB.queryOne(
+        'SELECT * FROM trip_items WHERE id = ?',
+        [itemId]
+      );
 
       res.json({
         success: true,
@@ -205,13 +226,6 @@ class TripController {
       });
     } catch (error) {
       console.error('更新行程项错误:', error);
-      if (error.name === 'SequelizeValidationError') {
-        return res.status(400).json({
-          success: false,
-          message: '数据验证失败',
-          errors: error.errors.map(err => err.message)
-        });
-      }
       res.status(500).json({
         success: false,
         message: '服务器错误'
@@ -226,9 +240,10 @@ class TripController {
       const userId = req.userId;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      const trip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
       if (!trip) {
         return res.status(404).json({
@@ -237,12 +252,10 @@ class TripController {
         });
       }
 
-      // 删除行程项
-      const result = await TripItem.destroy({
-        where: { id: itemId, trip_id: id }
-      });
+      // 软删除行程项
+      const affectedRows = await DB.softDelete('trip_items', itemId);
 
-      if (result === 0) {
+      if (affectedRows === 0) {
         return res.status(404).json({
           success: false,
           message: '行程项不存在'
@@ -276,45 +289,42 @@ class TripController {
         });
       }
 
-      // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      // 使用事务处理
+      await DB.transaction(async (connection) => {
+        // 验证行程是否存在且属于当前用户
+        const [trips] = await connection.execute(
+          'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+          [id, userId]
+        );
 
-      if (!trip) {
-        return res.status(404).json({
-          success: false,
-          message: '行程不存在或无权访问'
-        });
-      }
-
-      // 使用事务更新排序顺序
-      const sequelize = require('../config/database');
-      const transaction = await sequelize.transaction();
-
-      try {
-        for (let i = 0; i < itemIds.length; i++) {
-          await TripItem.update(
-            { sort_order: i },
-            {
-              where: { id: itemIds[i], trip_id: id },
-              transaction
-            }
-          );
+        if (trips.length === 0) {
+          throw new Error('行程不存在或无权访问');
         }
 
-        await transaction.commit();
+        // 批量更新排序顺序
+        for (let i = 0; i < itemIds.length; i++) {
+          const itemId = itemIds[i];
+          await connection.execute(
+            'UPDATE trip_items SET sort_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND trip_id = ?',
+            [i, itemId, id]
+          );
+        }
+      });
 
-        res.json({
-          success: true,
-          message: '行程项排序更新成功'
-        });
-      } catch (error) {
-        await transaction.rollback();
-        throw error;
-      }
+      res.json({
+        success: true,
+        message: '行程项排序更新成功'
+      });
     } catch (error) {
       console.error('行程项排序错误:', error);
+      
+      if (error.message === '行程不存在或无权访问') {
+        return res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      }
+      
       res.status(500).json({
         success: false,
         message: '服务器错误'
@@ -329,9 +339,10 @@ class TripController {
       const userId = req.userId;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      const trip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
       if (!trip) {
         return res.status(404).json({
@@ -340,23 +351,25 @@ class TripController {
         });
       }
 
-      // 查找行程项
-      const tripItem = await TripItem.findOne({
-        where: { id: itemId, trip_id: id }
+      // 更新打卡状态
+      const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const result = await DB.update('trip_items', itemId, {
+        visited: true,
+        visited_at: now
       });
 
-      if (!tripItem) {
+      if (result.affectedRows === 0) {
         return res.status(404).json({
           success: false,
           message: '行程项不存在'
         });
       }
 
-      // 更新打卡状态
-      await tripItem.update({
-        visited: true,
-        visited_at: new Date()
-      });
+      // 获取更新后的行程项
+      const tripItem = await DB.queryOne(
+        'SELECT * FROM trip_items WHERE id = ?',
+        [itemId]
+      );
 
       res.json({
         success: true,
@@ -377,12 +390,13 @@ class TripController {
     try {
       const { id } = req.params;
       const userId = req.userId;
-      const { expiresIn = 7 } = req.body; // 默认7天
+      const { expiresIn = 7 } = req.body;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId }
-      });
+      const trip = await DB.queryOne(
+        'SELECT * FROM trips WHERE id = ? AND user_id = ? AND deleted_at IS NULL',
+        [id, userId]
+      );
 
       if (!trip) {
         return res.status(404).json({
@@ -391,7 +405,7 @@ class TripController {
         });
       }
 
-      // 生成唯一的分享令牌
+      // 生成分享令牌
       const shareToken = crypto.randomBytes(16).toString('hex');
       
       // 计算过期时间
@@ -399,7 +413,7 @@ class TripController {
       expiresAt.setDate(expiresAt.getDate() + parseInt(expiresIn));
 
       // 更新行程的分享信息
-      await trip.update({
+      await DB.update('trips', id, {
         is_public: true,
         share_token: shareToken
       });
@@ -434,21 +448,12 @@ class TripController {
       const { format = 'json' } = req.body;
 
       // 验证行程是否存在且属于当前用户
-      const trip = await Trip.findOne({
-        where: { id, user_id: userId },
-        include: [
-          {
-            model: User,
-            as: 'user',
-            attributes: ['username', 'email']
-          },
-          {
-            model: TripItem,
-            as: 'items',
-            order: [['sort_order', 'ASC']]
-          }
-        ]
-      });
+      const trip = await DB.queryOne(`
+        SELECT t.*, u.username, u.email 
+        FROM trips t 
+        LEFT JOIN users u ON t.user_id = u.id 
+        WHERE t.id = ? AND t.user_id = ? AND t.deleted_at IS NULL
+      `, [id, userId]);
 
       if (!trip) {
         return res.status(404).json({
@@ -457,56 +462,37 @@ class TripController {
         });
       }
 
+      // 查询行程项
+      const items = await DB.query(`
+        SELECT * FROM trip_items 
+        WHERE trip_id = ? AND deleted_at IS NULL 
+        ORDER BY sort_order ASC
+      `, [id]);
+
       let exportData;
       let contentType;
       let filename;
 
       switch (format) {
         case 'text':
-          // 文本格式导出
-          exportData = this.generateTextExport(trip);
+          exportData = this.generateTextExport(trip, items);
           contentType = 'text/plain';
           filename = `trip-${trip.title}-${new Date().toISOString().split('T')[0]}.txt`;
           break;
 
         case 'csv':
-          // CSV格式导出
-          exportData = this.generateCsvExport(trip);
+          exportData = this.generateCsvExport(trip, items);
           contentType = 'text/csv';
           filename = `trip-${trip.title}-${new Date().toISOString().split('T')[0]}.csv`;
           break;
 
         case 'json':
         default:
-          // JSON格式导出
           exportData = JSON.stringify({
             success: true,
             data: {
-              trip: {
-                id: trip.id,
-                title: trip.title,
-                description: trip.description,
-                start_date: trip.start_date,
-                end_date: trip.end_date,
-                status: trip.status,
-                created_at: trip.created_at,
-                user: trip.user,
-                items: trip.items.map(item => ({
-                  id: item.id,
-                  title: item.title,
-                  description: item.description,
-                  location: item.location,
-                  address: item.address,
-                  start_time: item.start_time,
-                  end_time: item.end_time,
-                  visited: item.visited,
-                  visited_at: item.visited_at,
-                  category: item.category,
-                  cost: item.cost,
-                  notes: item.notes,
-                  sort_order: item.sort_order
-                }))
-              }
+              trip,
+              items
             }
           }, null, 2);
           contentType = 'application/json';
@@ -529,18 +515,18 @@ class TripController {
   }
 
   // 辅助方法：生成文本格式导出
-  generateTextExport(trip) {
+  generateTextExport(trip, items) {
     let text = `行程: ${trip.title}\n`;
     text += `描述: ${trip.description || '无'}\n`;
     text += `时间: ${new Date(trip.start_date).toLocaleDateString()} - ${new Date(trip.end_date).toLocaleDateString()}\n`;
     text += `状态: ${trip.status}\n`;
-    text += `创建者: ${trip.user.username}\n`;
+    text += `创建者: ${trip.username}\n`;
     text += `创建时间: ${new Date(trip.created_at).toLocaleString()}\n\n`;
     
     text += '行程安排:\n';
     text += '='.repeat(50) + '\n\n';
     
-    trip.items.forEach((item, index) => {
+    items.forEach((item, index) => {
       text += `${index + 1}. ${item.title}\n`;
       text += `   地点: ${item.location}\n`;
       if (item.address) {
@@ -573,13 +559,13 @@ class TripController {
   }
 
   // 辅助方法：生成CSV格式导出
-  generateCsvExport(trip) {
+  generateCsvExport(trip, items) {
     let csv = '行程标题,行程描述,开始日期,结束日期,状态,创建者\n';
-    csv += `"${trip.title}","${trip.description || ''}","${new Date(trip.start_date).toLocaleDateString()}","${new Date(trip.end_date).toLocaleDateString()}","${trip.status}","${trip.user.username}"\n\n`;
+    csv += `"${trip.title}","${trip.description || ''}","${new Date(trip.start_date).toLocaleDateString()}","${new Date(trip.end_date).toLocaleDateString()}","${trip.status}","${trip.username}"\n\n`;
     
     csv += '项目标题,地点,地址,开始时间,结束时间,描述,费用,类别,状态,完成时间,备注\n';
     
-    trip.items.forEach(item => {
+    items.forEach(item => {
       csv += `"${item.title}","${item.location}","${item.address || ''}","${item.start_time ? new Date(item.start_time).toLocaleString() : ''}","${item.end_time ? new Date(item.end_time).toLocaleString() : ''}","${item.description || ''}","${item.cost || 0}","${item.category}","${item.visited ? '已完成' : '未完成'}","${item.visited_at ? new Date(item.visited_at).toLocaleString() : ''}","${item.notes || ''}"\n`;
     });
     
