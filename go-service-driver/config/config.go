@@ -76,3 +76,11 @@ func GetDomain() string {
 func GetJWTExpirationDuration() int64 {
 	return 24 // 24 hours
 }
+
+func GetAmapAPIKey() string {
+	return os.Getenv("AMAP_API_KEY")
+}
+
+func GetAmapAPIURL() string {
+	return os.Getenv("AMAP_API_URL")
+}

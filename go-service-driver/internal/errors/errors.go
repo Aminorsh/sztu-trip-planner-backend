@@ -46,4 +46,8 @@ const (
 
 	// Place Errors
 	ErrJSONArrayScan = "JSON_ARRAY_SCAN_ERROR"
+	ErrAmapConfig    = "AMAP_CONFIG_ERROR"
+	ErrAmapAPI       = "AMAP_API_ERROR"
+	ErrReadResponse  = "READ_RESPONSE_ERROR"
+	ErrParseResponse = "PARSE_RESPONSE_ERROR"
 )

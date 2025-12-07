@@ -22,6 +22,19 @@ type UserRepository interface {
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
 }
 
+type PlaceRepository interface {
+	Create(ctx context.Context, place *model.Place) error
+	FindPlaceByPoiID(ctx context.Context, poiID string) (*model.Place, error)
+	Update(ctx context.Context, place *model.Place) error
+	UpdateFields(ctx context.Context, placeID uint64, updates map[string]any) error
+}
+
+type AmapPoiCacheRepository interface {
+	Create(ctx context.Context, cache *model.AmapPoiCache) error
+	FindByCacheKey(ctx context.Context, cacheKey string) (*model.AmapPoiCache, error)
+	UpdateFields(ctx context.Context, cacheID uint64, updates map[string]any) error
+}
+
 // TripRepository 行程数据访问接口
 type TripRepository interface {
 	Create(ctx context.Context, trip *model.Trips) error

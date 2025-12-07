@@ -47,22 +47,24 @@ type AmapSearchResponse struct {
 	Status string `json:"status"`
 	Count  int    `json:"count"`
 	Info   string `json:"info"`
-	Pois   []struct {
-		ID       string `json:"id"`
-		Name     string `json:"name"`
-		Type     string `json:"type"`
-		TypeCode string `json:"typecode"`
-		Address  string `json:"address"`
-		Location string `json:"location"`
-		Pcode    string `json:"pcode"`
-		Pname    string `json:"pname"`
-		Citycode string `json:"citycode"`
-		Cityname string `json:"cityname"`
-		Adcode   string `json:"adcode"`
-		Adname   string `json:"adname"`
-		Tel      string `json:"tel"`
-		Photos   []struct {
-			URL string `json:"url"`
-		} `json:"photos"`
-	} `json:"pois"`
+	Pois   []POI  `json:"pois"`
+}
+
+type POI struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Typecode string `json:"typecode"`
+	Address  string `json:"address"`
+	Location string `json:"location"`
+	Pcode    string `json:"pcode"`
+	Pname    string `json:"pname"`
+	Citycode string `json:"citycode"`
+	Cityname string `json:"cityname"`
+	Adcode   string `json:"adcode"`
+	Adname   string `json:"adname"`
+	Tel      string `json:"tel"`
+	Photos   []struct {
+		URL string `json:"url"`
+	} `json:"photos"`
 }
