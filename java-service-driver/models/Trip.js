@@ -1,55 +1,60 @@
-// models/Trip.js
-const mongoose = require('mongoose');
+ const { DataTypes } = require('sequelize');
+ const sequelize = require('../config/database');
+ const User = require('./User');
 
-const tripSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, '行程标题是必需的'],
-    trim: true,
-    maxlength: [100, '标题不能超过100个字符']
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [500, '描述不能超过500个字符']
-  },
-  startDate: {
-    type: Date,
-    required: [true, '开始日期是必需的']
-  },
-  endDate: {
-    type: Date,
-    required: [true, '结束日期是必需的']
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  isPublic: {
-    type: Boolean,
-    default: false
-  },
-  shareToken: {
-    type: String,
-    unique: true,
-    sparse: true
-  },
-  coverImage: {
-    type: String,
-    default: ''
-  },
-  status: {
-    type: String,
-    enum: ['planning', 'ongoing', 'completed', 'cancelled'],
-    default: 'planning'
-  }
-}, {
-  timestamps: true
-});
+ const Trip = sequelize.define('Trip', {
+   id: {
+     type: DataTypes.INTEGER,
+     primaryKey: true,
+     autoIncrement: true,
+   },
+   title: {
+     type: DataTypes.STRING(100),
+     allowNull: false,
+   },
+   description: {
+     type: DataTypes.TEXT,
+     allowNull: true,
+   },
+   startDate: {
+     type: DataTypes.DATE,
+     allowNull: false,
+   },
+   endDate: {
+     type: DataTypes.DATE,
+     allowNull: false,
+   },
+   userId: {
+     type: DataTypes.INTEGER,
+     allowNull: false,
+     references: {
+       model: User,
+       key: 'id',
+     },
+   },
+   isPublic: {
+     type: DataTypes.BOOLEAN,
+     defaultValue: false,
+   },
+   shareToken: {
+     type: DataTypes.STRING(255),
+     unique: true,
+     allowNull: true,
+   },
+   coverImage: {
+     type: DataTypes.STRING(255),
+     allowNull: true,
+   },
+   status: {
+     type: DataTypes.ENUM('planning', 'ongoing', 'completed', 'cancelled'),
+     defaultValue: 'planning',
+   },
+ }, {
+   tableName: 'trips',
+   timestamps: true,
+ });
 
-// 创建索引
-tripSchema.index({ userId: 1, createdAt: -1 });
-tripSchema.index({ shareToken: 1 });
+ Trip.belongsTo(User, { foreignKey: 'userId' });
+ User.hasMany(Trip, { foreignKey: 'userId' });
 
-module.exports = mongoose.model('Trip', tripSchema);
+ module.exports = Trip;

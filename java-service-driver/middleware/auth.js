@@ -1,41 +1,21 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+require('dotenv').config();
 
 const auth = async (req, res, next) => {
   try {
+    // 从请求头获取Token
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: '访问被拒绝，未提供token'
-      });
+      return res.status(401).json({ success: false, message: '请提供认证Token' });
     }
 
+    // 验证Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
-    
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: '用户不存在'
-      });
-    }
-
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: '账户已被禁用'
-      });
-    }
-
-    req.user = user;
-    next();
+    // 将解码出的用户ID（我们之后会存到token里）挂载到req对象上，方便后续使用
+    req.userId = decoded.userId;
+    next(); // 验证通过，放行到下一个处理函数
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Token无效'
-    });
+    res.status(401).json({ success: false, message: 'Token无效或已过期' });
   }
 };
 

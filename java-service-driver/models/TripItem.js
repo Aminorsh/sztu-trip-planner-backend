@@ -1,76 +1,83 @@
-// models/TripItem.js
-const mongoose = require('mongoose');
+ const { DataTypes } = require('sequelize');
+ const sequelize = require('../config/database');
+ const Trip = require('./Trip');
 
-const tripItemSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, '行程项标题是必需的'],
-    trim: true,
-    maxlength: [100, '标题不能超过100个字符']
-  },
-  description: {
-    type: String,
-    trim: true,
-    maxlength: [300, '描述不能超过300个字符']
-  },
-  location: {
-    type: String,
-    required: [true, '地点是必需的'],
-    trim: true
-  },
-  address: {
-    type: String,
-    trim: true
-  },
-  latitude: {
-    type: Number
-  },
-  longitude: {
-    type: Number
-  },
-  startTime: {
-    type: Date
-  },
-  endTime: {
-    type: Date
-  },
-  sortOrder: {
-    type: Number,
-    default: 0
-  },
-  visited: {
-    type: Boolean,
-    default: false
-  },
-  visitedAt: {
-    type: Date
-  },
-  tripId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Trip',
-    required: true
-  },
-  category: {
-    type: String,
-    enum: ['attraction', 'food', 'accommodation', 'transport', 'shopping', 'entertainment', 'other'],
-    default: 'other'
-  },
-  cost: {
-    type: Number,
-    min: 0,
-    default: 0
-  },
-  notes: {
-    type: String,
-    maxlength: [200, '备注不能超过200个字符']
-  }
-}, {
-  timestamps: true
-});
+ const TripItem = sequelize.define('TripItem', {
+   id: {
+     type: DataTypes.INTEGER,
+     primaryKey: true,
+     autoIncrement: true,
+   },
+   title: {
+     type: DataTypes.STRING(100),
+     allowNull: false,
+   },
+   description: {
+     type: DataTypes.TEXT,
+     allowNull: true,
+   },
+   location: {
+     type: DataTypes.STRING(255),
+     allowNull: false,
+   },
+   address: {
+     type: DataTypes.STRING(255),
+     allowNull: true,
+   },
+   latitude: {
+     type: DataTypes.FLOAT,
+     allowNull: true,
+   },
+   longitude: {
+     type: DataTypes.FLOAT,
+     allowNull: true,
+   },
+   startTime: {
+     type: DataTypes.DATE,
+     allowNull: true,
+   },
+   endTime: {
+     type: DataTypes.DATE,
+     allowNull: true,
+   },
+   sortOrder: {
+     type: DataTypes.INTEGER,
+     defaultValue: 0,
+   },
+   visited: {
+     type: DataTypes.BOOLEAN,
+     defaultValue: false,
+   },
+   visitedAt: {
+     type: DataTypes.DATE,
+     allowNull: true,
+   },
+   tripId: {
+     type: DataTypes.INTEGER,
+     allowNull: false,
+     references: {
+       model: Trip,
+       key: 'id',
+     },
+   },
+   category: {
+     type: DataTypes.ENUM('attraction', 'food', 'accommodation', 'transport', 'shopping', 'entertainment', 'other'),
+     defaultValue: 'other',
+   },
+   cost: {
+     type: DataTypes.DECIMAL(10, 2),
+     defaultValue: 0,
+   },
+   notes: {
+     type: DataTypes.TEXT,
+     allowNull: true,
+   },
+ }, {
+   tableName: 'trip_items',
+   timestamps: true,
+ });
 
-// 创建索引
-tripItemSchema.index({ tripId: 1, sortOrder: 1 });
-tripItemSchema.index({ tripId: 1, visited: 1 });
-tripItemSchema.index({ tripId: 1, category: 1 });
+ TripItem.belongsTo(Trip, { foreignKey: 'tripId' });
+ Trip.hasMany(TripItem, { foreignKey: 'tripId' });
 
-module.exports = mongoose.model('TripItem', tripItemSchema);
+ module.exports = TripItem;
