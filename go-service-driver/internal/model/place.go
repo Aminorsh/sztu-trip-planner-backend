@@ -105,12 +105,12 @@ type Place struct {
 
 	OpeningHours     string     `json:"opening_hours" gorm:"type:varchar(255);comment:营业时间"`
 	OpeningHoursJson JSONObject `json:"opening_hours_json" gorm:"type:json;comment:营业时间结构化数据"`
-	IsOpen24h        bool       `json:"is_open_24h" gorm:"default:false;comment:是否全天营业"`
+	IsOpen24h        bool       `json:"is_open_24h" gorm:"column:is_open_24h;default:false;comment:是否全天营业"`
 
-	PriceRange string     `json:"price_range" gorm:"type:varchar(50);comment:价格范围描述"`
-	PriceMin   *float64   `json:"price_min" gorm:"type:decimal(10,2);comment:最低价格"`
-	PriceMax   *float64   `json:"price_max" gorm:"type:decimal(10,2);comment:最高价格"`
-	PriceLevel PriceLevel `json:"price_level" gorm:"type:enum('free','budget','moderate','expensive','luxury');comment:价格等级"`
+	PriceRange string      `json:"price_range" gorm:"type:varchar(50);comment:价格范围描述"`
+	PriceMin   *float64    `json:"price_min" gorm:"type:decimal(10,2);comment:最低价格"`
+	PriceMax   *float64    `json:"price_max" gorm:"type:decimal(10,2);comment:最高价格"`
+	PriceLevel *PriceLevel `json:"price_level" gorm:"type:enum('free','budget','moderate','expensive','luxury');comment:价格等级"`
 
 	Phone       string `json:"phone" gorm:"type:varchar(50);comment:联系电话"`
 	Website     string `json:"website" gorm:"type:varchar(255);comment:官方网站"`

@@ -45,7 +45,7 @@ type PlaceSearchResponse struct {
 
 type AmapSearchResponse struct {
 	Status string `json:"status"`
-	Count  int    `json:"count"`
+	Count  string `json:"count"` // Amap returns count as string
 	Info   string `json:"info"`
 	Pois   []POI  `json:"pois"`
 }

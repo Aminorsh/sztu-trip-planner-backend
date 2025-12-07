@@ -112,25 +112,32 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 	}
 
 	requestURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+	fmt.Printf("Calling Amap API: %s\n", requestURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(requestURL)
 	if err != nil {
+		fmt.Printf("Amap API request error: %v\n", err)
 		return nil, errors.NewAmapAPIError(err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Printf("Read response error: %v\n", err)
 		return nil, errors.NewReadResponseError(err)
 	}
 
+	fmt.Printf("Amap API response: %s\n", string(body))
+
 	var amapResp dto.AmapSearchResponse
 	if err := json.Unmarshal(body, &amapResp); err != nil {
+		fmt.Printf("Parse response error: %v\n", err)
 		return nil, errors.NewParseResponseError(err)
 	}
 
 	if amapResp.Status != "1" {
+		fmt.Printf("Amap API returned error status: %s, info: %s\n", amapResp.Status, amapResp.Info)
 		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP API error: %s", amapResp.Info))
 	}
 
@@ -181,8 +188,8 @@ func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.Ama
 		if place.ReviewCount != nil {
 			placeResp.ReviewCount = *place.ReviewCount
 		}
-		if place.PriceLevel != "" {
-			placeResp.PriceLevel = string(place.PriceLevel)
+		if place.PriceLevel != nil {
+			placeResp.PriceLevel = string(*place.PriceLevel)
 		}
 		if place.Photos != nil {
 			placeResp.Photos = place.Photos
@@ -300,6 +307,9 @@ func (s *PlaceService) getFromRedis(key string) (*dto.PlaceSearchResponse, error
 	ctx := context.Background()
 	val, err := s.redisClient.Get(ctx, key).Result()
 	if err != nil {
+		if err == redis.Nil {
+			return nil, nil // Cache miss is not an error
+		}
 		return nil, err
 	}
 
@@ -325,14 +335,18 @@ func (s *PlaceService) saveToRedis(key string, resp *dto.PlaceSearchResponse, ex
 }
 
 func (s *PlaceService) getFromDBCache(ctx context.Context, cacheKey string) (*dto.PlaceSearchResponse, error) {
-	var cache model.AmapPoiCache
 	result, err := s.amapCacheRepo.FindByCacheKey(ctx, cacheKey)
 	if err != nil {
-		return nil, err
+		// Cache miss is not an error, just return nil
+		return nil, nil
+	}
+
+	if result == nil {
+		return nil, nil
 	}
 
 	now := time.Now()
-	s.amapCacheRepo.UpdateFields(ctx, cache.ID, map[string]any{
+	s.amapCacheRepo.UpdateFields(ctx, result.ID, map[string]any{
 		"hit_count":   gorm.Expr("hit_count + ?", 1),
 		"last_hit_at": &now,
 	})
@@ -353,11 +367,11 @@ func (s *PlaceService) getFromDBCache(ctx context.Context, cacheKey string) (*dt
 
 	page := 1
 	pageSize := 10
-	if cache.RequestParams["page"] != nil {
-		if p, ok := cache.RequestParams["page"].(float64); ok {
+	if result.RequestParams["page"] != nil {
+		if p, ok := result.RequestParams["page"].(float64); ok {
 			page = int(p)
 		}
-		if ps, ok := cache.RequestParams["page_size"].(float64); ok {
+		if ps, ok := result.RequestParams["page_size"].(float64); ok {
 			pageSize = int(ps)
 		}
 	}
@@ -388,7 +402,7 @@ func (s *PlaceService) saveToDBCache(ctx context.Context, cacheKey string, req *
 		return err
 	}
 
-	poiCount := amapResp.Count
+	poiCount, _ := strconv.Atoi(amapResp.Count)
 
 	cache := model.AmapPoiCache{
 		CacheKey:      cacheKey,

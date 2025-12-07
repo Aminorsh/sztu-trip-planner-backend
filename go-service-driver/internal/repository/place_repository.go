@@ -40,7 +40,7 @@ func (p *placeRepository) Create(ctx context.Context, place *model.Place) error 
 // FindPlaceByPoiID implements PlaceRepository.
 func (p *placeRepository) FindPlaceByPoiID(ctx context.Context, poiID string) (*model.Place, error) {
 	var place model.Place
-	if err := p.db.WithContext(ctx).Where("poi_id = ?", poiID).First(&place).Error; err != nil {
+	if err := p.db.WithContext(ctx).Where("amap_poi_id = ?", poiID).First(&place).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil // Not found
 		}

@@ -113,7 +113,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -193,7 +192,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"661255\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+                  "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"599077\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -249,7 +248,6 @@
                   "status": "Created",
                   "code": 201,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -376,7 +374,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -503,7 +500,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -629,7 +625,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -755,7 +750,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -881,7 +875,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -985,7 +978,6 @@
                       "status": "Created",
                       "code": 201,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1071,7 +1063,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1169,7 +1160,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1269,7 +1259,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1351,7 +1340,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1444,7 +1432,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1537,7 +1524,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1644,7 +1630,6 @@
                       "status": "OK",
                       "code": 200,
                       "_postman_previewlanguage": "Text",
-                      "_postman_previewtype": "html",
                       "header": [
                         {
                           "key": "Access-Control-Allow-Credentials",
@@ -1681,6 +1666,40 @@
                 }
               ],
               "id": "a77a9cc2-64b8-4f1a-b355-15ee31d46f7e"
+            },
+            {
+              "name": "Place",
+              "item": [
+                {
+                  "name": "New Request",
+                  "id": "d5769b67-0794-47b3-91ea-c941431f546a",
+                  "request": {
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"keyword\": \"广州塔\",\n    \"city\": \"广州\",\n    \"category\": \"scenic\",\n    \"page\": 1,\n    \"page_size\": 5\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/places/search",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "places",
+                        "search"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "id": "c9ccb76b-1628-4084-95e6-7a664ba81186"
             },
             {
               "name": "Health",
@@ -1720,7 +1739,6 @@
                   "status": "OK",
                   "code": 200,
                   "_postman_previewlanguage": "Text",
-                  "_postman_previewtype": "html",
                   "header": [
                     {
                       "key": "Access-Control-Allow-Credentials",
@@ -1762,7 +1780,7 @@
             "bearer": [
               {
                 "key": "token",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NDY0NjMwNX0.DA9Je8gxD7PgLuO15faCPDo0WU94DS9gqqp-Gs5e32Y",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NTE3Mzc3Mn0.R6xvfonqpHR06n2RRIyLAilfJ069e75by1mpHfY-lqk",
                 "type": "string"
               }
             ]
@@ -1804,7 +1822,6 @@
               "status": "OK",
               "code": 200,
               "_postman_previewlanguage": "Text",
-              "_postman_previewtype": "html",
               "header": [
                 {
                   "key": "Access-Control-Allow-Credentials",
