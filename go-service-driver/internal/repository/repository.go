@@ -25,7 +25,7 @@ type UserRepository interface {
 type PlaceRepository interface {
 	Create(ctx context.Context, place *model.Place) error
 	FindPlaceByPoiID(ctx context.Context, poiID string) (*model.Place, error)
-	Update(ctx context.Context, place *model.Place) error
+	// Update(ctx context.Context, place *model.Place) error
 	UpdateFields(ctx context.Context, placeID uint64, updates map[string]any) error
 }
 
@@ -33,6 +33,15 @@ type AmapPoiCacheRepository interface {
 	Create(ctx context.Context, cache *model.AmapPoiCache) error
 	FindByCacheKey(ctx context.Context, cacheKey string) (*model.AmapPoiCache, error)
 	UpdateFields(ctx context.Context, cacheID uint64, updates map[string]any) error
+}
+
+type RouteRepository interface {
+	Create(ctx context.Context, route *model.TripRoute) error
+	FindByID(ctx context.Context, id uint64) (*model.TripRoute, error)
+	FindByTripID(ctx context.Context, tripID uint64) ([]model.TripRoute, error)
+	FindActiveByTripID(ctx context.Context, tripID uint64) (*model.TripRoute, error)
+	Update(ctx context.Context, route *model.TripRoute) error
+	DeactivateOtherRoutes(ctx context.Context, tripID uint64, currentRouteID uint64) error
 }
 
 // TripRepository 行程数据访问接口

@@ -14,10 +14,6 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db: db}
-}
-
 // Create implements UserRepository.
 // If a user with the same email/username exists but is soft-deleted, it will be restored and updated.
 func (r *userRepository) Create(ctx context.Context, user *model.User) error {
@@ -232,4 +228,8 @@ func (r *userRepository) ExistsByUsername(ctx context.Context, username string) 
 		return false, apperrors.NewDatabaseError(err)
 	}
 	return count > 0, nil
+}
+
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db: db}
 }
