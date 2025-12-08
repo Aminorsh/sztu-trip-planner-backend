@@ -22,3 +22,6 @@ vendor/
 node_modules/
 .env
 uploads/
+
+# Go build artifacts
+go-service-driver/server
