@@ -28,13 +28,18 @@ type PlaceService struct {
 	amapCacheRepo repository.AmapPoiCacheRepository
 }
 
-func NewPlaceService(amapAPIKey, amapAPIURL string, redisClient *redis.Client, db *gorm.DB) *PlaceService {
+func NewPlaceService(
+	amapAPIKey, amapAPIURL string,
+	redisClient *redis.Client,
+	placeRepo repository.PlaceRepository,
+	amapCacheRepo repository.AmapPoiCacheRepository,
+) *PlaceService {
 	return &PlaceService{
 		amapAPIKey:    amapAPIKey,
 		amapAPIURL:    amapAPIURL,
 		redisClient:   redisClient,
-		placeRepo:     repository.NewPlaceRepository(db),
-		amapCacheRepo: repository.NewAmapPoiCacheRepository(db),
+		placeRepo:     placeRepo,
+		amapCacheRepo: amapCacheRepo,
 	}
 }
 
@@ -112,32 +117,25 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 	}
 
 	requestURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
-	fmt.Printf("Calling Amap API: %s\n", requestURL)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(requestURL)
 	if err != nil {
-		fmt.Printf("Amap API request error: %v\n", err)
 		return nil, errors.NewAmapAPIError(err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Read response error: %v\n", err)
 		return nil, errors.NewReadResponseError(err)
 	}
 
-	fmt.Printf("Amap API response: %s\n", string(body))
-
 	var amapResp dto.AmapSearchResponse
 	if err := json.Unmarshal(body, &amapResp); err != nil {
-		fmt.Printf("Parse response error: %v\n", err)
 		return nil, errors.NewParseResponseError(err)
 	}
 
 	if amapResp.Status != "1" {
-		fmt.Printf("Amap API returned error status: %s, info: %s\n", amapResp.Status, amapResp.Info)
 		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP API error: %s", amapResp.Info))
 	}
 

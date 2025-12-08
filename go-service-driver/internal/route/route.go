@@ -16,18 +16,30 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	r.Use(middleware.CORS())
 
 	userRepo := repository.NewUserRepository(db)
+	placeRepo := repository.NewPlaceRepository(db)
+	amapCacheRepo := repository.NewAmapPoiCacheRepository(db)
+	routeRepo := repository.NewRouteRepository(db)
+	tripRepo := repository.NewTripRepository(db)
 
 	userService := service.NewUserService(userRepo)
 	placeService := service.NewPlaceService(
 		config.GetAmapAPIKey(),
 		config.GetAmapAPIURL(),
 		database.RedisClient,
-		db,
+		placeRepo,
+		amapCacheRepo,
+	)
+	routeService := service.NewRouteService(
+		routeRepo,
+		tripRepo,
+		config.GetAmapAPIKey(),
+		config.GetAmapAPIURL(),
 	)
 	tripService := service.NewTripService(db)
 
 	userController := controller.NewUserController(userService)
 	placeController := controller.NewPlaceController(placeService)
+	routeController := controller.NewRouteController(routeService)
 	tripController := controller.NewTripController(tripService)
 
 	api := r.Group("/api")
@@ -69,6 +81,13 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			places := v2.Group("/places")
 			{
 				places.POST("/search", placeController.SearchPlaces)
+			}
+
+			routes := v2.Group("/routes")
+			{
+				routes.POST("/plan", routeController.PlanRoute)
+				routes.GET("/:id", routeController.GetRoute)
+				routes.GET("", routeController.GetTripRoutes)
 			}
 
 			trips := v2.Group("/trips")
