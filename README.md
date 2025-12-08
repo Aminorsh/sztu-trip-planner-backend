@@ -34,5 +34,5 @@ docker compose up -d
 ## 📚 API 文档
 
 ### Postman Documentation:
-- [SZTU Trip Planner Backend Go](../postman/collections/SZTU%20Trip%20Planner%20Backend%20Go.postman_collection.json)
+- [SZTU Trip Planner Backend Go](https://github.com/Aminorsh/sztu-trip-planner-backend/blob/dev/postman/collections/SZTU%20Trip%20Planner%20Backend%20Go.postman_collection.json)
 
