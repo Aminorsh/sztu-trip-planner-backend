@@ -153,9 +153,11 @@ func (s *RouteService) callAmapRouteAPI(req *dto.RoutePlanRequest) (*dto.AmapRou
 	httpReq.URL.RawQuery = q.Encode()
 
 	// 发送请求
+	// fmt.Printf("[DEBUG] Calling Amap Route API: %s\n", httpReq.URL.String())
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(httpReq)
 	if err != nil {
+		// fmt.Printf("[ERROR] Amap Route API request failed: %v\n", err)
 		return nil, apperrors.NewAmapAPIError(err)
 	}
 	defer resp.Body.Close()
@@ -163,17 +165,22 @@ func (s *RouteService) callAmapRouteAPI(req *dto.RoutePlanRequest) (*dto.AmapRou
 	// 读取响应
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		// fmt.Printf("[ERROR] Failed to read response: %v\n", err)
 		return nil, apperrors.NewReadResponseError(err)
 	}
+
+	// fmt.Printf("[DEBUG] Amap Route API response: %s\n", string(body))
 
 	// 解析 JSON
 	var amapResp dto.AmapRouteResponse
 	if err := json.Unmarshal(body, &amapResp); err != nil {
+		// fmt.Printf("[ERROR] Failed to parse JSON: %v\n", err)
 		return nil, apperrors.NewParseResponseError(err)
 	}
 
 	// 检查高德 API 状态
 	if amapResp.Status != "1" {
+		// fmt.Printf("[ERROR] Amap API error - Status: %s, Info: %s\n", amapResp.Status, amapResp.Info)
 		return nil, apperrors.NewAmapAPIError(fmt.Errorf("高德API错误: %s", amapResp.Info))
 	}
 
@@ -205,12 +212,18 @@ func (s *RouteService) parseAmapResponse(amapResp *dto.AmapRouteResponse) (*dto.
 			stepDist, _ := strconv.ParseFloat(step.Distance, 64)
 			stepDur, _ := strconv.Atoi(step.Duration)
 
+			// Convert action to string (handle both string and array types)
+			action := ""
+			if actionStr, ok := step.Action.(string); ok {
+				action = actionStr
+			}
+
 			steps = append(steps, dto.StepInfo{
 				Instruction: step.Instruction,
 				Road:        step.Road,
 				Distance:    stepDist,
 				Duration:    stepDur,
-				Action:      step.Action,
+				Action:      action,
 			})
 		}
 

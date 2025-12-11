@@ -50,5 +50,6 @@ type TripRepository interface {
 	FindByID(ctx context.Context, id int) (*model.Trips, error)
 	FindByUserID(ctx context.Context, userID int, search string) ([]model.Trips, error)
 	Update(ctx context.Context, trip *model.Trips) error
-	SoftDelete(ctx context.Context, id, userID int) error
+	SoftDelete(ctx context.Context, id int, userID int) error
+	UpdateStats(ctx context.Context, tripID uint64, totalDistance float64, totalDuration int) error
 }
