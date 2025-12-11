@@ -17,13 +17,13 @@ func NewTripRepository(db *gorm.DB) TripRepository {
 }
 
 // Create 创建新行程
-func (t *tripRepository) Create(ctx context.Context, trip *model.Trips) error {
+func (t *tripRepository) Create(ctx context.Context, trip *model.Trip) error {
 	return t.db.WithContext(ctx).Create(trip).Error
 }
 
 // FindByID 根据ID查找行程
-func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trips, error) {
-	var trip model.Trips
+func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trip, error) {
+	var trip model.Trip
 	err := t.db.WithContext(ctx).
 		Where("id = ?  AND deleted_at IS NULL", id).
 		First(&trip).Error
@@ -38,8 +38,8 @@ func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trips, er
 }
 
 // FindByUserID 根据用户ID查找行程（支持搜索）
-func (t *tripRepository) FindByUserID(ctx context.Context, userID int, search string) ([]model.Trips, error) {
-	var trips []model.Trips
+func (t *tripRepository) FindByUserID(ctx context.Context, userID int, search string) ([]model.Trip, error) {
+	var trips []model.Trip
 	query := t.db.WithContext(ctx).
 		Where("user_id = ? AND deleted_at IS NULL", userID)
 
@@ -53,7 +53,7 @@ func (t *tripRepository) FindByUserID(ctx context.Context, userID int, search st
 }
 
 // Update 更新行程信息
-func (t *tripRepository) Update(ctx context.Context, trip *model.Trips) error {
+func (t *tripRepository) Update(ctx context.Context, trip *model.Trip) error {
 	return t.db.WithContext(ctx).
 		Model(trip).
 		Updates(trip).Error
@@ -63,7 +63,7 @@ func (t *tripRepository) Update(ctx context.Context, trip *model.Trips) error {
 func (t *tripRepository) SoftDelete(ctx context.Context, id int, userID int) error {
 	now := time.Now()
 	return t.db.WithContext(ctx).
-		Model(&model.Trips{}).
+		Model(&model.Trip{}).
 		Where("id = ? AND user_id = ? ", id, userID).
 		Update("deleted_at", now).Error
 }
@@ -71,7 +71,7 @@ func (t *tripRepository) SoftDelete(ctx context.Context, id int, userID int) err
 // UpdateStats 更新行程的距离和时长统计
 func (t *tripRepository) UpdateStats(ctx context.Context, tripID uint64, totalDistance float64, totalDuration int) error {
 	return t.db.WithContext(ctx).
-		Model(&model.Trips{}).
+		Model(&model.Trip{}).
 		Where("id = ?", tripID).
 		Updates(map[string]interface{}{
 			"total_distance":     totalDistance,

@@ -36,7 +36,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ../database/dev:/docker-entrypoint-initdb.d/ # 初始化脚本
+      - ../database:/docker-entrypoint-initdb.d/ # 初始化脚本
       - mysql_data:/var/lib/mysql  # 数据持久化
 
 volumes:

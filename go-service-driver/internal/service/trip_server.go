@@ -20,51 +20,51 @@ func NewTripService(db *gorm.DB) *TripService {
 }
 
 func (s *TripService) CreateTrip(userID uint64, req dto.CreateTripRequest) (dto.TripResponse, error) {
-	trip := model.Trips{
-		UserID:             userID,
-		Title:              req.Title,
-		Description:        req.Description,
-		StartDate:          *req.StartDate,
-		EndDate:            *req.EndDate,
-		OriginAddress:      req.OriginAddress,
-		DestinationAddress: req.DestinationAddress,
-		DestinationCity:    req.DestinationCity,
-		DestinationCountry: req.DestinationCountry,
+	trip := model.Trip{
+		UserID:      userID,
+		Title:       req.Title,
+		Description: req.Description,
+		StartDate:   *req.StartDate,
+		EndDate:     *req.EndDate,
+		// OriginAddress:      req.OriginAddress,
+		// DestinationAddress: req.DestinationAddress,
+		// DestinationCity:    req.DestinationCity,
+		// DestinationCountry: req.DestinationCountry,
 	}
 
 	if req.IsPublic != nil {
 		trip.IsPublic = *req.IsPublic
 	}
 
-	if req.StartDate != nil && req.EndDate != nil {
-		days := int(req.EndDate.Sub(*req.StartDate).Hours()/24) + 1
-		trip.Days = days
-	}
+	// if req.StartDate != nil && req.EndDate != nil {
+	// 	days := int(req.EndDate.Sub(*req.StartDate).Hours()/24) + 1
+	// 	trip.Days = days
+	// }
 
 	if err := s.DB.Create(&trip).Error; err != nil {
 		return dto.TripResponse{}, err
 	}
 
 	response := dto.TripResponse{
-		ID:                 trip.ID,
-		UserID:             trip.UserID,
-		Title:              trip.Title,
-		Description:        trip.Description,
-		StartDate:          &trip.StartDate,
-		EndDate:            &trip.EndDate,
-		Days:               &trip.Days,
-		IsPublic:           trip.IsPublic,
-		DestinationCity:    trip.DestinationCity,
-		DestinationCountry: trip.DestinationCountry,
-		CreatedAt:          trip.CreatedAt,
-		UpdatedAt:          trip.UpdatedAt,
+		ID:          trip.ID,
+		UserID:      trip.UserID,
+		Title:       trip.Title,
+		Description: trip.Description,
+		StartDate:   &trip.StartDate,
+		EndDate:     &trip.EndDate,
+		// Days:               &trip.Days,
+		IsPublic: trip.IsPublic,
+		// DestinationCity:    trip.DestinationCity,
+		// DestinationCountry: trip.DestinationCountry,
+		CreatedAt: trip.CreatedAt,
+		UpdatedAt: trip.UpdatedAt,
 	}
 
 	return response, nil
 }
 
 func (s *TripService) ListTrips(userID int, search string) (dto.TripListResponse, error) {
-	var trips []model.Trips
+	var trips []model.Trip
 	query := s.DB.Where("user_id = ? AND deleted_at IS NULL", userID)
 
 	if search != "" {
@@ -78,20 +78,20 @@ func (s *TripService) ListTrips(userID int, search string) (dto.TripListResponse
 
 	var tripResponses []dto.TripResponse
 	for _, trip := range trips {
-		days := trip.Days
+		// days := trip.Days
 		tripResponses = append(tripResponses, dto.TripResponse{
-			ID:                 trip.ID,
-			UserID:             trip.UserID,
-			Title:              trip.Title,
-			Description:        trip.Description,
-			StartDate:          &trip.StartDate,
-			EndDate:            &trip.EndDate,
-			Days:               &days,
-			IsPublic:           trip.IsPublic,
-			DestinationCity:    trip.DestinationCity,
-			DestinationCountry: trip.DestinationCountry,
-			CreatedAt:          trip.CreatedAt,
-			UpdatedAt:          trip.UpdatedAt,
+			ID:          trip.ID,
+			UserID:      trip.UserID,
+			Title:       trip.Title,
+			Description: trip.Description,
+			StartDate:   &trip.StartDate,
+			EndDate:     &trip.EndDate,
+			// Days:               &days,
+			IsPublic: trip.IsPublic,
+			// DestinationCity:    trip.DestinationCity,
+			// DestinationCountry: trip.DestinationCountry,
+			CreatedAt: trip.CreatedAt,
+			UpdatedAt: trip.UpdatedAt,
 		})
 	}
 
@@ -104,7 +104,7 @@ func (s *TripService) ListTrips(userID int, search string) (dto.TripListResponse
 }
 
 func (s *TripService) DeleteTrip(userID int, tripID int) error {
-	var trip model.Trips
+	var trip model.Trip
 
 	if err := s.DB.Where("id = ? AND user_id = ? AND deleted_at IS NULL", tripID, userID).First(&trip).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
