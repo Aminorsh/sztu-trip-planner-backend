@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"bytes"
+	"io"
+	"log"
 	"strconv"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
@@ -25,7 +28,13 @@ func NewRouteController(routeService *service.RouteService) *RouteController {
 func (rc *RouteController) PlanRoute(ctx *gin.Context) {
 	var req dto.RoutePlanRequest
 
+	bodyBytes, _ := io.ReadAll(ctx.Request.Body)
+	log.Printf("Request body: %s", string(bodyBytes))
+
+	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		log.Println("Error binding JSON:", err)
 		middleware.HandleError(ctx, apperrors.NewInvalidRequestError(err.Error()))
 		return
 	}

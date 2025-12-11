@@ -97,7 +97,7 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 		return nil, errors.NewAmapConfigError()
 	}
 
-	baseURL := fmt.Sprintf("%s/place/text", s.amapAPIURL)
+	baseURL := fmt.Sprintf("%s/v5/place/text", s.amapAPIURL)
 	params := url.Values{}
 	params.Add("key", s.amapAPIKey)
 	params.Add("keywords", req.Keyword)

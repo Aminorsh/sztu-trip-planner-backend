@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "603f668d-d43a-497b-b02f-098b8a2d1fe5",
+    "_postman_id": "5a4c89da-a817-4ed4-a041-ab436d672966",
     "name": "SZTU Trip Planner Backend Go",
     "description": "Golang + Gin 后端服务\n\n提供注册登录、行程管理、路线规划等 RESTful API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -18,7 +18,7 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "id": "74a877f8-547a-4cc4-9bed-a0aff63f01d8",
+                    "id": "368ceafa-2dca-4257-863b-c024e787299e",
                     "exec": [
                       ""
                     ],
@@ -28,7 +28,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "2fa691fa-f08f-473d-a4bb-a0fec6ef6e55",
+                    "id": "5b18a555-e1b6-41c9-95d9-1c24eec701b6",
                     "exec": [
                       "pm.test(\"Status is 200\", function () {",
                       "  pm.response.to.have.status(200);",
@@ -44,7 +44,7 @@
                   }
                 }
               ],
-              "id": "12fe5f62-ba0f-42a8-a1e5-87063ab4a8c3",
+              "id": "450634b7-a115-4bb2-9843-71d473c79802",
               "request": {
                 "method": "POST",
                 "header": [
@@ -78,7 +78,7 @@
               },
               "response": [
                 {
-                  "id": "f8c82af7-eb68-4227-b429-51a8019a80ed",
+                  "id": "64f85e2b-bd7a-4f7e-8bdc-76549641c834",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -143,6 +143,7 @@
                       "value": "36"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"message\": \"Verification code sent\"\n}"
                 }
               ]
@@ -153,7 +154,7 @@
                 {
                   "listen": "test",
                   "script": {
-                    "id": "da3e0091-3be4-43fe-a2ae-ed0387c40c30",
+                    "id": "aec4e71f-a3cb-40a0-8255-abd30d49da71",
                     "exec": [
                       "pm.test(\"status is 201\", function () {",
                       "    pm.response.to.have.status(201);",
@@ -172,7 +173,7 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "id": "1db97096-c7ba-445f-9144-b7410a51fb8c",
+                    "id": "dd222458-231c-4afb-8182-ee58f28c5bcf",
                     "exec": [
                       ""
                     ],
@@ -180,7 +181,7 @@
                   }
                 }
               ],
-              "id": "7a580dfb-cc92-45a5-9e73-5e02d582647e",
+              "id": "a2bee024-ef89-47af-86d1-7614470ca24a",
               "request": {
                 "method": "POST",
                 "header": [
@@ -214,10 +215,11 @@
               },
               "response": [
                 {
-                  "id": "9af4c75c-95ea-442c-9a37-f5844a42a005",
+                  "id": "dd493cc7-1713-40ce-b1ce-55267c1bfea0",
                   "name": "201 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
+                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"547272\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
@@ -278,6 +280,7 @@
                       "value": "337"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"message\": \"User registered successfully\",\n    \"user\": {\n        \"id\": 2,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"aminorsh\",\n        \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMjk2Nn0._gp3fmVLMZysEKC4SAtvh6S70R-F5Ek1E2BtvxO2fP8\"\n}"
                 }
               ]
@@ -301,11 +304,11 @@
                       "});"
                     ],
                     "type": "text/javascript",
-                    "id": "0a0df502-d279-4793-93f9-b91c0bd624e0"
+                    "id": "bc6b1c55-b3b5-47ab-8be5-378efa6be436"
                   }
                 }
               ],
-              "id": "9d1f73dc-c6ca-47f9-b73a-0d5552a30983",
+              "id": "81f8e56a-d1a2-4819-93eb-50c9b8ada5a6",
               "request": {
                 "method": "POST",
                 "header": [
@@ -339,7 +342,7 @@
               },
               "response": [
                 {
-                  "id": "bbe09438-3341-49e7-a988-ad4f265be805",
+                  "id": "2e9923a6-d40f-400c-8c59-27902cb56de7",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -404,6 +407,7 @@
                       "value": "132"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzg1Mn0.Q5kIs9gkVQO_QFW8uOcQBSaIoeW7uhyX0_znHpq-OV8\"\n}"
                 }
               ]
@@ -427,11 +431,11 @@
                       "});"
                     ],
                     "type": "text/javascript",
-                    "id": "81db0988-cef3-41af-a027-ad6d80d00ea7"
+                    "id": "405eaae7-15af-4b3c-8b07-530278bd426d"
                   }
                 }
               ],
-              "id": "21702cb4-0372-4428-b697-b764751264fe",
+              "id": "e3a4d568-e964-4fd0-9212-d44491ec3dad",
               "request": {
                 "method": "POST",
                 "header": [
@@ -465,7 +469,7 @@
               },
               "response": [
                 {
-                  "id": "1561bcaa-dfc5-4337-a85b-34f7816c7f2c",
+                  "id": "02616bbc-c58e-4779-8e4a-c50d32c14e94",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -530,6 +534,7 @@
                       "value": "132"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzU4Mn0.kOK0xlMjysmooa1rJzCsN4iqN2NVal2FCD9j69W_Noo\"\n}"
                 }
               ]
@@ -552,11 +557,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "id": "f9937a1b-c6ad-4807-be91-7b34ea4ad73e"
+                    "id": "80dcdb53-7e0e-4adf-92c0-f956e240e571"
                   }
                 }
               ],
-              "id": "1fc306d3-8a51-463f-89e9-834ed4a6ceb1",
+              "id": "38060e1b-62c6-4d48-9f8b-58920da71078",
               "request": {
                 "method": "POST",
                 "header": [
@@ -590,7 +595,7 @@
               },
               "response": [
                 {
-                  "id": "599cf668-f6b8-46e3-b148-e23c24de7284",
+                  "id": "10c818d0-f935-4173-980e-af88e816609f",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -655,6 +660,7 @@
                       "value": "39"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"message\": \"Forget password code sent\"\n}"
                 }
               ]
@@ -677,11 +683,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "id": "64810ab4-9292-4457-9b66-3c5f0b1456bb"
+                    "id": "ce4d1c26-e3b1-4e6a-8cd2-a97d1f6fb015"
                   }
                 }
               ],
-              "id": "cae3e4b5-a766-43dc-967c-25afc769df68",
+              "id": "5f5386ce-3a35-4a4b-b1ed-3207ab5e00df",
               "request": {
                 "method": "POST",
                 "header": [
@@ -715,7 +721,7 @@
               },
               "response": [
                 {
-                  "id": "c1ca66bd-0b10-4671-a0a4-bc38e9b48b22",
+                  "id": "e11d30de-925f-4786-bcaa-81ab30ec8c25",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -780,6 +786,7 @@
                       "value": "39"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"message\": \"Forget password code sent\"\n}"
                 }
               ]
@@ -802,11 +809,11 @@
                       ""
                     ],
                     "type": "text/javascript",
-                    "id": "3d392af5-b3ce-4b58-9672-a4eea45f90f3"
+                    "id": "f26d2aa8-654f-414c-91c1-4efabbb63622"
                   }
                 }
               ],
-              "id": "2864d0d4-c63a-48af-8e5b-c73d4090f232",
+              "id": "653b87c7-babd-4d3e-a823-b885991a0cfa",
               "request": {
                 "method": "POST",
                 "header": [
@@ -840,7 +847,7 @@
               },
               "response": [
                 {
-                  "id": "b82e7ee8-65f4-4956-b462-466831a1f771",
+                  "id": "8d8852d5-5750-4c00-acfe-40025112de73",
                   "name": "200 OK - Success Example",
                   "originalRequest": {
                     "method": "POST",
@@ -905,12 +912,13 @@
                       "value": "41"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"message\": \"Password reset successfully\"\n}"
                 }
               ]
             }
           ],
-          "id": "35c942d6-3f8e-4460-90ef-5ffc2ffdd918",
+          "id": "f48ba29d-70d1-495b-90e4-9b7b2f1bbd38",
           "description": "提供注册、登录及重置密码等API"
         },
         {
@@ -921,7 +929,7 @@
               "item": [
                 {
                   "name": "Create Trip",
-                  "id": "2e1bb5e2-14cc-4cb0-b0e8-265b04e505d8",
+                  "id": "fb1caff4-7b45-4bd1-866f-b1fcc64bbe64",
                   "request": {
                     "method": "POST",
                     "header": [
@@ -949,7 +957,7 @@
                   },
                   "response": [
                     {
-                      "id": "edad44de-7770-426d-8575-9f545b2192aa",
+                      "id": "eae21bf2-f9e0-4065-8357-7b4a4733c0ce",
                       "name": "201 OK - Success Example",
                       "originalRequest": {
                         "method": "POST",
@@ -1008,13 +1016,14 @@
                           "value": "303"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"user_id\": 1,\n    \"title\": \"test_title\",\n    \"description\": \"description\",\n    \"start_date\": \"2025-12-01T09:00:00Z\",\n    \"end_date\": \"2025-12-05T09:00:00Z\",\n    \"days\": 5,\n    \"is_public\": false,\n    \"destination_city\": \"Shenzhen\",\n    \"destination_country\": \"\",\n    \"created_at\": \"2025-11-30T13:43:08+08:00\",\n    \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "List Trips",
-                  "id": "2c85cf5d-8925-4599-9051-decdedb141a9",
+                  "id": "7b841246-ee00-4fd4-9dbb-3b6d8ec8878b",
                   "request": {
                     "method": "GET",
                     "header": [
@@ -1038,7 +1047,7 @@
                   },
                   "response": [
                     {
-                      "id": "10f11f2c-1d40-4985-8769-04ac94fb63bb",
+                      "id": "8fa8cece-6297-43c1-9807-c90e3ed8e15c",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "GET",
@@ -1093,13 +1102,14 @@
                           "value": "334"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
                     }
                   ]
                 },
                 {
                   "name": "Search Trips",
-                  "id": "36645aa6-32af-43a4-9b32-69f6f4e2a764",
+                  "id": "feae9526-078a-4a26-98e9-6c0f679de5ca",
                   "request": {
                     "method": "GET",
                     "header": [
@@ -1129,7 +1139,7 @@
                   },
                   "response": [
                     {
-                      "id": "157eccf3-7264-4374-b8b5-0785850dff27",
+                      "id": "e231859a-e247-42e0-9654-abdb24f00bfe",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "GET",
@@ -1190,13 +1200,14 @@
                           "value": "334"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"total\": 1,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user_id\": 1,\n            \"title\": \"test_title\",\n            \"description\": \"description\",\n            \"start_date\": \"2025-12-01T00:00:00+08:00\",\n            \"end_date\": \"2025-12-05T00:00:00+08:00\",\n            \"days\": 5,\n            \"is_public\": false,\n            \"destination_city\": \"Shenzhen\",\n            \"destination_country\": \"\",\n            \"created_at\": \"2025-11-30T13:43:08+08:00\",\n            \"updated_at\": \"2025-11-30T13:43:08+08:00\"\n        }\n    ]\n}"
                     }
                   ]
                 },
                 {
                   "name": "Delete Trip",
-                  "id": "84dec0e8-e8e6-4f94-981f-c2b2dc083e78",
+                  "id": "fe080c17-d7b7-4433-b815-161c3e4a17c3",
                   "request": {
                     "method": "DELETE",
                     "header": [
@@ -1227,7 +1238,7 @@
                   },
                   "response": [
                     {
-                      "id": "b06ac3b6-d471-47c3-92c8-fe08094178e4",
+                      "id": "a0ab7022-47f4-4140-8a10-9dcf58b1c32f",
                       "name": "200 OK - Success Example",
                       "originalRequest": {
                         "method": "DELETE",
@@ -1289,12 +1300,13 @@
                           "value": "39"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"message\": \"Trip deleted successfully\"\n}"
                     }
                   ]
                 }
               ],
-              "id": "4c212445-9e18-4ac5-8e8c-7823ce92c2e6",
+              "id": "84230874-dd72-4843-a16f-57f5238a9435",
               "description": "提供行程创建、软删除、查询等功能"
             },
             {
@@ -1302,9 +1314,10 @@
               "item": [
                 {
                   "name": "Get Profile",
-                  "id": "75daa27c-852a-46a5-97b9-4df91eb10d72",
+                  "id": "ce42c120-0af9-43c4-821b-c4602be6ca86",
                   "request": {
                     "method": "GET",
+                    "header": [],
                     "url": {
                       "raw": "{{BASE_URL}}/api/v2/users/profile",
                       "host": [
@@ -1320,10 +1333,11 @@
                   },
                   "response": [
                     {
-                      "id": "b9f54d8c-2d64-4643-81e5-af58a8c78d3f",
+                      "id": "d5656db6-aac9-4e2a-a398-9e7900db140b",
                       "name": "Get Profile",
                       "originalRequest": {
                         "method": "GET",
+                        "header": [],
                         "url": {
                           "raw": "{{BASE_URL}}/api/v2/users/profile",
                           "host": [
@@ -1370,15 +1384,17 @@
                           "value": "275"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T12:48:06+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Update Profile",
-                  "id": "2c643517-e27d-4a79-aa3b-5a1a8d45ff8b",
+                  "id": "2c09d8e3-30d1-4aff-9f95-9facacecdc65",
                   "request": {
                     "method": "PUT",
+                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
@@ -1403,10 +1419,11 @@
                   },
                   "response": [
                     {
-                      "id": "3184b423-cb68-4ee4-963d-2b89c78f3001",
+                      "id": "03fe635c-97ce-452a-9588-88e32b7e2284",
                       "name": "Update Profile",
                       "originalRequest": {
                         "method": "PUT",
+                        "header": [],
                         "body": {
                           "mode": "raw",
                           "raw": "{\n    \"display_name\": \"{{TEST_DISPLAY}}\",\n    \"avatar_url\": \"{{TEST_AVATAR}}\"\n}",
@@ -1462,15 +1479,17 @@
                           "value": "361"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"id\": 1,\n    \"username\": \"aminorsh\",\n    \"email\": \"aminorsh@gmail.com\",\n    \"display_name\": \"Arinos\",\n    \"avatar_url\": \"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnbxCgxGiF3h5XMJx7Mcj82kesZyuqG2aJgxxdxxia_Y9p_aF1HvP1gPG28i1FoPBEJfI&usqp=CAU\",\n    \"created_at\": \"2025-11-30T12:48:06+08:00\",\n    \"updated_at\": \"2025-11-30T15:50:58.434+08:00\",\n    \"last_login_at\": null,\n    \"status\": \"active\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Change Password",
-                  "id": "b345b084-e795-4088-91ef-0900d001ed37",
+                  "id": "9ccc3c12-cd58-4082-ab65-3ae990efc001",
                   "request": {
                     "method": "PUT",
+                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
@@ -1495,10 +1514,11 @@
                   },
                   "response": [
                     {
-                      "id": "041202fa-5168-4d21-a647-900896eab2e3",
+                      "id": "cc635426-32ed-4d6f-99fe-4b66f7b3e272",
                       "name": "New Request",
                       "originalRequest": {
                         "method": "PUT",
+                        "header": [],
                         "body": {
                           "mode": "raw",
                           "raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
@@ -1554,13 +1574,14 @@
                           "value": "43"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"message\": \"Password changed successfully\"\n}"
                     }
                   ]
                 },
                 {
                   "name": "Delete Account",
-                  "id": "f15f5c05-aa1f-4ced-abcd-3b42bf391d9f",
+                  "id": "993eccaa-3181-48b4-bd10-f99fb003937a",
                   "request": {
                     "method": "DELETE",
                     "header": [
@@ -1594,7 +1615,7 @@
                   },
                   "response": [
                     {
-                      "id": "6b419497-98fa-4101-ae69-ee1bb8202b60",
+                      "id": "71b312d0-e81e-43f6-81a2-59574c824169",
                       "name": "New Request",
                       "originalRequest": {
                         "method": "DELETE",
@@ -1660,21 +1681,23 @@
                           "value": "42"
                         }
                       ],
+                      "cookie": [],
                       "body": "{\n    \"message\": \"Account deleted successfully\"\n}"
                     }
                   ]
                 }
               ],
-              "id": "a77a9cc2-64b8-4f1a-b355-15ee31d46f7e"
+              "id": "31275ac4-a7f3-44c8-acc5-17bf9fe09224"
             },
             {
               "name": "Place",
               "item": [
                 {
                   "name": "Search Place",
-                  "id": "d5769b67-0794-47b3-91ea-c941431f546a",
+                  "id": "84bc4e17-30c0-406b-bf58-051f95b5b4ff",
                   "request": {
                     "method": "POST",
+                    "header": [],
                     "body": {
                       "mode": "raw",
                       "raw": "{\n    \"keyword\": \"广州塔\",\n    \"city\": \"广州\",\n    \"category\": \"scenic\",\n    \"page\": 1,\n    \"page_size\": 5\n}",
@@ -1699,10 +1722,11 @@
                   },
                   "response": [
                     {
-                      "id": "ec68c042-dcc4-4f1f-876a-9ef86e347f0f",
+                      "id": "055cbea3-e139-4a7a-b363-603336c6995f",
                       "name": "Search Place",
                       "originalRequest": {
                         "method": "POST",
+                        "header": [],
                         "body": {
                           "mode": "raw",
                           "raw": "{\n    \"keyword\": \"广州塔\",\n    \"city\": \"广州\",\n    \"category\": \"scenic\",\n    \"page\": 1,\n    \"page_size\": 5\n}",
@@ -1758,19 +1782,121 @@
                           "value": "chunked"
                         }
                       ],
-                      "responseTime": "2025-12-07T06:59:54.083Z",
+                      "cookie": [],
                       "body": "{\n    \"success\": true,\n    \"data\": {\n        \"total\": 10,\n        \"page\": 1,\n        \"page_size\": 5,\n        \"places\": [\n            {\n                \"id\": 1,\n                \"amap_poi_id\": \"B00140BNNF\",\n                \"name\": \"越秀公园\",\n                \"address\": \"解放北路988号\",\n                \"location\": {\n                    \"lng\": 113.265561,\n                    \"lat\": 23.140096\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;公园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 2,\n                \"amap_poi_id\": \"B0FFF06EOH\",\n                \"name\": \"沙湾古镇\",\n                \"address\": \"福北路2号\",\n                \"location\": {\n                    \"lng\": 113.334288,\n                    \"lat\": 22.900653\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 3,\n                \"amap_poi_id\": \"B00140UDHU\",\n                \"name\": \"莲花山旅游区\",\n                \"address\": \"西门路123号\",\n                \"location\": {\n                    \"lng\": 113.502804,\n                    \"lat\": 22.987262\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 4,\n                \"amap_poi_id\": \"B00140UEO1\",\n                \"name\": \"广州动物园\",\n                \"address\": \"先烈中路120号\",\n                \"location\": {\n                    \"lng\": 113.305342,\n                    \"lat\": 23.140884\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;动物园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 5,\n                \"amap_poi_id\": \"B00140UEO5\",\n                \"name\": \"华南国家植物园\",\n                \"address\": \"天源路1190号\",\n                \"location\": {\n                    \"lng\": 113.367139,\n                    \"lat\": 23.181902\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"天河区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;植物园\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 6,\n                \"amap_poi_id\": \"B00140UFHC\",\n                \"name\": \"中山纪念堂\",\n                \"address\": \"东风中路299号\",\n                \"location\": {\n                    \"lng\": 113.264692,\n                    \"lat\": 23.13286\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"越秀区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;纪念馆|风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 7,\n                \"amap_poi_id\": \"B00140W71L\",\n                \"name\": \"岭南印象园\",\n                \"address\": \"大学城外环西路\",\n                \"location\": {\n                    \"lng\": 113.406209,\n                    \"lat\": 23.036038\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 8,\n                \"amap_poi_id\": \"B00140WBI1\",\n                \"name\": \"广州塔\",\n                \"address\": \"赤岗街道新鸿社区滨江东路222号\",\n                \"location\": {\n                    \"lng\": 113.324521,\n                    \"lat\": 23.106428\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"海珠区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜;国家级景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 9,\n                \"amap_poi_id\": \"B00141KFJH\",\n                \"name\": \"广东科学中心\",\n                \"address\": \"科普路168号\",\n                \"location\": {\n                    \"lng\": 113.362465,\n                    \"lat\": 23.039403\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"番禺区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;风景名胜相关;旅游景点\",\n                \"review_count\": 0\n            },\n            {\n                \"id\": 10,\n                \"amap_poi_id\": \"B00141V5TB\",\n                \"name\": \"正佳极地海洋世界\",\n                \"address\": \"天河路228号正佳广场2层2D126\",\n                \"location\": {\n                    \"lng\": 113.327025,\n                    \"lat\": 23.132143\n                },\n                \"province\": \"广东省\",\n                \"city\": \"广州市\",\n                \"district\": \"天河区\",\n                \"category\": \"scenic\",\n                \"amap_type\": \"风景名胜;公园广场;水族馆\",\n                \"review_count\": 0\n            }\n        ]\n    }\n}"
                     }
                   ]
                 }
               ],
-              "id": "c9ccb76b-1628-4084-95e6-7a664ba81186"
+              "id": "6dac6526-2df4-4cbc-8db6-95c16574073a"
+            },
+            {
+              "name": "Routes",
+              "item": [
+                {
+                  "name": "Route Plan",
+                  "id": "9269b9cd-25bb-4be4-8a3f-8213ce17fe51",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"trip_id\": 1,\n    \"origin\": {\n      \"place_id\": 1,\n      \"lng\": 114.057868,\n      \"lat\": 22.543099\n    },\n    \"destination\":  {\n      \"place_id\":  5,\n      \"lng\": 114.067868,\n      \"lat\": 22.553099\n    },\n    \"waypoints\": [],\n    \"strategy\": \"0\",\n    \"travel_mode\": \"driving\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{BASE_URL}}/api/v2/routes/plan",
+                      "host": [
+                        "{{BASE_URL}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v2",
+                        "routes",
+                        "plan"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "5e83fb71-f9bf-4b38-87be-e8815ce4a147",
+                      "name": "Route Plan",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"trip_id\": 1,\n    \"origin\": {\n      \"place_id\": 1,\n      \"lng\": 114.057868,\n      \"lat\": 22.543099\n    },\n    \"destination\":  {\n      \"place_id\":  5,\n      \"lng\": 114.067868,\n      \"lat\": 22.553099\n    },\n    \"waypoints\": [],\n    \"strategy\": \"0\",\n    \"travel_mode\": \"driving\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{BASE_URL}}/api/v2/routes/plan",
+                          "host": [
+                            "{{BASE_URL}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v2",
+                            "routes",
+                            "plan"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Access-Control-Allow-Credentials",
+                          "value": "true"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Headers",
+                          "value": "Content-Type, Authorization"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Methods",
+                          "value": "GET, POST, PUT, DELETE, OPTIONS"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "http://localhost:5173"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json; charset=utf-8"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Thu, 11 Dec 2025 02:43:25 GMT"
+                        },
+                        {
+                          "key": "Content-Length",
+                          "value": "1092"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"success\": true,\n    \"data\": {\n        \"route_id\": 4,\n        \"trip_id\": 1,\n        \"total_distance\": 2.399,\n        \"total_duration\": 7,\n        \"path_count\": 1,\n        \"paths\": [\n            {\n                \"distance\": 2.399,\n                \"duration\": 7,\n                \"strategy\": \"未知策略\",\n                \"steps\": [\n                    {\n                        \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                        \"road\": \"福中三路\",\n                        \"distance\": 123,\n                        \"duration\": 39,\n                        \"action\": \"向右前方行驶\"\n                    },\n                    {\n                        \"instruction\": \"沿益田路向西北行驶52米右转\",\n                        \"road\": \"益田路\",\n                        \"distance\": 52,\n                        \"duration\": 14,\n                        \"action\": \"右转\"\n                    },\n                    {\n                        \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                        \"road\": \"益田路\",\n                        \"distance\": 555,\n                        \"duration\": 130,\n                        \"action\": \"向右前方行驶\"\n                    },\n                    {\n                        \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                        \"road\": \"红荔路\",\n                        \"distance\": 51,\n                        \"duration\": 16,\n                        \"action\": \"右转\"\n                    },\n                    {\n                        \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                        \"road\": \"红荔路\",\n                        \"distance\": 1140,\n                        \"duration\": 198,\n                        \"action\": \"左转\"\n                    },\n                    {\n                        \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                        \"road\": \"彩田路\",\n                        \"distance\": 478,\n                        \"duration\": 43,\n                        \"action\": \"\"\n                    }\n                ],\n                \"polyline\": \"\"\n            }\n        ],\n        \"optimized_order\": [\n            1,\n            5\n        ],\n        \"created_at\": \"0001-01-01T00:00:00Z\"\n    }\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "81709621-5194-47ca-80fb-7c93aaa54780"
             },
             {
               "name": "Health",
-              "id": "09efe3e5-dfbf-4ad7-9286-72d4ced8a81c",
+              "id": "b53b10fc-537c-45f6-8749-aa24182c0668",
               "request": {
                 "method": "GET",
+                "header": [],
                 "url": {
                   "raw": "{{BASE_URL}}/api/v2/health",
                   "host": [
@@ -1785,10 +1911,11 @@
               },
               "response": [
                 {
-                  "id": "c7e516e0-547f-4bd7-9404-73d017b27b67",
+                  "id": "0d37f965-bb6a-42fb-bddf-7861713302f3",
                   "name": "Health",
                   "originalRequest": {
                     "method": "GET",
+                    "header": [],
                     "url": {
                       "raw": "{{BASE_URL}}/api/v2/health",
                       "host": [
@@ -1834,28 +1961,56 @@
                       "value": "15"
                     }
                   ],
+                  "cookie": [],
                   "body": "{\n    \"status\": \"ok\"\n}"
                 }
               ]
             }
           ],
-          "id": "94cf34e3-5fa8-4ad6-93ec-ba2a11da7bad",
+          "id": "8c3970d9-86cb-4971-b9b1-ac358cb0cf23",
           "auth": {
             "type": "bearer",
             "bearer": [
               {
                 "key": "token",
-                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NTE3Mzc3Mn0.R6xvfonqpHR06n2RRIyLAilfJ069e75by1mpHfY-lqk",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsImV4cCI6MTc2NTUwNjg3NH0.ZidkQTLRZI6cxpLMaJ4MmNJ6l62Ss8_KBSFO-t_XqCk",
                 "type": "string"
               }
             ]
-          }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "15105563-44dc-4686-a640-41d572f8e9f6",
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "29ab639c-404e-40c6-8c33-290dc801d1d1",
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Health",
-          "id": "11cc87b4-d93a-4501-899d-24df70e878a9",
+          "id": "e6a0d825-1e0d-4370-a749-81afe1fac2c8",
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/health",
               "host": [
@@ -1869,10 +2024,11 @@
           },
           "response": [
             {
-              "id": "9624a977-bec3-42e0-96e2-8189b9b43329",
+              "id": "ef305f3f-8d46-40c0-a1cd-71106e9769e9",
               "name": "Health",
               "originalRequest": {
                 "method": "GET",
+                "header": [],
                 "url": {
                   "raw": "{{BASE_URL}}/api/health",
                   "host": [
@@ -1917,12 +2073,13 @@
                   "value": "15"
                 }
               ],
+              "cookie": [],
               "body": "{\n    \"status\": \"ok\"\n}"
             }
           ]
         }
       ],
-      "id": "ca0aadb9-fca5-4f4d-bfd8-03dfa6bd7ca6"
+      "id": "fdf37cf9-4a76-4da1-a201-31965d045402"
     }
   ]
 }
