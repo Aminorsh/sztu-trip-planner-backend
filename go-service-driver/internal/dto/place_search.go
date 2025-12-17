@@ -1,11 +1,13 @@
 package dto
 
 type PlaceSearchRequest struct {
-	Keyword  string `json:"keyword" binding:"required"`
-	City     string `json:"city"`
-	Category string `json:"category"`
-	Page     int    `json:"page" binding:"min=0"`
-	PageSize int    `json:"page_size" binding:"min=1,max=50"`
+	Keyword string `form:"keyword" binding:"required"`
+	// City     string `json:"city"`
+	// Category string `json:"category"`
+	FilterType string `form:"filter_type"`
+	// Page       int    `json:"page" binding:"min=0"`
+	// PageSize   int    `json:"page_size" binding:"min=1,max=50"`
+	SortOrder string `form:"sort_order"`
 }
 
 type Location struct {
@@ -14,33 +16,27 @@ type Location struct {
 }
 
 type PlaceResponse struct {
-	ID           uint64   `json:"id"`
-	AmapPoiID    string   `json:"amap_poi_id,omitempty"`
-	Name         string   `json:"name"`
-	NameEn       string   `json:"name_en,omitempty"`
-	Address      string   `json:"address"`
-	Location     Location `json:"location"`
-	Province     string   `json:"province,omitempty"`
-	City         string   `json:"city"`
-	District     string   `json:"district,omitempty"`
-	Category     string   `json:"category"`
-	AmapType     string   `json:"amap_type,omitempty"`
-	Tel          string   `json:"tel,omitempty"`
-	Rating       float64  `json:"rating,omitempty"`
-	ReviewCount  int      `json:"review_count"`
-	PriceRange   string   `json:"price_range,omitempty"`
-	PriceLevel   string   `json:"price_level,omitempty"`
-	OpeningHours string   `json:"opening_hours,omitempty"`
-	CoverImage   string   `json:"cover_image,omitempty"`
-	Photos       []string `json:"photos,omitempty"`
-	Tags         []string `json:"tags,omitempty"`
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	Address      string  `json:"address"`
+	Description  string  `json:"description"`
+	Image        string  `json:"image"`
+	Rating       float64 `json:"rating"`
+	Distance     float64 `json:"distance"`
+	OpeningHours string  `json:"openingHours"`
+	Added        bool    `json:"added"`
+	Expanded     bool    `json:"expanded"`
+	// 保留额外信息供后续使用
+	Category   string   `json:"category,omitempty"`
+	Location   Location `json:"location,omitempty"`
+	Tel        string   `json:"tel,omitempty"`
+	PriceRange string   `json:"priceRange,omitempty"`
+	Photos     []string `json:"photos,omitempty"`
 }
 
 type PlaceSearchResponse struct {
-	Total    int             `json:"total"`
-	Page     int             `json:"page"`
-	PageSize int             `json:"page_size"`
-	Places   []PlaceResponse `json:"places"`
+	Places []PlaceResponse `json:"places"`
+	Total  int             `json:"total"`
 }
 
 type AmapSearchResponse struct {

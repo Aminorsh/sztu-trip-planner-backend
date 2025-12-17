@@ -24,11 +24,13 @@ func NewPlaceController(placeService *service.PlaceService) *PlaceController {
 func (pc *PlaceController) SearchPlaces(ctx *gin.Context) {
 	var req dto.PlaceSearchRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		log.Println("Error binding JSON:", req, err)
+	// 使用 ShouldBindQuery 从 URL query parameters 绑定
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		log.Println("Error binding query params:", err)
 		middleware.HandleError(ctx, errors.NewInvalidRequestError(err.Error()))
 		return
 	}
+
 	resp, err := pc.PlaceService.SearchPlaces(ctx.Request.Context(), &req)
 	if err != nil {
 		middleware.HandleError(ctx, errors.NewInternalServerError(err))

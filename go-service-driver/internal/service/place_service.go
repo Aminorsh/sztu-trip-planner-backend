@@ -44,52 +44,66 @@ func NewPlaceService(
 }
 
 func (s *PlaceService) SearchPlaces(ctx context.Context, req *dto.PlaceSearchRequest) (*dto.PlaceSearchResponse, error) {
-	if req.Page < 1 {
-		req.Page = 1
-	}
-	if req.PageSize < 1 {
-		req.PageSize = 10
-	}
+	// 缓存key只基于keyword，不包含筛选和排序条件
+	cacheKey := s.buildCacheKey(req.Keyword)
+
+	var places []dto.PlaceResponse
+	var total int
 
 	// Layer 1: Check Redis cache (5 minutes)
-	cacheKey := s.buildCacheKey(req.Keyword, req.City, req.Page, req.PageSize)
 	cacheData, err := s.getFromRedis(cacheKey)
 	if err == nil && cacheData != nil {
-		return cacheData, nil
+		places = cacheData.Places
+		total = cacheData.Total
+	} else {
+		// Layer 2: Check database cache (24 hours)
+		dbCacheData, err := s.getFromDBCache(ctx, cacheKey)
+		if err == nil && dbCacheData != nil {
+			places = dbCacheData.Places
+			total = dbCacheData.Total
+			// 保存到Redis缓存
+			go s.saveToRedis(cacheKey, dbCacheData, 5*time.Minute)
+		} else {
+			// Layer 3: Call Amap API
+			amapResponse, err := s.callAmapAPI(req)
+			if err != nil {
+				return nil, err
+			}
+
+			places, total, err = s.parseAndSavePlaces(ctx, amapResponse)
+			if err != nil {
+				return nil, err
+			}
+
+			// 缓存原始未筛选的数据
+			originalResponse := &dto.PlaceSearchResponse{
+				Places: places,
+				Total:  total,
+			}
+
+			// Save to DB cache
+			go s.saveToDBCache(ctx, cacheKey, req, amapResponse, 24*time.Hour)
+
+			// Save to Redis cache
+			go s.saveToRedis(cacheKey, originalResponse, 5*time.Minute)
+		}
 	}
 
-	// Layer 2: Check database cache (24 hours)
-	dbCacheData, err := s.getFromDBCache(ctx, cacheKey)
-	if err == nil && dbCacheData != nil {
-		go s.saveToRedis(cacheKey, dbCacheData, 5*time.Minute)
-		return dbCacheData, nil
+	// 应用筛选（在获取缓存数据后）
+	if req.FilterType != "" {
+		places = s.filterPlaces(places, req.FilterType)
+		total = len(places)
 	}
 
-	// Layer 3: Call Amap API
-	amapResponse, err := s.callAmapAPI(req)
-	if err != nil {
-		return nil, err
+	// 应用排序（在筛选后）
+	if req.SortOrder != "" {
+		s.sortPlaces(places, req.SortOrder)
 	}
 
-	places, total, err := s.parseAndSavePlaces(ctx, amapResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	response := &dto.PlaceSearchResponse{
-		Total:    total,
-		Page:     req.Page,
-		Places:   places,
-		PageSize: req.PageSize,
-	}
-
-	// Save to DB cache
-	go s.saveToDBCache(ctx, cacheKey, req, amapResponse, 24*time.Hour)
-
-	// Save to Redis cache
-	go s.saveToRedis(cacheKey, response, 5*time.Minute)
-
-	return response, nil
+	return &dto.PlaceSearchResponse{
+		Places: places,
+		Total:  total,
+	}, nil
 }
 
 func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearchResponse, error) {
@@ -102,19 +116,9 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 	params.Add("key", s.amapAPIKey)
 	params.Add("keywords", req.Keyword)
 	params.Add("output", "json")
-	params.Add("page", strconv.Itoa(req.Page))
-	params.Add("offset", strconv.Itoa(req.PageSize))
+	params.Add("page", "1")
+	params.Add("offset", "20")
 	params.Add("extensions", "all")
-
-	if req.City != "" {
-		params.Add("city", req.City)
-	}
-
-	if req.Category != "" {
-		if types := s.mapCategoryToAmapType(req.Category); types != "" {
-			params.Add("types", types)
-		}
-	}
 
 	requestURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
 
@@ -162,38 +166,31 @@ func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.Ama
 		if err != nil {
 			return nil, 0, err
 		}
-		placeResp := dto.PlaceResponse{
-			ID:           place.ID,
-			AmapPoiID:    place.AmapPoiID,
-			Name:         place.Name,
-			NameEn:       place.NameEn,
-			Address:      place.Address,
-			Location:     dto.Location{Lng: lng, Lat: lat},
-			Province:     place.Province,
-			City:         place.City,
-			District:     place.District,
-			Category:     string(place.Category),
-			AmapType:     place.AmapType,
-			Tel:          place.Phone,
-			PriceRange:   place.PriceRange,
-			OpeningHours: place.OpeningHours,
-			CoverImage:   place.CoverImage,
+		// 构建符合前端需求的响应
+		rating := 0.0
+		if place.Rating != nil {
+			rating = *place.Rating
 		}
 
-		if place.Rating != nil {
-			placeResp.Rating = *place.Rating
+		placeResp := dto.PlaceResponse{
+			ID:           fmt.Sprintf("%d", place.ID),
+			Name:         place.Name,
+			Address:      place.Address,
+			Description:  place.Description,
+			Image:        place.CoverImage,
+			Rating:       rating,
+			Distance:     0, // 需要根据用户位置计算
+			OpeningHours: place.OpeningHours,
+			Added:        false, // 需要根据用户行程判断
+			Expanded:     false,
+			Category:     string(place.Category),
+			Location:     dto.Location{Lng: lng, Lat: lat},
+			Tel:          place.Phone,
+			PriceRange:   place.PriceRange,
 		}
-		if place.ReviewCount != nil {
-			placeResp.ReviewCount = *place.ReviewCount
-		}
-		if place.PriceLevel != nil {
-			placeResp.PriceLevel = string(*place.PriceLevel)
-		}
+
 		if place.Photos != nil {
 			placeResp.Photos = place.Photos
-		}
-		if place.Tags != nil {
-			placeResp.Tags = place.Tags
 		}
 		places = append(places, placeResp)
 	}
@@ -295,9 +292,8 @@ func (s *PlaceService) mapCategoryToAmapType(category string) string {
 	return mapping[category]
 }
 
-func (s *PlaceService) buildCacheKey(keyword, city string, page, pageSize int) string {
-	raw := fmt.Sprintf("%s:%s:%d:%d", keyword, city, page, pageSize)
-	hash := md5.Sum([]byte(raw))
+func (s *PlaceService) buildCacheKey(keyword string) string {
+	hash := md5.Sum([]byte(keyword))
 	return fmt.Sprintf("place_search:%x", hash)
 }
 
@@ -363,32 +359,15 @@ func (s *PlaceService) getFromDBCache(ctx context.Context, cacheKey string) (*dt
 		return nil, err
 	}
 
-	page := 1
-	pageSize := 10
-	if result.RequestParams["page"] != nil {
-		if p, ok := result.RequestParams["page"].(float64); ok {
-			page = int(p)
-		}
-		if ps, ok := result.RequestParams["page_size"].(float64); ok {
-			pageSize = int(ps)
-		}
-	}
-
 	return &dto.PlaceSearchResponse{
-		Places:   places,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		Places: places,
+		Total:  total,
 	}, nil
 }
 
 func (s *PlaceService) saveToDBCache(ctx context.Context, cacheKey string, req *dto.PlaceSearchRequest, amapResp *dto.AmapSearchResponse, expiration time.Duration) error {
 	requestParams := model.JSONObject{
-		"keyword":   req.Keyword,
-		"city":      req.City,
-		"category":  req.Category,
-		"page":      req.Page,
-		"page_size": req.PageSize,
+		"keyword": req.Keyword,
 	}
 
 	responseData := model.JSONObject{}
@@ -411,4 +390,52 @@ func (s *PlaceService) saveToDBCache(ctx context.Context, cacheKey string, req *
 	}
 
 	return s.amapCacheRepo.Create(ctx, &cache)
+}
+
+// filterPlaces 根据筛选类型过滤地点
+func (s *PlaceService) filterPlaces(places []dto.PlaceResponse, filterType string) []dto.PlaceResponse {
+	if filterType == "" {
+		return places
+	}
+
+	filtered := make([]dto.PlaceResponse, 0)
+	for _, place := range places {
+		if place.Category == filterType {
+			filtered = append(filtered, place)
+		}
+	}
+	return filtered
+}
+
+// sortPlaces 根据排序方式排序地点
+func (s *PlaceService) sortPlaces(places []dto.PlaceResponse, sortOrder string) {
+	switch sortOrder {
+	case "rating":
+		// 按评分降序
+		for i := 0; i < len(places)-1; i++ {
+			for j := i + 1; j < len(places); j++ {
+				if places[i].Rating < places[j].Rating {
+					places[i], places[j] = places[j], places[i]
+				}
+			}
+		}
+	case "distance":
+		// 按距离升序
+		for i := 0; i < len(places)-1; i++ {
+			for j := i + 1; j < len(places); j++ {
+				if places[i].Distance > places[j].Distance {
+					places[i], places[j] = places[j], places[i]
+				}
+			}
+		}
+	case "name":
+		// 按名称字母顺序
+		for i := 0; i < len(places)-1; i++ {
+			for j := i + 1; j < len(places); j++ {
+				if places[i].Name > places[j].Name {
+					places[i], places[j] = places[j], places[i]
+				}
+			}
+		}
+	}
 }
