@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/database"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
 	apperrors "github.com/Aminorsh/sztu-trip-planner-backend/internal/errors"
@@ -45,17 +46,20 @@ func (s *UserService) SendVerificationCode(ctx context.Context, email string) er
 }
 
 func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*model.User, error) {
-	// Verify code from Redis
-	key := fmt.Sprintf("verify:%s", req.Email)
-	storedCode, err := database.RedisClient.Get(ctx, key).Result()
-	if err != nil {
-		if errors.Is(err, context.Canceled) {
-			return nil, apperrors.NewInternalServerError(err)
+	if !config.IsTestMode() {
+		// Verify code from Redis
+		key := fmt.Sprintf("verify:%s", req.Email)
+		storedCode, err := database.RedisClient.Get(ctx, key).Result()
+		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				return nil, apperrors.NewInternalServerError(err)
+			}
+			return nil, apperrors.NewVerifyCodeExpiredError()
 		}
-		return nil, apperrors.NewVerifyCodeExpiredError()
-	}
-	if storedCode != req.Code {
-		return nil, apperrors.NewInvalidVerifyCodeError()
+		if storedCode != req.Code {
+			return nil, apperrors.NewInvalidVerifyCodeError()
+		}
+
 	}
 
 	// Check if user already exists (repository handles soft-delete check)
@@ -91,8 +95,10 @@ func (s *UserService) RegisterUser(ctx context.Context, req dto.RegisterUser) (*
 		return nil, err
 	}
 
-	// Delete verification code from Redis
-	_ = database.RedisClient.Del(ctx, key).Err()
+	if !config.IsTestMode() {
+		// Delete verification code from Redis
+		_ = database.RedisClient.Del(ctx, fmt.Sprintf("verify:%s", req.Email)).Err()
+	}
 
 	// Zero out password hash before returning
 	newUser.PasswordHash = ""

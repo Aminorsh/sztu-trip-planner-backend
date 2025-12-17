@@ -32,8 +32,8 @@ type TripRoute struct {
 
 	IsActive bool `json:"is_active" gorm:"default:true;comment:是否当前激活路线"`
 
-	CreatedAt time.Time  `json:"created_at" gorm:"default:CURRENT_TIMESTAMP"`
-	UpdatedAt time.Time  `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 

@@ -46,10 +46,10 @@ type RouteRepository interface {
 
 // TripRepository 行程数据访问接口
 type TripRepository interface {
-	Create(ctx context.Context, trip *model.Trips) error
-	FindByID(ctx context.Context, id int) (*model.Trips, error)
-	FindByUserID(ctx context.Context, userID int, search string) ([]model.Trips, error)
-	Update(ctx context.Context, trip *model.Trips) error
+	Create(ctx context.Context, trip *model.Trip) error
+	FindByID(ctx context.Context, id int) (*model.Trip, error)
+	FindByUserID(ctx context.Context, userID int, search string) ([]model.Trip, error)
+	Update(ctx context.Context, trip *model.Trip) error
 	SoftDelete(ctx context.Context, id int, userID int) error
 	UpdateStats(ctx context.Context, tripID uint64, totalDistance float64, totalDuration int) error
 }

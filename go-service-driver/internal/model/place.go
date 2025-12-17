@@ -94,7 +94,7 @@ type Place struct {
 	District string `json:"district" gorm:"type:varchar(100);index:idx_city_district;comment:区县"`
 	Street   string `json:"street" gorm:"type:varchar(100);comment:街道"`
 	Address  string `json:"address" gorm:"type:varchar(255);not null;index:ft_name,class:FULLTEXT;comment:地址"`
-	Adcode   string `json:"adcode" gorm:"type:varchar(10);index;comment:区域编码"`
+	Adcode   string `json:"adcode" gorm:"size:10;index;comment:区域编码"`
 
 	Latitude  *float64 `json:"latitude" gorm:"type:decimal(11,8);index:idx_location;not null;comment:纬度"`
 	Longitude *float64 `json:"longitude" gorm:"type:decimal(12,8);index:idx_location;not null;comment:经度"`
@@ -120,7 +120,7 @@ type Place struct {
 	CoverImage string    `json:"cover_image" gorm:"type:varchar(255);comment:封面图片URL"`
 	Photos     JSONArray `json:"photos" gorm:"type:json;comment:地点图片URL列表"`
 
-	AmapPoiID        string     `json:"amap_poi_id" gorm:"type:varchar(50);unique;comment:高德POI ID"`
+	AmapPoiID        string     `json:"amap_poi_id" gorm:"size:50;unique;comment:高德POI ID"`
 	DataSource       DataSource `json:"data_source" gorm:"type:enum('user_created','amap_api','imported');not null;comment:数据来源"`
 	APIResponseCache JSONObject `json:"api_response_cache" gorm:"type:json;comment:API响应缓存"`
 	APILastUpdated   *time.Time `json:"api_last_updated" gorm:"comment:API数据最后更新时间"`
@@ -139,7 +139,7 @@ func (Place) TableName() string {
 
 type AmapPoiCache struct {
 	ID            uint64     `json:"id" gorm:"primaryKey;autoIncrement;comment:缓存ID"`
-	CacheKey      string     `json:"cache_key" gorm:"type:varchar(255);uniqueIndex;not null;comment:缓存键"`
+	CacheKey      string     `json:"cache_key" gorm:"size:255;uniqueIndex;not null;comment:缓存键"`
 	RequestParams JSONObject `json:"request_params" gorm:"type:json;comment:请求参数"`
 	ResponseData  JSONObject `json:"response_data" gorm:"type:json;comment:响应数据"`
 	PoiCount      int        `json:"poi_count"`
