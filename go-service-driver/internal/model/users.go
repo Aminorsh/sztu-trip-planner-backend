@@ -4,8 +4,8 @@ import "time"
 
 type User struct {
 	ID           uint64 `gorm:"primaryKey"`
-	Username     string `gorm:"uniqueIndex;not null"`
-	Email        string `gorm:"uniqueIndex;not null"`
+	Username     string `gorm:"size:100;uniqueIndex;not null"`
+	Email        string `gorm:"size:255;uniqueIndex;not null"`
 	PasswordHash string `gorm:"not null"`
 	DisplayName  string
 	AvatarURL    string

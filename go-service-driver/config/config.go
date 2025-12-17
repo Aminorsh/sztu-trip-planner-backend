@@ -84,3 +84,7 @@ func GetAmapAPIKey() string {
 func GetAmapAPIURL() string {
 	return os.Getenv("AMAP_API_URL")
 }
+
+func IsTestMode() bool {
+	return os.Getenv("TEST_MODE") == "true"
+}
