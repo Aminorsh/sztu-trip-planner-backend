@@ -53,4 +53,10 @@ type TripRepository interface {
 	Update(ctx context.Context, trip *model.Trip) error
 	SoftDelete(ctx context.Context, id int, userID int) error
 	UpdateStats(ctx context.Context, tripID uint64, totalDistance float64, totalDuration int) error
+	UpdateFields(ctx context.Context, tripID uint64, updates map[string]any) error
+	CreateTripItem(ctx context.Context, item *model.TripItem) error
+	FindTripItemByID(ctx context.Context, itemID uint64) (*model.TripItem, error)
+	UpdateTripItem(ctx context.Context, item *model.TripItem) error
+	DeleteTripItem(ctx context.Context, itemID uint64) error
+	DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error
 }

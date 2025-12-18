@@ -43,6 +43,7 @@ const (
 	ErrTripNotFound     = "TRIP_NOT_FOUND"
 	ErrTripAccessDenied = "TRIP_ACCESS_DENIED"
 	ErrInvalidTripData  = "INVALID_TRIP_DATA"
+	ErrTripItemNotFound = "TRIP_ITEM_NOT_FOUND"
 
 	// Place Errors
 	ErrJSONArrayScan = "JSON_ARRAY_SCAN_ERROR"

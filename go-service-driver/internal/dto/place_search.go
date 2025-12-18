@@ -16,23 +16,19 @@ type Location struct {
 }
 
 type PlaceResponse struct {
-	ID           string  `json:"id"`
-	Name         string  `json:"name"`
-	Address      string  `json:"address"`
-	Description  string  `json:"description"`
-	Image        string  `json:"image"`
-	Rating       float64 `json:"rating"`
-	Distance     float64 `json:"distance"`
-	OpeningHours string  `json:"openingHours"`
-	// Added        bool    `json:"added"`
-	Expanded bool `json:"expanded"`
-	// 保留额外信息供后续使用
-	// Category   string   `json:"category,omitempty"`
-	Type     string   `json:"type,omitempty"`
-	Location Location `json:"location,omitempty"`
-	// Tel        string   `json:"tel,omitempty"`
-	// PriceRange string   `json:"priceRange,omitempty"`
-	Photos []string `json:"photos,omitempty"`
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	Address      string   `json:"address"`
+	Description  string   `json:"description"`
+	Image        string   `json:"image"`
+	Rating       float64  `json:"rating"`
+	Distance     float64  `json:"distance"`
+	OpeningHours string   `json:"openingHours"`
+	Added        bool     `json:"added"`
+	Expanded     bool     `json:"expanded"`
+	Type         string   `json:"type,omitempty"`
+	Location     Location `json:"location,omitempty"`
+	Photos       []string `json:"photos,omitempty"`
 }
 
 type PlaceSearchResponse struct {
