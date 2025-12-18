@@ -1,11 +1,15 @@
 // go-service-driver/internal/model/trip_item.go
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type TripItem struct {
 	ID      uint64 `gorm:"primaryKey"`
-	TripID  uint64 `gorm:"not null;index: idx_trip_day"`
+	TripID  uint64 `gorm:"not null;index:idx_trip_day"`
 	PlaceID uint64 `gorm:"not null"`
 
 	DayNumber int `gorm:"not null;index:idx_trip_day"` // 第几天
@@ -19,7 +23,7 @@ type TripItem struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt *time.Time `gorm:"index"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// 关联
 	Place Place `gorm:"foreignKey:PlaceID"`

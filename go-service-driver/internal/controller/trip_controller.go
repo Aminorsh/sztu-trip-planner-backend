@@ -179,7 +179,13 @@ func (c *TripController) DeleteTripItem(ctx *gin.Context) {
 func (c *TripController) AddTripDay(ctx *gin.Context) {
 	tripID := ctx.Param("tripId")
 
-	dayCount, err := c.tripService.AddTripDay(ctx.Request.Context(), tripID)
+	var req dto.AddTripDayRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		middleware.HandleError(ctx, errors.NewInvalidRequestError(err.Error()))
+		return
+	}
+
+	dayCount, err := c.tripService.AddTripDay(ctx.Request.Context(), tripID, &req)
 	if err != nil {
 		middleware.HandleError(ctx, err)
 		return

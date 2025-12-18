@@ -232,7 +232,7 @@ func (s *TripService) DeleteTrip(ctx context.Context, tripID string, userID uint
 }
 
 // AddTripDay 添加新的一天
-func (s *TripService) AddTripDay(ctx context.Context, tripID string) (int, error) {
+func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.AddTripDayRequest) (int, error) {
 	id, err := strconv.ParseUint(tripID, 10, 64)
 	if err != nil {
 		return 0, errors.NewInvalidRequestError("invalid trip ID")
@@ -246,15 +246,37 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string) (int, error
 		return 0, errors.NewTripNotFoundError()
 	}
 
-	// 找到最大的天数
-	maxDay := 0
-	for _, item := range trip.Items {
-		if item.DayNumber > maxDay {
-			maxDay = item.DayNumber
+	dayNumber := req.Day
+	// 如果没有指定天数，找到最大天数+1
+	if dayNumber == 0 {
+		maxDay := 0
+		for _, item := range trip.Items {
+			if item.DayNumber > maxDay {
+				maxDay = item.DayNumber
+			}
+		}
+		dayNumber = maxDay + 1
+	}
+
+	// 创建行程项
+	for i, item := range req.Items {
+		placeID, _ := strconv.ParseUint(item.ID, 10, 64)
+
+		tripItem := &model.TripItem{
+			TripID:    id,
+			PlaceID:   placeID,
+			DayNumber: dayNumber,
+			Sequence:  i + 1,
+			StartTime: item.Time,
+			Note:      item.Note,
+		}
+
+		if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
+			return 0, err
 		}
 	}
 
-	return maxDay + 1, nil
+	return dayNumber, nil
 }
 
 // DeleteTripDay 删除指定天
@@ -294,13 +316,35 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 	// 转换为有序的天数数组
 	days := make([]dto.TripDay, 0)
-	for dayNum := 1; dayNum <= len(dayMap); dayNum++ {
-		if items, ok := dayMap[dayNum]; ok {
-			days = append(days, dto.TripDay{
-				Day:   dayNum,
-				Items: items,
-			})
+
+	// 找到最大的天数
+	maxDay := 0
+	for dayNum := range dayMap {
+		if dayNum > maxDay {
+			maxDay = dayNum
 		}
+	}
+
+	// 如果有开始和结束日期，确保包含这些天数
+	if !trip.StartDate.IsZero() && !trip.EndDate.IsZero() {
+		// 计算日期差（包含结束日期）
+		// 使用 Round 确保跨天计算准确，加 1 是因为是闭区间
+		daysDiff := int(trip.EndDate.Sub(trip.StartDate).Hours()/24) + 1
+		if daysDiff > maxDay {
+			maxDay = daysDiff
+		}
+	}
+
+	// 包含所有天数（包括空的）
+	for dayNum := 1; dayNum <= maxDay; dayNum++ {
+		items := dayMap[dayNum]
+		if items == nil {
+			items = []dto.TripItem{} // 空数组而不是nil
+		}
+		days = append(days, dto.TripDay{
+			Day:   dayNum,
+			Items: items,
+		})
 	}
 
 	return &dto.TripResponse{

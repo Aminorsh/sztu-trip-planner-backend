@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/model"
 	"gorm.io/gorm"
@@ -25,6 +24,10 @@ func (t *tripRepository) Create(ctx context.Context, trip *model.Trip) error {
 func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trip, error) {
 	var trip model.Trip
 	err := t.db.WithContext(ctx).
+		Preload("Items", func(db *gorm.DB) *gorm.DB {
+			return db.Order("day_number ASC, sequence ASC")
+		}).
+		Preload("Items.Place"). // 预加载行程项和关联的地点
 		Where("id = ?  AND deleted_at IS NULL", id).
 		First(&trip).Error
 
@@ -44,8 +47,8 @@ func (t *tripRepository) FindByUserID(ctx context.Context, userID int, search st
 		Where("user_id = ? AND deleted_at IS NULL", userID)
 
 	if search != "" {
-		query = query.Where("title LIKE ? OR description LIKE ?  OR destination_city LIKE ?",
-			"%"+search+"%", "%"+search+"%", "%"+search+"%")
+		query = query.Where("title LIKE ? OR description LIKE ?",
+			"%"+search+"%", "%"+search+"%")
 	}
 
 	err := query.Order("created_at DESC").Find(&trips).Error
@@ -61,11 +64,9 @@ func (t *tripRepository) Update(ctx context.Context, trip *model.Trip) error {
 
 // SoftDelete 软删除行程
 func (t *tripRepository) SoftDelete(ctx context.Context, id int, userID int) error {
-	now := time.Now()
 	return t.db.WithContext(ctx).
-		Model(&model.Trip{}).
 		Where("id = ? AND user_id = ? ", id, userID).
-		Update("deleted_at", now).Error
+		Delete(&model.Trip{}).Error
 }
 
 // UpdateStats 更新行程的距离和时长统计
