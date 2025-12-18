@@ -49,6 +49,18 @@ func (p *placeRepository) FindPlaceByPoiID(ctx context.Context, poiID string) (*
 	return &place, nil
 }
 
+// FindByID implements PlaceRepository.
+func (p *placeRepository) FindByID(ctx context.Context, id uint) (*model.Place, error) {
+	var place model.Place
+	if err := p.db.WithContext(ctx).Where("id = ?", id).First(&place).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil // Not found
+		}
+		return nil, apperrors.NewDatabaseError(err)
+	}
+	return &place, nil
+}
+
 // NewPlaceRepository creates a new instance of PlaceRepository
 func NewPlaceRepository(db *gorm.DB) PlaceRepository {
 	return &placeRepository{db: db}

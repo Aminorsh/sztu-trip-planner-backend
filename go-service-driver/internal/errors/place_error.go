@@ -44,3 +44,11 @@ func NewParseResponseError(err error) *AppError {
 		Internal: err,
 	}
 }
+
+func NewPlaceNotFoundError() *AppError {
+	return &AppError{
+		Code:    ErrPlaceNotFound,
+		Message: "Place not found",
+		Status:  http.StatusNotFound,
+	}
+}

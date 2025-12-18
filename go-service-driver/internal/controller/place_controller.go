@@ -39,3 +39,18 @@ func (pc *PlaceController) SearchPlaces(ctx *gin.Context) {
 
 	response.Success(ctx, resp)
 }
+
+func (pc *PlaceController) GetPlaceDetail(ctx *gin.Context) {
+	placeID := ctx.Param("placeID")
+	if placeID == "" {
+		middleware.HandleError(ctx, errors.NewInvalidRequestError("place ID is required"))
+		return
+	}
+	resp, err := pc.PlaceService.GetPlaceDetail(ctx.Request.Context(), placeID)
+	if err != nil {
+		middleware.HandleError(ctx, errors.NewInternalServerError(err))
+		return
+	}
+
+	response.Success(ctx, resp)
+}

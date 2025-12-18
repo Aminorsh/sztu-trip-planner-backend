@@ -143,7 +143,90 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP API error: %s", amapResp.Info))
 	}
 
+	// // 调试：打印第一个POI的详细信息
+	// if len(amapResp.Pois) > 0 {
+	// 	firstPOI, _ := json.MarshalIndent(amapResp.Pois[0], "", "  ")
+	// 	fmt.Printf("First POI from Amap API:\n%s\n", string(firstPOI))
+	// }
+
 	return &amapResp, nil
+}
+
+// callAmapDetailAPI 调用高德POI详情API获取详细信息
+func (s *PlaceService) callAmapDetailAPI(poiID string) (*dto.POI, error) {
+	if s.amapAPIKey == "" || s.amapAPIURL == "" {
+		return nil, errors.NewAmapConfigError()
+	}
+
+	baseURL := fmt.Sprintf("%s/v5/place/detail", s.amapAPIURL)
+	params := url.Values{}
+	params.Add("key", s.amapAPIKey)
+	params.Add("id", poiID)
+	params.Add("output", "json")
+
+	requestURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(requestURL)
+	if err != nil {
+		return nil, errors.NewAmapAPIError(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.NewReadResponseError(err)
+	}
+
+	var detailResp dto.AmapDetailResponse
+	if err := json.Unmarshal(body, &detailResp); err != nil {
+		return nil, errors.NewParseResponseError(err)
+	}
+
+	if detailResp.Status != "1" {
+		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP Detail API error: %s", detailResp.Info))
+	}
+
+	if len(detailResp.Pois) == 0 {
+		return nil, errors.NewPlaceNotFoundError()
+	}
+
+	return &detailResp.Pois[0], nil
+}
+
+// callWikipediaAPI 调用Wikipedia API获取景点信息
+func (s *PlaceService) callWikipediaAPI(placeName string) (*dto.WikipediaResponse, error) {
+	// URL编码地点名称
+	encodedName := url.QueryEscape(placeName)
+	apiURL := fmt.Sprintf("https://zh.wikipedia.org/api/rest_v1/page/summary/%s", encodedName)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(apiURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// 404表示Wikipedia没有该词条
+	if resp.StatusCode == 404 {
+		return nil, nil
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("wikipedia API returned status: %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var wikiResp dto.WikipediaResponse
+	if err := json.Unmarshal(body, &wikiResp); err != nil {
+		return nil, err
+	}
+
+	return &wikiResp, nil
 }
 
 func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.AmapSearchResponse) ([]dto.PlaceResponse, int, error) {
@@ -166,27 +249,45 @@ func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.Ama
 		if err != nil {
 			return nil, 0, err
 		}
-		// 构建符合前端需求的响应
+
+		// 提取评分
 		rating := 0.0
 		if place.Rating != nil {
 			rating = *place.Rating
+		} else if poi.Biz_ext.Rating != "" {
+			// 尝试从高德API响应中解析评分
+			if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+				rating = r
+			}
+		}
+
+		// 提取营业时间
+		openingHours := place.OpeningHours
+		if openingHours == "" && poi.Opentime_desc != "" {
+			openingHours = poi.Opentime_desc
+		}
+
+		// 提取简介
+		description := place.Description
+		if description == "" && poi.Introduction != "" {
+			description = poi.Introduction
 		}
 
 		placeResp := dto.PlaceResponse{
 			ID:           fmt.Sprintf("%d", place.ID),
 			Name:         place.Name,
 			Address:      place.Address,
-			Description:  place.Description,
+			Description:  description,
 			Image:        place.CoverImage,
 			Rating:       rating,
 			Distance:     0, // 需要根据用户位置计算
-			OpeningHours: place.OpeningHours,
-			Added:        false, // 需要根据用户行程判断
-			Expanded:     false,
-			Category:     string(place.Category),
-			Location:     dto.Location{Lng: lng, Lat: lat},
-			Tel:          place.Phone,
-			PriceRange:   place.PriceRange,
+			OpeningHours: openingHours,
+			// Added:        false, // 需要根据用户行程判断
+			Expanded: false,
+			// Category:   string(place.Category),
+			Location: dto.Location{Lng: lng, Lat: lat},
+			// Tel:        place.Phone,
+			// PriceRange: place.PriceRange,
 		}
 
 		if place.Photos != nil {
@@ -220,6 +321,20 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 		coverImage = photos[0]
 	}
 
+	// 解析评分
+	var rating *float64
+	if poi.Biz_ext.Rating != "" {
+		if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+			rating = &r
+		}
+	}
+
+	// 获取营业时间
+	openingHours := poi.Opentime_desc
+
+	// 获取简介
+	description := poi.Introduction
+
 	if existing == nil {
 		// Create new place
 		place = model.Place{
@@ -241,6 +356,9 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 			DataSource:     model.DataSourceAmapAPI,
 			APILastUpdated: &now,
 			VisitCount:     1,
+			Rating:         rating,
+			OpeningHours:   openingHours,
+			Description:    description,
 		}
 		if err := s.placeRepo.Create(ctx, &place); err != nil {
 			return nil, err
@@ -260,6 +378,16 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 			"photos":           photos,
 			"api_last_updated": now,
 			"visit_count":      gorm.Expr("visit_count + ?", 1),
+		}
+		// 只在有新数据时更新
+		if rating != nil {
+			updates["rating"] = *rating
+		}
+		if openingHours != "" {
+			updates["opening_hours"] = openingHours
+		}
+		if description != "" {
+			updates["description"] = description
 		}
 		if err := s.placeRepo.UpdateFields(ctx, place.ID, updates); err != nil {
 			return nil, err
@@ -400,7 +528,7 @@ func (s *PlaceService) filterPlaces(places []dto.PlaceResponse, filterType strin
 
 	filtered := make([]dto.PlaceResponse, 0)
 	for _, place := range places {
-		if place.Category == filterType {
+		if place.Type == filterType {
 			filtered = append(filtered, place)
 		}
 	}
@@ -438,4 +566,253 @@ func (s *PlaceService) sortPlaces(places []dto.PlaceResponse, sortOrder string) 
 			}
 		}
 	}
+}
+
+func (s *PlaceService) GetPlaceDetail(ctx context.Context, placeID string) (*dto.PlaceResponse, error) {
+	id, err := strconv.Atoi(placeID)
+	if err != nil {
+		return nil, errors.NewInvalidRequestError("invalid place ID")
+	}
+
+	place, err := s.placeRepo.FindByID(ctx, uint(id))
+	if err != nil {
+		return nil, err
+	}
+	if place == nil {
+		return nil, errors.NewPlaceNotFoundError()
+	}
+
+	// 检查是否需要从高德API获取详细信息
+	needDetailAPI := (place.Rating == nil || *place.Rating == 0) &&
+		place.Description == "" &&
+		place.OpeningHours == "" &&
+		len(place.Photos) == 0
+
+	// 如果有AmapPoiID且信息不完整，尝试调用详情API
+	if needDetailAPI && place.AmapPoiID != "" {
+		if poi, err := s.callAmapDetailAPI(place.AmapPoiID); err == nil {
+			// 更新地点信息
+			updates := make(map[string]any)
+
+			// 更新评分
+			if poi.Biz_ext.Rating != "" {
+				if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+					updates["rating"] = r
+					place.Rating = &r
+				}
+			}
+
+			// 更新简介
+			if poi.Introduction != "" {
+				updates["description"] = poi.Introduction
+				place.Description = poi.Introduction
+			}
+
+			// 更新营业时间
+			if poi.Opentime_desc != "" {
+				updates["opening_hours"] = poi.Opentime_desc
+				place.OpeningHours = poi.Opentime_desc
+			}
+
+			// 更新照片
+			if len(poi.Photos) > 0 {
+				photos := make([]string, 0, len(poi.Photos))
+				for _, photo := range poi.Photos {
+					photos = append(photos, photo.URL)
+				}
+				updates["photos"] = photos
+				updates["cover_image"] = photos[0]
+				place.Photos = photos
+				place.CoverImage = photos[0]
+			}
+
+			// 更新电话
+			if poi.Tel != "" {
+				updates["phone"] = poi.Tel
+				place.Phone = poi.Tel
+			}
+
+			// 保存更新到数据库
+			if len(updates) > 0 {
+				now := time.Now()
+				updates["api_last_updated"] = now
+				s.placeRepo.UpdateFields(ctx, place.ID, updates)
+			}
+		}
+		// 即使API调用失败也继续返回现有数据
+	}
+
+	// 如果仍然缺少信息，尝试从Wikipedia获取
+	if (place.Description == "" || len(place.Photos) == 0) && place.Name != "" {
+		// 尝试多个名称变体
+		nameVariants := s.getNameVariants(place.Name)
+		fmt.Printf("[DEBUG] Trying Wikipedia for place: %s, variants: %v\n", place.Name, nameVariants)
+
+		for _, name := range nameVariants {
+			fmt.Printf("[DEBUG] Calling Wikipedia API with name: %s\n", name)
+			if wikiData, err := s.callWikipediaAPI(name); err == nil && wikiData != nil {
+				fmt.Printf("[DEBUG] Wikipedia response: title=%s, extract_len=%d, has_image=%v\n",
+					wikiData.Title, len(wikiData.Extract), wikiData.Originalimage.Source != "")
+
+				updates := make(map[string]any)
+
+				// 更新简介
+				if place.Description == "" && wikiData.Extract != "" {
+					updates["description"] = wikiData.Extract
+					place.Description = wikiData.Extract
+				}
+
+				// 更新封面图片
+				if place.CoverImage == "" {
+					var imageURL string
+					// 优先使用原图
+					if wikiData.Originalimage.Source != "" {
+						imageURL = wikiData.Originalimage.Source
+					} else if wikiData.Thumbnail.Source != "" {
+						imageURL = wikiData.Thumbnail.Source
+					}
+
+					if imageURL != "" {
+						updates["cover_image"] = imageURL
+						place.CoverImage = imageURL
+						// 如果photos为空，也添加到photos
+						if len(place.Photos) == 0 {
+							updates["photos"] = []string{imageURL}
+							place.Photos = []string{imageURL}
+						}
+					}
+				}
+
+				// 保存Wikipedia数据到数据库
+				if len(updates) > 0 {
+					now := time.Now()
+					updates["api_last_updated"] = now
+					fmt.Printf("[DEBUG] Saving Wikipedia data: %+v\n", updates)
+					s.placeRepo.UpdateFields(ctx, place.ID, updates)
+					break // 成功获取数据后退出循环
+				}
+			} else if err != nil {
+				fmt.Printf("[DEBUG] Wikipedia API error for %s: %v\n", name, err)
+			}
+		}
+	}
+
+	// 如果仍然缺少信息，应用默认值
+	s.applyDefaultPlaceData(place)
+
+	var rating float64
+	if place.Rating != nil {
+		rating = *place.Rating
+	}
+
+	var lng, lat float64
+	if place.Longitude != nil {
+		lng = *place.Longitude
+	}
+	if place.Latitude != nil {
+		lat = *place.Latitude
+	}
+
+	resp := &dto.PlaceResponse{
+		ID:           fmt.Sprintf("%d", place.ID),
+		Name:         place.Name,
+		Address:      place.Address,
+		Description:  place.Description,
+		Image:        place.CoverImage,
+		Rating:       rating,
+		Distance:     0, // 需要根据用户位置计算
+		OpeningHours: place.OpeningHours,
+		Expanded:     true,
+		Type:         string(place.Category),
+		Location:     dto.Location{Lng: lng, Lat: lat},
+		Photos:       place.Photos,
+	}
+
+	return resp, nil
+}
+
+// applyDefaultPlaceData 为知名景点应用默认数据
+func (s *PlaceService) applyDefaultPlaceData(place *model.Place) {
+	// 定义一些知名景点的默认数据
+	defaultData := map[string]struct {
+		rating       float64
+		description  string
+		openingHours string
+	}{
+		"广州塔": {
+			rating:       4.5,
+			description:  "广州地标性建筑，中国第一高塔，可俯瞰珠江两岸美景",
+			openingHours: "09:30-22:30",
+		},
+		"东方明珠": {
+			rating:       4.6,
+			description:  "上海标志性建筑，集观光、餐饮、购物于一体",
+			openingHours: "08:00-21:30",
+		},
+		"外滩": {
+			rating:       4.7,
+			description:  "上海最著名的观光区，万国建筑博览群",
+			openingHours: "全天开放",
+		},
+		"天安门广场": {
+			rating:       4.8,
+			description:  "世界最大的城市广场，中国的象征",
+			openingHours: "05:00-22:00",
+		},
+		"故宫": {
+			rating:       4.8,
+			description:  "中国明清两代的皇家宫殿，世界文化遗产",
+			openingHours: "08:30-17:00",
+		},
+	}
+
+	if data, exists := defaultData[place.Name]; exists {
+		if place.Rating == nil || *place.Rating == 0 {
+			place.Rating = &data.rating
+		}
+		if place.Description == "" {
+			place.Description = data.description
+		}
+		if place.OpeningHours == "" {
+			place.OpeningHours = data.openingHours
+		}
+	}
+}
+
+// getNameVariants 生成地点名称的多个变体用于搜索
+func (s *PlaceService) getNameVariants(name string) []string {
+	variants := []string{name} // 原始名称
+
+	// 常见后缀映射
+	suffixMap := map[string][]string{
+		"广播电视塔": {"塔", ""},
+		"电视塔":   {"塔", ""},
+		"博物馆":   {""},
+		"纪念馆":   {""},
+		"公园":    {""},
+		"广场":    {""},
+		"大厦":    {"塔", ""},
+	}
+
+	// 尝试移除后缀
+	for suffix, replacements := range suffixMap {
+		if strings.HasSuffix(name, suffix) {
+			base := strings.TrimSuffix(name, suffix)
+			for _, repl := range replacements {
+				variants = append(variants, base+repl)
+			}
+		}
+	}
+
+	// 去重
+	seen := make(map[string]bool)
+	result := make([]string, 0)
+	for _, v := range variants {
+		if !seen[v] && v != "" {
+			seen[v] = true
+			result = append(result, v)
+		}
+	}
+
+	return result
 }

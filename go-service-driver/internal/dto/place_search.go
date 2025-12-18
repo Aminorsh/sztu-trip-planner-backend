@@ -24,14 +24,15 @@ type PlaceResponse struct {
 	Rating       float64 `json:"rating"`
 	Distance     float64 `json:"distance"`
 	OpeningHours string  `json:"openingHours"`
-	Added        bool    `json:"added"`
-	Expanded     bool    `json:"expanded"`
+	// Added        bool    `json:"added"`
+	Expanded bool `json:"expanded"`
 	// 保留额外信息供后续使用
-	Category   string   `json:"category,omitempty"`
-	Location   Location `json:"location,omitempty"`
-	Tel        string   `json:"tel,omitempty"`
-	PriceRange string   `json:"priceRange,omitempty"`
-	Photos     []string `json:"photos,omitempty"`
+	// Category   string   `json:"category,omitempty"`
+	Type     string   `json:"type,omitempty"`
+	Location Location `json:"location,omitempty"`
+	// Tel        string   `json:"tel,omitempty"`
+	// PriceRange string   `json:"priceRange,omitempty"`
+	Photos []string `json:"photos,omitempty"`
 }
 
 type PlaceSearchResponse struct {
@@ -63,4 +64,38 @@ type POI struct {
 	Photos   []struct {
 		URL string `json:"url"`
 	} `json:"photos"`
+	// 额外字段（当extensions=all时返回）
+	Biz_ext struct {
+		Rating string `json:"rating"` // 评分，可能为空
+		Cost   string `json:"cost"`   // 人均消费
+	} `json:"biz_ext"`
+	Opentime_desc string `json:"opentime_desc"` // 营业时间描述
+	Business_area string `json:"business_area"` // 商圈
+	Introduction  string `json:"introduction"`  // 简介
+}
+
+// AmapDetailResponse 高德POI详情API响应
+type AmapDetailResponse struct {
+	Status string `json:"status"`
+	Info   string `json:"info"`
+	Pois   []POI  `json:"pois"`
+}
+
+// WikipediaResponse Wikipedia API响应
+type WikipediaResponse struct {
+	Type         string `json:"type"`
+	Title        string `json:"title"`
+	DisplayTitle string `json:"displaytitle"`
+	Extract      string `json:"extract"` // 简介
+	Description  string `json:"description"`
+	Thumbnail    struct {
+		Source string `json:"source"`
+		Width  int    `json:"width"`
+		Height int    `json:"height"`
+	} `json:"thumbnail,omitempty"`
+	Originalimage struct {
+		Source string `json:"source"`
+		Width  int    `json:"width"`
+		Height int    `json:"height"`
+	} `json:"originalimage,omitempty"`
 }

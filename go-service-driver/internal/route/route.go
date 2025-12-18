@@ -81,6 +81,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			places := v2.Group("/places")
 			{
 				places.GET("/search", placeController.SearchPlaces)
+				places.GET("/:placeID/detail", placeController.GetPlaceDetail)
 			}
 
 			routes := v2.Group("/routes")

@@ -24,6 +24,7 @@ type UserRepository interface {
 
 type PlaceRepository interface {
 	Create(ctx context.Context, place *model.Place) error
+	FindByID(ctx context.Context, id uint) (*model.Place, error)
 	FindPlaceByPoiID(ctx context.Context, poiID string) (*model.Place, error)
 	// Update(ctx context.Context, place *model.Place) error
 	UpdateFields(ctx context.Context, placeID uint64, updates map[string]any) error
