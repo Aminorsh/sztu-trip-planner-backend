@@ -35,12 +35,12 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		config.GetAmapAPIKey(),
 		config.GetAmapAPIURL(),
 	)
-	tripService := service.NewTripService(db)
+	// tripService := service.NewTripService(db)
 
 	userController := controller.NewUserController(userService)
 	placeController := controller.NewPlaceController(placeService)
 	routeController := controller.NewRouteController(routeService)
-	tripController := controller.NewTripController(tripService)
+	// tripController := controller.NewTripController(tripService)
 
 	api := r.Group("/api")
 	{
@@ -80,7 +80,8 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 
 			places := v2.Group("/places")
 			{
-				places.POST("/search", placeController.SearchPlaces)
+				places.GET("/search", placeController.SearchPlaces)
+				places.GET("/:placeID/detail", placeController.GetPlaceDetail)
 			}
 
 			routes := v2.Group("/routes")
@@ -89,13 +90,15 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				routes.GET("/:id", routeController.GetRoute)
 				routes.GET("", routeController.GetTripRoutes)
 			}
+		}
 
-			trips := v2.Group("/trips")
-			{
-				trips.POST("", tripController.CreateTrip)
-				trips.GET("", tripController.ListTrips)
-				trips.DELETE("/:id", tripController.DeleteTrip)
-			}
+		v3 := api.Group("/v3")
+		v3.Use(middleware.AuthMiddleware())
+		{
+			// trips := v3.Group("/trips")
+			// {
+			// 	trips.POST("", tripController.CreateTrip)
+			// }
 		}
 	}
 

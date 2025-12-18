@@ -12,5 +12,6 @@ func AutoMigrate(db *gorm.DB) error {
 		&model.TripItem{},
 		&model.Place{},
 		&model.TripRoute{},
+		&model.AmapPoiCache{},
 	)
 }

@@ -50,4 +50,5 @@ const (
 	ErrAmapAPI       = "AMAP_API_ERROR"
 	ErrReadResponse  = "READ_RESPONSE_ERROR"
 	ErrParseResponse = "PARSE_RESPONSE_ERROR"
+	ErrPlaceNotFound = "PLACE_NOT_FOUND"
 )
