@@ -34,7 +34,7 @@ type TripDay struct {
 type TripItem struct {
 	ID       string     `json:"id"`
 	Name     string     `json:"name"`
-	Time     string     `json:"time"`
+	Time     string     `json:"time"` // 格式: "15:04" 或 RFC3339
 	EndTime  string     `json:"end_time,omitempty"`
 	Note     string     `json:"note,omitempty"`
 	Priority string     `json:"priority,omitempty"`
@@ -55,11 +55,11 @@ type AddTripItemRequest struct {
 
 // 更新行程项请求
 type UpdateTripItemRequest struct {
-	Name     string `json:"name"`
-	Time     string `json:"time"`
-	EndTime  string `json:"end_time"`
-	Note     string `json:"note"`
-	Priority string `json:"priority"`
+	Name     *string `json:"name"`
+	Time     *string `json:"time"`
+	EndTime  *string `json:"end_time"`
+	Note     *string `json:"note"`
+	Priority *string `json:"priority"`
 }
 
 // 添加天数请求

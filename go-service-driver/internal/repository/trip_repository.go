@@ -107,7 +107,7 @@ func (t *tripRepository) FindTripItemByID(ctx context.Context, itemID uint64) (*
 
 // UpdateTripItem 更新行程项
 func (t *tripRepository) UpdateTripItem(ctx context.Context, item *model.TripItem) error {
-	return t.db.WithContext(ctx).Save(item).Error
+	return t.db.WithContext(ctx).Omit("Place").Save(item).Error
 }
 
 // DeleteTripItem 删除行程项

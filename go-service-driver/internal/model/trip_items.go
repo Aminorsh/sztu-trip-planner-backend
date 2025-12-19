@@ -15,8 +15,8 @@ type TripItem struct {
 	DayNumber int `gorm:"not null;index:idx_trip_day"` // 第几天
 	Sequence  int `gorm:"not null"`                    // 当天第几个
 
-	StartTime string `gorm:"type:time"` // "09:00"
-	EndTime   string `gorm:"type:time"` // "11:00"
+	StartTime string `gorm:"type:TIME"` // "09:00"
+	EndTime   string `gorm:"type:TIME"` // "11:00"
 	Note      string `gorm:"type:text"`
 
 	ItemType string `gorm:"type:varchar(20)"` // scenic/restaurant/hotel

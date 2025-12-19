@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -142,7 +143,8 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 				PlaceID:   placeID,
 				DayNumber: day.Day,
 				Sequence:  i + 1,
-				StartTime: item.Time,
+				StartTime: extractTime(item.Time),
+				EndTime:   extractTime(item.EndTime),
 				Note:      item.Note,
 			}
 
@@ -215,8 +217,8 @@ func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber
 			PlaceID:   placeID,
 			DayNumber: dayNumber,
 			Sequence:  i + 1,
-			StartTime: item.Time,
-			EndTime:   item.EndTime,
+			StartTime: extractTime(item.Time),
+			EndTime:   extractTime(item.EndTime),
 			Note:      item.Note,
 		}
 
@@ -246,9 +248,30 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 	}
 
 	// 更新字段
-	item.StartTime = req.Time
-	item.EndTime = req.EndTime
-	item.Note = req.Note
+	if req.Name != nil {
+		placeID, err := s.getOrCreatePlaceID(ctx, dto.TripItem{
+			Name:   *req.Name,
+			Lnglat: [2]float64{},
+		})
+		if err != nil {
+			return err
+		}
+		item.PlaceID = placeID
+	}
+	if req.Time != nil {
+		item.StartTime = extractTime(*req.Time)
+	}
+	if req.EndTime != nil {
+		item.EndTime = extractTime(*req.EndTime)
+	}
+	if req.Note != nil {
+		item.Note = *req.Note
+	}
+	if req.Priority != nil {
+		// 优先级暂时不存储
+	}
+	log.Printf("req: %v", req)
+	log.Printf("updated item: %v", item)
 
 	return s.tripRepo.UpdateTripItem(ctx, item)
 }
@@ -312,8 +335,8 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 			PlaceID:   placeID,
 			DayNumber: dayNumber,
 			Sequence:  i + 1,
-			StartTime: item.Time,
-			EndTime:   item.EndTime,
+			StartTime: extractTime(item.Time),
+			EndTime:   extractTime(item.EndTime),
 			Note:      item.Note,
 		}
 
@@ -351,7 +374,8 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 		tripItem := dto.TripItem{
 			ID:       fmt.Sprintf("%d", item.ID),
 			Name:     item.Place.Name,
-			Time:     item.StartTime,
+			Time:     calculateDateTime(trip.StartDate, item.DayNumber, item.StartTime),
+			EndTime:  calculateDateTime(trip.StartDate, item.DayNumber, item.EndTime),
 			Note:     item.Note,
 			Priority: "medium", // 默认优先级
 			Lnglat:   [2]float64{lng, lat},
@@ -382,4 +406,64 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 		StartDate:   &trip.StartDate,
 		EndDate:     &trip.EndDate,
 	}
+}
+
+func extractTime(timeStr string) string {
+	if timeStr == "" {
+		return ""
+	}
+	// 尝试解析 RFC3339 格式 (e.g., "2025-12-18T09:00:00Z")
+	if t, err := time.Parse(time.RFC3339, timeStr); err == nil {
+		return t.Format("15:04:05")
+	}
+	// 尝试解析 "2006-01-02 15:04" 格式
+	if t, err := time.Parse("2006-01-02 15:04", timeStr); err == nil {
+		return t.Format("15:04:05")
+	}
+	// 尝试解析 "2006-01-02 15:04:05" 格式
+	if t, err := time.Parse("2006-01-02 15:04:05", timeStr); err == nil {
+		return t.Format("15:04:05")
+	}
+	// 尝试解析 "15:04" 格式
+	if t, err := time.Parse("15:04", timeStr); err == nil {
+		return t.Format("15:04:05")
+	}
+	return timeStr
+}
+
+func calculateDateTime(startDate time.Time, dayNumber int, timeStr string) string {
+	if timeStr == "" {
+		return ""
+	}
+	if startDate.IsZero() {
+		return timeStr
+	}
+
+	// 解析时间部分
+	t, err := time.Parse("15:04:05", timeStr)
+	if err != nil {
+		t, err = time.Parse("15:04", timeStr)
+		if err != nil {
+			// 尝试解析完整日期时间，以防万一
+			if fullT, err := time.Parse(time.RFC3339, timeStr); err == nil {
+				t = fullT
+			} else if fullT, err := time.Parse("2006-01-02 15:04:05", timeStr); err == nil {
+				t = fullT
+			} else {
+				return timeStr
+			}
+		}
+	}
+
+	// 计算日期: StartDate + (DayNumber - 1)
+	date := startDate.AddDate(0, 0, dayNumber-1)
+
+	// 组合日期和时间
+	fullDateTime := time.Date(
+		date.Year(), date.Month(), date.Day(),
+		t.Hour(), t.Minute(), t.Second(), 0,
+		startDate.Location(),
+	)
+
+	return fullDateTime.Format(time.RFC3339)
 }
