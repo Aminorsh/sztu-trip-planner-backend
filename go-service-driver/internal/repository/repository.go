@@ -59,4 +59,5 @@ type TripRepository interface {
 	UpdateTripItem(ctx context.Context, item *model.TripItem) error
 	DeleteTripItem(ctx context.Context, itemID uint64) error
 	DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error
+	// DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error
 }

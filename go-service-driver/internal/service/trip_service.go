@@ -313,6 +313,7 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 			DayNumber: dayNumber,
 			Sequence:  i + 1,
 			StartTime: item.Time,
+			EndTime:   item.EndTime,
 			Note:      item.Note,
 		}
 
@@ -361,37 +362,13 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 	// 转换为有序的天数数组
 	days := make([]dto.TripDay, 0)
-
-	// 找到最大的天数
-	maxDay := 0
-	for dayNum := range dayMap {
-		if dayNum > maxDay {
-			maxDay = dayNum
+	for dayNum := 1; dayNum <= len(dayMap); dayNum++ {
+		if items, ok := dayMap[dayNum]; ok {
+			days = append(days, dto.TripDay{
+				Day:   dayNum,
+				Items: items,
+			})
 		}
-	}
-
-	// 如果有开始和结束日期，确保包含这些天数
-	if !trip.StartDate.IsZero() && !trip.EndDate.IsZero() {
-		// 计算日期差（包含结束日期）
-		// 使用 Round 确保跨天计算准确，加 1 是因为是闭区间
-		daysDiff := int(trip.EndDate.Sub(trip.StartDate).Hours()/24) + 1
-		if daysDiff > maxDay {
-			maxDay = daysDiff
-		}
-	}
-
-	// fmt.Printf("DEBUG: TripID=%d Start=%v End=%v Items=%d MaxDay=%d\n", trip.ID, trip.StartDate, trip.EndDate, len(trip.Items), maxDay)
-
-	// 包含所有天数（包括空的）
-	for dayNum := 1; dayNum <= maxDay; dayNum++ {
-		items := dayMap[dayNum]
-		if items == nil {
-			items = []dto.TripItem{} // 空数组而不是nil
-		}
-		days = append(days, dto.TripDay{
-			Day:   dayNum,
-			Items: items,
-		})
 	}
 
 	return &dto.TripResponse{

@@ -121,3 +121,10 @@ func (t *tripRepository) DeleteTripItemsByDay(ctx context.Context, tripID uint64
 		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
 		Delete(&model.TripItem{}).Error
 }
+
+// // DeleteTripDay 删除指定某天
+// func (t *tripRepository) DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error {
+// 	return t.db.WithContext(ctx).
+// 		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
+// 		Delete(&model.TripItem{}).Error
+// }
