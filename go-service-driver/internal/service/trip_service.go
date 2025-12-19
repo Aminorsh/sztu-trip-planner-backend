@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -248,30 +247,9 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 	}
 
 	// 更新字段
-	if req.Name != nil {
-		placeID, err := s.getOrCreatePlaceID(ctx, dto.TripItem{
-			Name:   *req.Name,
-			Lnglat: [2]float64{},
-		})
-		if err != nil {
-			return err
-		}
-		item.PlaceID = placeID
-	}
-	if req.Time != nil {
-		item.StartTime = extractTime(*req.Time)
-	}
-	if req.EndTime != nil {
-		item.EndTime = extractTime(*req.EndTime)
-	}
-	if req.Note != nil {
-		item.Note = *req.Note
-	}
-	if req.Priority != nil {
-		// 优先级暂时不存储
-	}
-	log.Printf("req: %v", req)
-	log.Printf("updated item: %v", item)
+	item.StartTime = req.Time
+	item.EndTime = req.EndTime
+	item.Note = req.Note
 
 	return s.tripRepo.UpdateTripItem(ctx, item)
 }

@@ -55,11 +55,11 @@ type AddTripItemRequest struct {
 
 // 更新行程项请求
 type UpdateTripItemRequest struct {
-	Name     *string `json:"name"`
-	Time     *string `json:"time"`
-	EndTime  *string `json:"end_time"`
-	Note     *string `json:"note"`
-	Priority *string `json:"priority"`
+	Name     string `json:"name"`
+	Time     string `json:"time"`
+	EndTime  string `json:"end_time"`
+	Note     string `json:"note"`
+	Priority string `json:"priority"`
 }
 
 // 添加天数请求
