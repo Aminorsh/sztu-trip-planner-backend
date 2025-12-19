@@ -411,14 +411,14 @@ func (s *PlaceService) mapAmapTypeToCategory(amapType string) model.PlaceCategor
 	return model.PlaceCategoryOther
 }
 
-func (s *PlaceService) mapCategoryToAmapType(category string) string {
-	mapping := map[string]string{
-		"restaurant": "050000",
-		"hotel":      "100000",
-		"scenic":     "110000",
-	}
-	return mapping[category]
-}
+// func (s *PlaceService) mapCategoryToAmapType(category string) string {
+// 	mapping := map[string]string{
+// 		"restaurant": "050000",
+// 		"hotel":      "100000",
+// 		"scenic":     "110000",
+// 	}
+// 	return mapping[category]
+// }
 
 func (s *PlaceService) buildCacheKey(keyword string) string {
 	hash := md5.Sum([]byte(keyword))

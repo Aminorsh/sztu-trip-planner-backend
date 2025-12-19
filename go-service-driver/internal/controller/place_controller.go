@@ -41,7 +41,7 @@ func (pc *PlaceController) SearchPlaces(ctx *gin.Context) {
 }
 
 func (pc *PlaceController) GetPlaceDetail(ctx *gin.Context) {
-	placeID := ctx.Param("placeID")
+	placeID := ctx.Param("placeId")
 	if placeID == "" {
 		middleware.HandleError(ctx, errors.NewInvalidRequestError("place ID is required"))
 		return

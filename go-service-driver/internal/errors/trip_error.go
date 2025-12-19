@@ -25,3 +25,11 @@ func NewInvalidTripDataError() *AppError {
 		Status:  http.StatusBadRequest,
 	}
 }
+
+func NewTripItemNotFoundError() *AppError {
+	return &AppError{
+		Code:    ErrTripItemNotFound,
+		Message: "Trip item not found",
+		Status:  http.StatusNotFound,
+	}
+}

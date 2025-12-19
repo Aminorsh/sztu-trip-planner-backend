@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/model"
 	"gorm.io/gorm"
@@ -25,6 +24,10 @@ func (t *tripRepository) Create(ctx context.Context, trip *model.Trip) error {
 func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trip, error) {
 	var trip model.Trip
 	err := t.db.WithContext(ctx).
+		Preload("Items", func(db *gorm.DB) *gorm.DB {
+			return db.Order("day_number ASC, sequence ASC")
+		}).
+		Preload("Items.Place"). // 预加载行程项和关联的地点
 		Where("id = ?  AND deleted_at IS NULL", id).
 		First(&trip).Error
 
@@ -44,8 +47,8 @@ func (t *tripRepository) FindByUserID(ctx context.Context, userID int, search st
 		Where("user_id = ? AND deleted_at IS NULL", userID)
 
 	if search != "" {
-		query = query.Where("title LIKE ? OR description LIKE ?  OR destination_city LIKE ?",
-			"%"+search+"%", "%"+search+"%", "%"+search+"%")
+		query = query.Where("title LIKE ? OR description LIKE ?",
+			"%"+search+"%", "%"+search+"%")
 	}
 
 	err := query.Order("created_at DESC").Find(&trips).Error
@@ -61,11 +64,9 @@ func (t *tripRepository) Update(ctx context.Context, trip *model.Trip) error {
 
 // SoftDelete 软删除行程
 func (t *tripRepository) SoftDelete(ctx context.Context, id int, userID int) error {
-	now := time.Now()
 	return t.db.WithContext(ctx).
-		Model(&model.Trip{}).
 		Where("id = ? AND user_id = ? ", id, userID).
-		Update("deleted_at", now).Error
+		Delete(&model.Trip{}).Error
 }
 
 // UpdateStats 更新行程的距离和时长统计
@@ -78,3 +79,52 @@ func (t *tripRepository) UpdateStats(ctx context.Context, tripID uint64, totalDi
 			"estimated_duration": totalDuration,
 		}).Error
 }
+
+// UpdateFields 更新行程的指定字段
+func (t *tripRepository) UpdateFields(ctx context.Context, tripID uint64, updates map[string]any) error {
+	return t.db.WithContext(ctx).
+		Model(&model.Trip{}).
+		Where("id = ?", tripID).
+		Updates(updates).Error
+}
+
+// CreateTripItem 创建行程项
+func (t *tripRepository) CreateTripItem(ctx context.Context, item *model.TripItem) error {
+	return t.db.WithContext(ctx).Create(item).Error
+}
+
+// FindTripItemByID 根据ID查找行程项
+func (t *tripRepository) FindTripItemByID(ctx context.Context, itemID uint64) (*model.TripItem, error) {
+	var item model.TripItem
+	if err := t.db.WithContext(ctx).Preload("Place").First(&item, itemID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &item, nil
+}
+
+// UpdateTripItem 更新行程项
+func (t *tripRepository) UpdateTripItem(ctx context.Context, item *model.TripItem) error {
+	return t.db.WithContext(ctx).Save(item).Error
+}
+
+// DeleteTripItem 删除行程项
+func (t *tripRepository) DeleteTripItem(ctx context.Context, itemID uint64) error {
+	return t.db.WithContext(ctx).Delete(&model.TripItem{}, itemID).Error
+}
+
+// DeleteTripItemsByDay 删除指定天数的所有行程项
+func (t *tripRepository) DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error {
+	return t.db.WithContext(ctx).
+		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
+		Delete(&model.TripItem{}).Error
+}
+
+// // DeleteTripDay 删除指定某天
+// func (t *tripRepository) DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error {
+// 	return t.db.WithContext(ctx).
+// 		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
+// 		Delete(&model.TripItem{}).Error
+// }

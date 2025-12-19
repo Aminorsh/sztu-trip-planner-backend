@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Trip struct {
 	ID          uint64    `gorm:"primaryKey"`
@@ -16,7 +20,7 @@ type Trip struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt *time.Time `gorm:"index"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	TotalDistance     float64 `gorm:"-"` // 非数据库字段，行程总距离，单位公里
 	EstimatedDuration int     `gorm:"-"` // 非数据库字段，行程总时长，单位分钟

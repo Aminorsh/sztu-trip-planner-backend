@@ -35,12 +35,15 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		config.GetAmapAPIKey(),
 		config.GetAmapAPIURL(),
 	)
-	// tripService := service.NewTripService(db)
+	tripService := service.NewTripService(
+		tripRepo,
+		placeRepo,
+	)
 
 	userController := controller.NewUserController(userService)
 	placeController := controller.NewPlaceController(placeService)
 	routeController := controller.NewRouteController(routeService)
-	// tripController := controller.NewTripController(tripService)
+	tripController := controller.NewTripController(tripService)
 
 	api := r.Group("/api")
 	{
@@ -81,7 +84,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			places := v2.Group("/places")
 			{
 				places.GET("/search", placeController.SearchPlaces)
-				places.GET("/:placeID/detail", placeController.GetPlaceDetail)
+				places.GET("/:placeId/detail", placeController.GetPlaceDetail)
 			}
 
 			routes := v2.Group("/routes")
@@ -95,10 +98,25 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		v3 := api.Group("/v3")
 		v3.Use(middleware.AuthMiddleware())
 		{
-			// trips := v3.Group("/trips")
-			// {
-			// 	trips.POST("", tripController.CreateTrip)
-			// }
+			v3.GET("/health", func(ctx *gin.Context) {
+				ctx.JSON(200, gin.H{
+					"status": "ok",
+				})
+			})
+
+			trips := v3.Group("/trips")
+			{
+				trips.POST("", tripController.CreateTrip)           // 创建行程（新增）
+				trips.GET("", tripController.GetTrips)              // 获取行程列表（新增）
+				trips.DELETE("/:tripId", tripController.DeleteTrip) // 删除行程（新增）
+				trips.GET("/:tripId", tripController.GetTrip)
+				trips.PUT("/:tripId", tripController.UpdateTrip)
+				trips.POST("/:tripId/days/:dayId/items", tripController.AddTripItems)
+				trips.DELETE("/:tripId/days/:dayId/items/:itemId", tripController.DeleteTripItem)
+				trips.PUT("/:tripId/days/:dayId/items/:itemId", tripController.UpdateTripItem)
+				trips.POST("/:tripId/days", tripController.AddTripDay)
+				trips.DELETE("/:tripId/days/:dayId", tripController.DeleteTripDay)
+			}
 		}
 	}
 
