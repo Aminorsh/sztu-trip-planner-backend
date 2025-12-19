@@ -35,6 +35,7 @@ type TripItem struct {
 	ID       string     `json:"id"`
 	Name     string     `json:"name"`
 	Time     string     `json:"time"`
+	EndTime  string     `json:"end_time,omitempty"`
 	Note     string     `json:"note,omitempty"`
 	Priority string     `json:"priority,omitempty"`
 	Lnglat   [2]float64 `json:"lnglat,omitempty"`
@@ -56,6 +57,7 @@ type AddTripItemRequest struct {
 type UpdateTripItemRequest struct {
 	Name     string `json:"name"`
 	Time     string `json:"time"`
+	EndTime  string `json:"end_time"`
 	Note     string `json:"note"`
 	Priority string `json:"priority"`
 }

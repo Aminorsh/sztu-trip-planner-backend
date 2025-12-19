@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/errors"
@@ -131,7 +132,10 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 
 		// 创建新的行程项
 		for i, item := range day.Items {
-			placeID, _ := strconv.ParseUint(item.ID, 10, 64)
+			placeID, err := s.getOrCreatePlaceID(ctx, item)
+			if err != nil {
+				return err
+			}
 
 			tripItem := &model.TripItem{
 				TripID:    id,
@@ -151,6 +155,39 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 	return nil
 }
 
+func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem) (uint64, error) {
+	if item.ID != "" {
+		id, err := strconv.ParseUint(item.ID, 10, 64)
+		if err == nil && id > 0 {
+			return id, nil
+		}
+	}
+
+	// Create new place
+	if item.Name == "" {
+		return 0, errors.NewInvalidRequestError("place name is required")
+	}
+
+	lng := item.Lnglat[0]
+	lat := item.Lnglat[1]
+
+	newPlace := &model.Place{
+		Name:       item.Name,
+		Category:   model.PlaceCategoryOther,
+		Address:    "自定义地点",
+		Longitude:  &lng,
+		Latitude:   &lat,
+		DataSource: model.DataSourceUserCreated,
+		AmapPoiID:  fmt.Sprintf("custom_%d", time.Now().UnixNano()),
+	}
+
+	if err := s.placeRepo.Create(ctx, newPlace); err != nil {
+		return 0, err
+	}
+
+	return newPlace.ID, nil
+}
+
 // AddTripItems 添加行程项
 func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber int, req *dto.AddTripItemRequest) ([]string, error) {
 	id, err := strconv.ParseUint(tripID, 10, 64)
@@ -168,7 +205,10 @@ func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber
 
 	itemIDs := make([]string, 0, len(req.Items))
 	for i, item := range req.Items {
-		placeID, _ := strconv.ParseUint(item.ID, 10, 64)
+		placeID, err := s.getOrCreatePlaceID(ctx, item)
+		if err != nil {
+			return nil, err
+		}
 
 		tripItem := &model.TripItem{
 			TripID:    id,
@@ -176,6 +216,7 @@ func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber
 			DayNumber: dayNumber,
 			Sequence:  i + 1,
 			StartTime: item.Time,
+			EndTime:   item.EndTime,
 			Note:      item.Note,
 		}
 
@@ -206,6 +247,7 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 
 	// 更新字段
 	item.StartTime = req.Time
+	item.EndTime = req.EndTime
 	item.Note = req.Note
 
 	return s.tripRepo.UpdateTripItem(ctx, item)
@@ -260,7 +302,10 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 
 	// 创建行程项
 	for i, item := range req.Items {
-		placeID, _ := strconv.ParseUint(item.ID, 10, 64)
+		placeID, err := s.getOrCreatePlaceID(ctx, item)
+		if err != nil {
+			return 0, err
+		}
 
 		tripItem := &model.TripItem{
 			TripID:    id,
@@ -334,6 +379,8 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 			maxDay = daysDiff
 		}
 	}
+
+	// fmt.Printf("DEBUG: TripID=%d Start=%v End=%v Items=%d MaxDay=%d\n", trip.ID, trip.StartDate, trip.EndDate, len(trip.Items), maxDay)
 
 	// 包含所有天数（包括空的）
 	for dayNum := 1; dayNum <= maxDay; dayNum++ {
