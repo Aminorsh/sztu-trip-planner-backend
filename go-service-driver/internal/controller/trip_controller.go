@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"bytes"
+	"io"
+	"log"
 	"strconv"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
@@ -140,6 +143,13 @@ func (c *TripController) UpdateTripItem(ctx *gin.Context) {
 	tripID := ctx.Param("tripId")
 	dayID := ctx.Param("dayId")
 	itemID := ctx.Param("itemId")
+
+	// Read body for debugging
+	bodyBytes, _ := io.ReadAll(ctx.Request.Body)
+	// Restore body
+	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	log.Printf("DEBUG: UpdateTripItem raw body: %s", string(bodyBytes))
 
 	var req dto.UpdateTripItemRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
