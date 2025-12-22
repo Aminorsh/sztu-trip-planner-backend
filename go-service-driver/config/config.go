@@ -88,3 +88,11 @@ func GetAmapAPIURL() string {
 func IsTestMode() bool {
 	return os.Getenv("TEST_MODE") == "true"
 }
+
+func GetDeepseekAPIKey() string {
+	return os.Getenv("DEEPSEEK_API_KEY")
+}
+
+func GetDeepseekAPIURL() string {
+	return os.Getenv("DEEPSEEK_API_URL")
+}
