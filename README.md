@@ -17,8 +17,6 @@ git clone https://github.com/Aminorsh/sztu-trip-planner-backend.git
 cd sztu-trip-planner-backend
 ```
 
-进入`go-service-driver`目录：
-
 ```bash
 mv .env.example .env
 ```
@@ -27,9 +25,14 @@ mv .env.example .env
 使用 Docker Compose 启动服务：
 
 ```bash
-docker compose up -d
+docker compose up -d --build backend
 ```
 服务启动后，API 将在 `http://localhost:8080` 可用。
+
+旧版本需要清除旧容器：
+```bash
+docker stop trip-backend trip-mysql trip-redis && docker rm trip-backend trip-mysql trip-redis
+```
 
 ## 📚 API 文档
 
