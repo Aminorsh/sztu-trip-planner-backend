@@ -26,6 +26,7 @@ const (
 	ErrRateLimitExceeded = "RATE_LIMIT_EXCEEDED"
 	ErrDatabaseError     = "DATABASE_ERROR"
 	ErrRedisError        = "REDIS_ERROR"
+	ErrParseResponse     = "PARSE_RESPONSE_ERROR"
 
 	// User Errors
 	ErrUserNotFound       = "USER_NOT_FOUND"
@@ -50,6 +51,14 @@ const (
 	ErrAmapConfig    = "AMAP_CONFIG_ERROR"
 	ErrAmapAPI       = "AMAP_API_ERROR"
 	ErrReadResponse  = "READ_RESPONSE_ERROR"
-	ErrParseResponse = "PARSE_RESPONSE_ERROR"
 	ErrPlaceNotFound = "PLACE_NOT_FOUND"
+
+	// Assistant Errors
+	ErrAssistantConfig     = "ASSISTANT_CONFIG_ERROR"
+	ErrSerialization       = "ASSISTANT_SERIALIZATION_ERROR"
+	ErrDeepseekAPI         = "DEEPSEEK_API_ERROR"
+	ErrAuthenticationFails = "AUTHENTICATION_FAILS"
+	ErrInsufficientBalance = "INSUFFICIENT_BALANCE"
+	ErrInvalidParameters   = "INVALID_PARAMETERS"
+	ErrServerOverloaded    = "SERVER_OVERLOADED"
 )

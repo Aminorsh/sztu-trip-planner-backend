@@ -6,9 +6,9 @@ type AssistantMessage struct {
 }
 
 type AssistantChatRequest struct {
-	Model    string             `json:"model" binding:"required"`
-	Messages []AssistantMessage `json:"messages" binding:"required"`
-	Stream   bool               `json:"stream"`
+	Model    string `json:"model" binding:"required"`
+	Messages string `json:"messages" binding:"required"`
+	Stream   bool   `json:"stream"`
 }
 
 type AssistantChatResponse struct {

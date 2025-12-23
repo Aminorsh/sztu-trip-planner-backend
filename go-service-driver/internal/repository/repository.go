@@ -63,6 +63,6 @@ type TripRepository interface {
 }
 
 type AssistantRepository interface {
-	GetSummary(ctx context.Context, userID string) (string, error)
-	SetSummary(ctx context.Context, userID string, summary string) error
+	GetSummary(ctx context.Context, userID uint64) (string, error)
+	SetSummary(ctx context.Context, userID uint64, summary string) error
 }
