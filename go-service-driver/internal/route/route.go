@@ -20,6 +20,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	amapCacheRepo := repository.NewAmapPoiCacheRepository(db)
 	routeRepo := repository.NewRouteRepository(db)
 	tripRepo := repository.NewTripRepository(db)
+	assistantRepo := repository.NewAssistantRepository(database.RedisClient)
 
 	userService := service.NewUserService(userRepo)
 	placeService := service.NewPlaceService(
@@ -39,11 +40,17 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 		tripRepo,
 		placeRepo,
 	)
+	assistantService := service.NewAssistantService(
+		assistantRepo,
+		config.GetDeepseekAPIKey(),
+		config.GetDeepseekAPIURL(),
+	)
 
 	userController := controller.NewUserController(userService)
 	placeController := controller.NewPlaceController(placeService)
 	routeController := controller.NewRouteController(routeService)
 	tripController := controller.NewTripController(tripService)
+	assistantController := controller.NewAssistantController(assistantService)
 
 	api := r.Group("/api")
 	{
@@ -116,6 +123,11 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				trips.PUT("/:tripId/days/:dayId/items/:itemId", tripController.UpdateTripItem)
 				trips.POST("/:tripId/days", tripController.AddTripDay)
 				trips.DELETE("/:tripId/days/:dayId", tripController.DeleteTripDay)
+			}
+
+			assistants := v3.Group("/assistants")
+			{
+				assistants.POST("/chat", assistantController.Chat)
 			}
 		}
 	}

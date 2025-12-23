@@ -44,3 +44,12 @@ func NewRedisError(err error) *AppError {
 		Internal: err,
 	}
 }
+
+func NewParseResponseError(err error) *AppError {
+	return &AppError{
+		Code:     ErrParseResponse,
+		Message:  "Failed to parse response",
+		Status:   http.StatusInternalServerError,
+		Internal: err,
+	}
+}

@@ -68,11 +68,11 @@ type Path struct {
 }
 
 type Step struct {
-	Instruction      string      `json:"instruction"`
-	Road             string      `json:"road"`
-	Distance         string      `json:"distance"`
-	Duration         string      `json:"duration"`
-	Polyline         string      `json:"polyline"`
-	Action           interface{} `json:"action"`           // Can be string or array
-	Assistant_action interface{} `json:"assistant_action"` // Can be string or array
+	Instruction      string `json:"instruction"`
+	Road             string `json:"road"`
+	Distance         string `json:"distance"`
+	Duration         string `json:"duration"`
+	Polyline         string `json:"polyline"`
+	Action           any    `json:"action"`           // Can be string or array
+	Assistant_action any    `json:"assistant_action"` // Can be string or array
 }

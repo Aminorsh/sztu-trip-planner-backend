@@ -61,3 +61,8 @@ type TripRepository interface {
 	DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error
 	// DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error
 }
+
+type AssistantRepository interface {
+	GetSummary(ctx context.Context, userID uint64) (string, error)
+	SetSummary(ctx context.Context, userID uint64, summary string) error
+}

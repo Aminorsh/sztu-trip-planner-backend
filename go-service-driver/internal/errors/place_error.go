@@ -36,15 +36,6 @@ func NewReadResponseError(err error) *AppError {
 	}
 }
 
-func NewParseResponseError(err error) *AppError {
-	return &AppError{
-		Code:     ErrParseResponse,
-		Message:  "Failed to parse response from AMAP API",
-		Status:   http.StatusInternalServerError,
-		Internal: err,
-	}
-}
-
 func NewPlaceNotFoundError() *AppError {
 	return &AppError{
 		Code:    ErrPlaceNotFound,
