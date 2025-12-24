@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/errors"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/model"
@@ -143,11 +144,11 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP API error: %s", amapResp.Info))
 	}
 
-	// // 调试：打印第一个POI的详细信息
-	// if len(amapResp.Pois) > 0 {
-	// 	firstPOI, _ := json.MarshalIndent(amapResp.Pois[0], "", "  ")
-	// 	fmt.Printf("First POI from Amap API:\n%s\n", string(firstPOI))
-	// }
+	// 调试：打印第一个POI的详细信息
+	if config.IsTestMode() && len(amapResp.Pois) > 0 {
+		firstPOI, _ := json.MarshalIndent(amapResp.Pois[0], "", "  ")
+		fmt.Printf("First POI from Amap API:\n%s\n", string(firstPOI))
+	}
 
 	return &amapResp, nil
 }
