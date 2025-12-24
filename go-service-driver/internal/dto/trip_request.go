@@ -15,15 +15,16 @@ type CreateTripRequest struct {
 }
 
 type TripResponse struct {
-	ID          string     `json:"id"`
-	Title       string     `json:"title"`
-	Status      string     `json:"status"`
-	Days        []TripDay  `json:"days"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	LastSaved   time.Time  `json:"lastSaved"`
-	Description string     `json:"description,omitempty"`
-	StartDate   *time.Time `json:"startDate,omitempty"`
-	EndDate     *time.Time `json:"endDate,omitempty"`
+	ID            string     `json:"id"`
+	Title         string     `json:"title"`
+	Status        string     `json:"status"`
+	CoverImageURL string     `json:"cover_image_url,omitempty"`
+	Days          []TripDay  `json:"days"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	LastSaved     time.Time  `json:"lastSaved"`
+	Description   string     `json:"description,omitempty"`
+	StartDate     *time.Time `json:"startDate,omitempty"`
+	EndDate       *time.Time `json:"endDate,omitempty"`
 }
 
 type TripDay struct {
@@ -71,4 +72,8 @@ type AddTripDayRequest struct {
 type TripListResponse struct {
 	Total int            `json:"total"`
 	Data  []TripResponse `json:"data"`
+}
+
+type UpdateTripCoverImageRequest struct {
+	CoverImageURL string `json:"cover_image_url" binding:"required"`
 }

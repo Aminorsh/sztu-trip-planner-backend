@@ -11,8 +11,8 @@ type tripRepository struct {
 	db *gorm.DB
 }
 
-// UploadCoverImage implements TripRepository.
-func (t *tripRepository) UploadCoverImage(ctx context.Context, tripID uint64, coverImagePath string) error {
+// UpdateCoverImage implements TripRepository.
+func (t *tripRepository) UpdateCoverImage(ctx context.Context, tripID uint64, coverImagePath string) error {
 	return t.db.WithContext(ctx).
 		Model(&model.Trip{}).
 		Where("id = ?", tripID).
