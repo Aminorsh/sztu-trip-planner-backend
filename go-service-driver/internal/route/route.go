@@ -14,6 +14,7 @@ import (
 func InitRoute(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.CORS())
+	r.Static("/static/avatars", "./uploads/avatars")
 
 	userRepo := repository.NewUserRepository(db)
 	placeRepo := repository.NewPlaceRepository(db)
@@ -87,6 +88,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				users.PUT("/profile", userController.UpdateUserProfile)
 				users.PUT("/change-password", userController.ChangePassword)
 				users.DELETE("/delete-account", userController.DeleteAccount)
+				users.POST("/upload-avatar", userController.UploadAvatar)
 			}
 
 			places := v2.Group("/places")

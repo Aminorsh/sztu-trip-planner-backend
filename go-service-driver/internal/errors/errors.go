@@ -27,6 +27,7 @@ const (
 	ErrDatabaseError     = "DATABASE_ERROR"
 	ErrRedisError        = "REDIS_ERROR"
 	ErrParseResponse     = "PARSE_RESPONSE_ERROR"
+	ErrInvalidFileType   = "INVALID_FILE_TYPE"
 
 	// User Errors
 	ErrUserNotFound       = "USER_NOT_FOUND"

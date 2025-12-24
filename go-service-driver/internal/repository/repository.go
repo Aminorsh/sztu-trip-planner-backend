@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindByUsername(ctx context.Context, username string) (*model.User, error)
 	FindByEmailOrUsername(ctx context.Context, email, username string) (*model.User, error)
 	Update(ctx context.Context, user *model.User) error
+	UpdateAvatarURL(ctx context.Context, userID uint, avatarURL string) error
 	UpdatePassword(ctx context.Context, userID uint, newPasswordHash string) error
 	UpdateStatus(ctx context.Context, userID uint, status string) error
 	UpdateLastLogin(ctx context.Context, userID uint) error

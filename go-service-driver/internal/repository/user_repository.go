@@ -14,6 +14,21 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+// UpdateAvatarURL implements UserRepository.
+func (r *userRepository) UpdateAvatarURL(ctx context.Context, userID uint, avatarURL string) error {
+	result := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Where("id = ? AND deleted_at IS NULL AND status = ?", userID, "active").
+		Update("avatar_url", avatarURL)
+	if result.Error != nil {
+		return apperrors.NewDatabaseError(result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return apperrors.NewUserNotFoundError()
+	}
+	return nil
+}
+
 // Create implements UserRepository.
 // If a user with the same email/username exists but is soft-deleted, it will be restored and updated.
 func (r *userRepository) Create(ctx context.Context, user *model.User) error {

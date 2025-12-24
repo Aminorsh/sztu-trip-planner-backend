@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"mime/multipart"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/config"
@@ -272,17 +275,27 @@ func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPa
 	return nil
 }
 
-func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (*model.User, error) {
+func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (dto.UserProfileResponse, error) {
 	// Find user by ID using repository
 	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	// Zero out password hash before returning
 	user.PasswordHash = ""
 
-	return user, nil
+	return dto.UserProfileResponse{
+		ID:          int(user.ID),
+		Username:    user.Username,
+		Email:       user.Email,
+		DisplayName: user.DisplayName,
+		AvatarURL:   user.AvatarURL,
+		Bio:         user.Bio,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLogin:   "",
+	}, nil
 }
 
 func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (*model.User, error) {
@@ -300,8 +313,11 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req 
 	if req.DisplayName != nil {
 		user.DisplayName = *req.DisplayName
 	}
-	if req.AvatarURL != nil {
-		user.AvatarURL = *req.AvatarURL
+	// if req.AvatarURL != nil {
+	// 	user.AvatarURL = *req.AvatarURL
+	// }
+	if req.Bio != nil {
+		user.Bio = *req.Bio
 	}
 
 	user.UpdatedAt = time.Now()
@@ -368,4 +384,26 @@ func (s *UserService) DeleteAccount(ctx context.Context, userID uint64, req dto.
 	}
 
 	return nil
+}
+
+func (s *UserService) UploadAvatar(ctx context.Context, userID uint64, file *multipart.FileHeader) (string, error) {
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+		return "", apperrors.NewInvalidFileTypeError("avatar")
+	}
+
+	avatarPath := fmt.Sprintf("uploads/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
+
+	// Save file to disk
+	if err := utils.SaveUploadedFile(file, avatarPath); err != nil {
+		return "", apperrors.NewInternalServerError(err)
+	}
+
+	// Update user's avatar URL using repository
+	avatarURL := fmt.Sprintf("/%s", avatarPath) // Assuming static file server serves from root
+	if err := s.userRepo.UpdateAvatarURL(ctx, uint(userID), avatarURL); err != nil {
+		return "", err
+	}
+
+	return avatarURL, nil
 }

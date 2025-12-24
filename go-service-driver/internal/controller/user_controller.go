@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/database"
@@ -33,22 +32,21 @@ func (uc *UserController) SendVerificationCode(c *gin.Context) {
 	}
 
 	// Rate limiting: allow one request per minute per email
-	ctx := context.Background()
 	rateKey := "verify:limit:" + req.Email
 
-	exists, _ := database.RedisClient.Exists(ctx, rateKey).Result()
+	exists, _ := database.RedisClient.Exists(c, rateKey).Result()
 	if exists > 0 {
 		middleware.HandleError(c, errors.NewRateLimitExceededError())
 		return
 	}
 
-	if err := uc.userService.SendVerificationCode(ctx, req.Email); err != nil {
+	if err := uc.userService.SendVerificationCode(c, req.Email); err != nil {
 		middleware.HandleError(c, errors.NewInternalServerError(err))
 		return
 	}
 
 	// Set rate limit key with 1 minute expiration
-	_ = database.RedisClient.Set(ctx, rateKey, "1", 1*time.Minute).Err()
+	_ = database.RedisClient.Set(c, rateKey, "1", 1*time.Minute).Err()
 
 	response.SuccessWithMessage(c, nil, "Verification code sent")
 }
@@ -61,8 +59,7 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	user, err := uc.userService.RegisterUser(ctx, req)
+	user, err := uc.userService.RegisterUser(c, req)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
@@ -94,8 +91,7 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	user, err := uc.userService.LoginUser(ctx, req)
+	user, err := uc.userService.LoginUser(c, req)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
@@ -112,8 +108,7 @@ func (uc *UserController) LoginUserByEmail(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	user, err := uc.userService.LoginUserByEmail(ctx, req)
+	user, err := uc.userService.LoginUserByEmail(c, req)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
@@ -130,8 +125,7 @@ func (uc *UserController) SendForgetPasswordCode(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	if err := uc.userService.SendForgetPasswordCode(ctx, req.Email); err != nil {
+	if err := uc.userService.SendForgetPasswordCode(c, req.Email); err != nil {
 		middleware.HandleError(c, err)
 		return
 	}
@@ -147,8 +141,7 @@ func (uc *UserController) SendForgetPasswordCodeByUsername(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	if err := uc.userService.SendForgetPasswordCodeByUsername(ctx, req.Username); err != nil {
+	if err := uc.userService.SendForgetPasswordCodeByUsername(c, req.Username); err != nil {
 		middleware.HandleError(c, err)
 		return
 	}
@@ -164,8 +157,7 @@ func (uc *UserController) VerifyForgetPassword(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	if err := uc.userService.VerifyForgetPassword(ctx, req); err != nil {
+	if err := uc.userService.VerifyForgetPassword(c, req); err != nil {
 		middleware.HandleError(c, err)
 		return
 	}
@@ -177,8 +169,7 @@ func (uc *UserController) VerifyForgetPassword(c *gin.Context) {
 func (uc *UserController) GetUserProfile(c *gin.Context) {
 	userID := c.GetUint64("userID")
 
-	ctx := context.Background()
-	profile, err := uc.userService.GetUserProfile(ctx, userID)
+	profile, err := uc.userService.GetUserProfile(c, userID)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
@@ -197,8 +188,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	profile, err := uc.userService.UpdateUserProfile(ctx, userID, req)
+	profile, err := uc.userService.UpdateUserProfile(c, userID, req)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
@@ -217,8 +207,7 @@ func (uc *UserController) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	if err := uc.userService.ChangePassword(ctx, userID, req); err != nil {
+	if err := uc.userService.ChangePassword(c, userID, req); err != nil {
 		middleware.HandleError(c, err)
 		return
 	}
@@ -236,11 +225,29 @@ func (uc *UserController) DeleteAccount(c *gin.Context) {
 		return
 	}
 
-	ctx := context.Background()
-	if err := uc.userService.DeleteAccount(ctx, userID, req); err != nil {
+	if err := uc.userService.DeleteAccount(c, userID, req); err != nil {
 		middleware.HandleError(c, err)
 		return
 	}
 
 	response.SuccessWithMessage(c, nil, "Account deleted successfully")
+}
+
+// POST /api/v2/users/upload-avatar
+func (uc *UserController) UploadAvatar(c *gin.Context) {
+	userID := c.GetUint64("userID")
+
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		middleware.HandleError(c, errors.NewInvalidRequestError("Avatar file is required"))
+		return
+	}
+
+	avatarURL, err := uc.userService.UploadAvatar(c, userID, file)
+	if err != nil {
+		middleware.HandleError(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{"avatar_url": avatarURL})
 }

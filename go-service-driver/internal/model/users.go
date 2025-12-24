@@ -10,6 +10,7 @@ type User struct {
 	DisplayName  string
 	AvatarURL    string
 	Status       string `gorm:"default:'active'"`
+	Bio          string `gorm:"type:text"`
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	LastLoginAt  *time.Time
