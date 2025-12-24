@@ -387,23 +387,34 @@ func (s *UserService) DeleteAccount(ctx context.Context, userID uint64, req dto.
 }
 
 func (s *UserService) UploadAvatar(ctx context.Context, userID uint64, file *multipart.FileHeader) (string, error) {
+	// log.Printf("[UploadAvatar] Starting avatar upload for userID: %d, filename: %s, size: %d bytes",
+	// 	userID, file.Filename, file.Size)
+
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+		// log.Printf("[UploadAvatar] Invalid file type: %s", ext)
 		return "", apperrors.NewInvalidFileTypeError("avatar")
 	}
 
 	avatarPath := fmt.Sprintf("uploads/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
+	// log.Printf("[UploadAvatar] Target path: %s", avatarPath)
 
 	// Save file to disk
 	if err := utils.SaveUploadedFile(file, avatarPath); err != nil {
+		// log.Printf("[UploadAvatar] ERROR: Failed to save file: %v", err)
+		// log.Printf("[UploadAvatar] ERROR Details - Type: %T, Error: %+v", err, err)
 		return "", apperrors.NewInternalServerError(err)
 	}
 
+	// log.Printf("[UploadAvatar] File saved successfully to: %s", avatarPath)
+
 	// Update user's avatar URL using repository
-	avatarURL := fmt.Sprintf("/%s", avatarPath) // Assuming static file server serves from root
+	avatarURL := fmt.Sprintf("/static/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
 	if err := s.userRepo.UpdateAvatarURL(ctx, uint(userID), avatarURL); err != nil {
+		// log.Printf("[UploadAvatar] ERROR: Failed to update avatar URL in database: %v", err)
 		return "", err
 	}
 
+	// log.Printf("[UploadAvatar] Avatar uploaded successfully: %s", avatarURL)
 	return avatarURL, nil
 }
