@@ -61,6 +61,7 @@ type TripRepository interface {
 	DeleteTripItem(ctx context.Context, itemID uint64) error
 	DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error
 	// DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error
+	UploadCoverImage(ctx context.Context, tripID uint64, coverImagePath string) error
 }
 
 type AssistantRepository interface {
