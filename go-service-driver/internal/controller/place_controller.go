@@ -33,7 +33,7 @@ func (pc *PlaceController) SearchPlaces(ctx *gin.Context) {
 
 	resp, err := pc.PlaceService.SearchPlaces(ctx.Request.Context(), &req)
 	if err != nil {
-		middleware.HandleError(ctx, errors.NewInternalServerError(err))
+		middleware.HandleError(ctx, err)
 		return
 	}
 

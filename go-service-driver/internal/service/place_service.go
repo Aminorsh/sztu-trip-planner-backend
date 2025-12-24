@@ -112,11 +112,11 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 		return nil, errors.NewAmapConfigError()
 	}
 
-	baseURL := fmt.Sprintf("%s/v5/place/text", s.amapAPIURL)
+	baseURL := fmt.Sprintf("%s/v3/place/text", s.amapAPIURL)
 	params := url.Values{}
 	params.Add("key", s.amapAPIKey)
 	params.Add("keywords", req.Keyword)
-	params.Add("output", "json")
+	// params.Add("output", "json")
 	params.Add("page", "1")
 	params.Add("offset", "20")
 	params.Add("extensions", "all")
@@ -137,10 +137,16 @@ func (s *PlaceService) callAmapAPI(req *dto.PlaceSearchRequest) (*dto.AmapSearch
 
 	var amapResp dto.AmapSearchResponse
 	if err := json.Unmarshal(body, &amapResp); err != nil {
+		fmt.Printf("[AMAP API] JSON unmarshal error: %v\n", err)
+		fmt.Printf("[AMAP API] Failed to parse body: %s\n", string(body))
 		return nil, errors.NewParseResponseError(err)
 	}
 
+	fmt.Printf("[AMAP API] Parsed response - Status: %s, Info: %s, Count: %s, POIs: %d\n",
+		amapResp.Status, amapResp.Info, amapResp.Count, len(amapResp.Pois))
+
 	if amapResp.Status != "1" {
+		fmt.Printf("[AMAP API] API returned error status: %s\n", amapResp.Info)
 		return nil, errors.NewAmapAPIError(fmt.Errorf("AMAP API error: %s", amapResp.Info))
 	}
 
@@ -159,7 +165,7 @@ func (s *PlaceService) callAmapDetailAPI(poiID string) (*dto.POI, error) {
 		return nil, errors.NewAmapConfigError()
 	}
 
-	baseURL := fmt.Sprintf("%s/v5/place/detail", s.amapAPIURL)
+	baseURL := fmt.Sprintf("%s/v3/place/detail", s.amapAPIURL)
 	params := url.Values{}
 	params.Add("key", s.amapAPIKey)
 	params.Add("id", poiID)
@@ -231,48 +237,51 @@ func (s *PlaceService) callWikipediaAPI(placeName string) (*dto.WikipediaRespons
 }
 
 func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.AmapSearchResponse) ([]dto.PlaceResponse, int, error) {
+	fmt.Printf("[parseAndSavePlaces] Starting to parse %d POIs\n", len(amapResp.Pois))
 	places := make([]dto.PlaceResponse, 0, len(amapResp.Pois))
-	for _, poi := range amapResp.Pois {
+	for i, poi := range amapResp.Pois {
+		fmt.Printf("[parseAndSavePlaces] Processing POI %d: ID=%s, Name=%s, Location=%s\n",
+			i, poi.ID, poi.Name, poi.Location)
+
 		location := strings.Split(poi.Location, ",")
 		if len(location) != 2 {
+			fmt.Printf("[parseAndSavePlaces] POI %d: Invalid location format, skipping\n", i)
 			continue
 		}
 		lng, err := strconv.ParseFloat(location[0], 64)
 		if err != nil {
+			fmt.Printf("[parseAndSavePlaces] POI %d: Failed to parse longitude: %v\n", i, err)
 			continue
 		}
 		lat, err := strconv.ParseFloat(location[1], 64)
 		if err != nil {
+			fmt.Printf("[parseAndSavePlaces] POI %d: Failed to parse latitude: %v\n", i, err)
 			continue
 		}
 
 		place, err := s.saveOrUpdatePlace(ctx, &poi, lng, lat)
 		if err != nil {
+			fmt.Printf("[parseAndSavePlaces] POI %d: Failed to save/update place: %v\n", i, err)
 			return nil, 0, err
 		}
+		fmt.Printf("[parseAndSavePlaces] POI %d: Successfully saved place ID=%d\n", i, place.ID)
 
 		// 提取评分
 		rating := 0.0
 		if place.Rating != nil {
 			rating = *place.Rating
-		} else if poi.Biz_ext.Rating != "" {
+		} else if string(poi.Biz_ext.Rating) != "" {
 			// 尝试从高德API响应中解析评分
-			if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+			if r, err := strconv.ParseFloat(string(poi.Biz_ext.Rating), 64); err == nil {
 				rating = r
 			}
 		}
 
-		// 提取营业时间
+		// 提取营业时间（v3 API不返回，只使用数据库中的数据）
 		openingHours := place.OpeningHours
-		if openingHours == "" && poi.Opentime_desc != "" {
-			openingHours = poi.Opentime_desc
-		}
 
-		// 提取简介
+		// 提取简介（v3 API不返回，只使用数据库中的数据）
 		description := place.Description
-		if description == "" && poi.Introduction != "" {
-			description = poi.Introduction
-		}
 
 		placeResp := dto.PlaceResponse{
 			ID:           fmt.Sprintf("%d", place.ID),
@@ -296,6 +305,7 @@ func (s *PlaceService) parseAndSavePlaces(ctx context.Context, amapResp *dto.Ama
 		}
 		places = append(places, placeResp)
 	}
+	fmt.Printf("[parseAndSavePlaces] Completed: parsed %d places\n", len(places))
 	return places, len(places), nil
 }
 
@@ -324,17 +334,15 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 
 	// 解析评分
 	var rating *float64
-	if poi.Biz_ext.Rating != "" {
-		if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+	if string(poi.Biz_ext.Rating) != "" {
+		if r, err := strconv.ParseFloat(string(poi.Biz_ext.Rating), 64); err == nil {
 			rating = &r
 		}
 	}
 
-	// 获取营业时间
-	openingHours := poi.Opentime_desc
-
-	// 获取简介
-	description := poi.Introduction
+	// v3 API不返回营业时间和简介，这些字段保持空
+	var openingHours string
+	var description string
 
 	if existing == nil {
 		// Create new place
@@ -350,7 +358,7 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 			Adcode:         poi.Adcode,
 			Latitude:       &lat,
 			Longitude:      &lng,
-			Phone:          poi.Tel,
+			Phone:          string(poi.Tel),
 			CoverImage:     coverImage,
 			Photos:         photos,
 			AmapPoiID:      poi.ID,
@@ -374,7 +382,7 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 			"address":          poi.Address,
 			"latitude":         lat,
 			"longitude":        lng,
-			"phone":            poi.Tel,
+			"phone":            string(poi.Tel),
 			"cover_image":      coverImage,
 			"photos":           photos,
 			"api_last_updated": now,
@@ -384,12 +392,7 @@ func (s *PlaceService) saveOrUpdatePlace(ctx context.Context, poi *dto.POI, lng,
 		if rating != nil {
 			updates["rating"] = *rating
 		}
-		if openingHours != "" {
-			updates["opening_hours"] = openingHours
-		}
-		if description != "" {
-			updates["description"] = description
-		}
+		// v3 API不返回营业时间和简介，不更新这些字段
 		if err := s.placeRepo.UpdateFields(ctx, place.ID, updates); err != nil {
 			return nil, err
 		}
@@ -596,24 +599,14 @@ func (s *PlaceService) GetPlaceDetail(ctx context.Context, placeID string) (*dto
 			updates := make(map[string]any)
 
 			// 更新评分
-			if poi.Biz_ext.Rating != "" {
-				if r, err := strconv.ParseFloat(poi.Biz_ext.Rating, 64); err == nil {
+			if string(poi.Biz_ext.Rating) != "" {
+				if r, err := strconv.ParseFloat(string(poi.Biz_ext.Rating), 64); err == nil {
 					updates["rating"] = r
 					place.Rating = &r
 				}
 			}
 
-			// 更新简介
-			if poi.Introduction != "" {
-				updates["description"] = poi.Introduction
-				place.Description = poi.Introduction
-			}
-
-			// 更新营业时间
-			if poi.Opentime_desc != "" {
-				updates["opening_hours"] = poi.Opentime_desc
-				place.OpeningHours = poi.Opentime_desc
-			}
+			// v3 API不返回简介和营业时间字段
 
 			// 更新照片
 			if len(poi.Photos) > 0 {
@@ -628,9 +621,9 @@ func (s *PlaceService) GetPlaceDetail(ctx context.Context, placeID string) (*dto
 			}
 
 			// 更新电话
-			if poi.Tel != "" {
-				updates["phone"] = poi.Tel
-				place.Phone = poi.Tel
+			if string(poi.Tel) != "" {
+				updates["phone"] = string(poi.Tel)
+				place.Phone = string(poi.Tel)
 			}
 
 			// 保存更新到数据库
@@ -643,57 +636,62 @@ func (s *PlaceService) GetPlaceDetail(ctx context.Context, placeID string) (*dto
 		// 即使API调用失败也继续返回现有数据
 	}
 
-	// 如果仍然缺少信息，尝试从Wikipedia获取
-	if (place.Description == "" || len(place.Photos) == 0) && place.Name != "" {
-		// 尝试多个名称变体
-		nameVariants := s.getNameVariants(place.Name)
-		fmt.Printf("[DEBUG] Trying Wikipedia for place: %s, variants: %v\n", place.Name, nameVariants)
+	// Deactive Wikipedia data fetching for now
+	wikipediaDataEnabled := false
 
-		for _, name := range nameVariants {
-			fmt.Printf("[DEBUG] Calling Wikipedia API with name: %s\n", name)
-			if wikiData, err := s.callWikipediaAPI(name); err == nil && wikiData != nil {
-				fmt.Printf("[DEBUG] Wikipedia response: title=%s, extract_len=%d, has_image=%v\n",
-					wikiData.Title, len(wikiData.Extract), wikiData.Originalimage.Source != "")
+	if wikipediaDataEnabled {
+		// 如果仍然缺少信息，尝试从Wikipedia获取
+		if (place.Description == "" || len(place.Photos) == 0) && place.Name != "" {
+			// 尝试多个名称变体
+			nameVariants := s.getNameVariants(place.Name)
+			fmt.Printf("[DEBUG] Trying Wikipedia for place: %s, variants: %v\n", place.Name, nameVariants)
 
-				updates := make(map[string]any)
+			for _, name := range nameVariants {
+				fmt.Printf("[DEBUG] Calling Wikipedia API with name: %s\n", name)
+				if wikiData, err := s.callWikipediaAPI(name); err == nil && wikiData != nil {
+					fmt.Printf("[DEBUG] Wikipedia response: title=%s, extract_len=%d, has_image=%v\n",
+						wikiData.Title, len(wikiData.Extract), wikiData.Originalimage.Source != "")
 
-				// 更新简介
-				if place.Description == "" && wikiData.Extract != "" {
-					updates["description"] = wikiData.Extract
-					place.Description = wikiData.Extract
-				}
+					updates := make(map[string]any)
 
-				// 更新封面图片
-				if place.CoverImage == "" {
-					var imageURL string
-					// 优先使用原图
-					if wikiData.Originalimage.Source != "" {
-						imageURL = wikiData.Originalimage.Source
-					} else if wikiData.Thumbnail.Source != "" {
-						imageURL = wikiData.Thumbnail.Source
+					// 更新简介
+					if place.Description == "" && wikiData.Extract != "" {
+						updates["description"] = wikiData.Extract
+						place.Description = wikiData.Extract
 					}
 
-					if imageURL != "" {
-						updates["cover_image"] = imageURL
-						place.CoverImage = imageURL
-						// 如果photos为空，也添加到photos
-						if len(place.Photos) == 0 {
-							updates["photos"] = []string{imageURL}
-							place.Photos = []string{imageURL}
+					// 更新封面图片
+					if place.CoverImage == "" {
+						var imageURL string
+						// 优先使用原图
+						if wikiData.Originalimage.Source != "" {
+							imageURL = wikiData.Originalimage.Source
+						} else if wikiData.Thumbnail.Source != "" {
+							imageURL = wikiData.Thumbnail.Source
+						}
+
+						if imageURL != "" {
+							updates["cover_image"] = imageURL
+							place.CoverImage = imageURL
+							// 如果photos为空，也添加到photos
+							if len(place.Photos) == 0 {
+								updates["photos"] = []string{imageURL}
+								place.Photos = []string{imageURL}
+							}
 						}
 					}
-				}
 
-				// 保存Wikipedia数据到数据库
-				if len(updates) > 0 {
-					now := time.Now()
-					updates["api_last_updated"] = now
-					fmt.Printf("[DEBUG] Saving Wikipedia data: %+v\n", updates)
-					s.placeRepo.UpdateFields(ctx, place.ID, updates)
-					break // 成功获取数据后退出循环
+					// 保存Wikipedia数据到数据库
+					if len(updates) > 0 {
+						now := time.Now()
+						updates["api_last_updated"] = now
+						fmt.Printf("[DEBUG] Saving Wikipedia data: %+v\n", updates)
+						s.placeRepo.UpdateFields(ctx, place.ID, updates)
+						break // 成功获取数据后退出循环
+					}
+				} else if err != nil {
+					fmt.Printf("[DEBUG] Wikipedia API error for %s: %v\n", name, err)
 				}
-			} else if err != nil {
-				fmt.Printf("[DEBUG] Wikipedia API error for %s: %v\n", name, err)
 			}
 		}
 	}
@@ -740,11 +738,11 @@ func (s *PlaceService) applyDefaultPlaceData(place *model.Place) {
 		description  string
 		openingHours string
 	}{
-		"广州塔": {
-			rating:       4.5,
-			description:  "广州地标性建筑，中国第一高塔，可俯瞰珠江两岸美景",
-			openingHours: "09:30-22:30",
-		},
+		// "广州塔": {
+		// 	rating:       4.5,
+		// 	description:  "广州地标性建筑，中国第一高塔，可俯瞰珠江两岸美景",
+		// 	openingHours: "09:30-22:30",
+		// },
 		"东方明珠": {
 			rating:       4.6,
 			description:  "上海标志性建筑，集观光、餐饮、购物于一体",
