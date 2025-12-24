@@ -53,3 +53,11 @@ func NewParseResponseError(err error) *AppError {
 		Internal: err,
 	}
 }
+
+func NewInvalidFileTypeError(message string) *AppError {
+	return &AppError{
+		Code:    ErrInvalidFileType,
+		Message: message,
+		Status:  http.StatusBadRequest,
+	}
+}

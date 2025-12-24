@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"mime/multipart"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/config"
@@ -272,49 +275,72 @@ func (s *UserService) VerifyForgetPassword(ctx context.Context, req dto.ForgetPa
 	return nil
 }
 
-func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (*model.User, error) {
+func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (dto.UserProfileResponse, error) {
 	// Find user by ID using repository
 	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	// Zero out password hash before returning
 	user.PasswordHash = ""
 
-	return user, nil
+	return dto.UserProfileResponse{
+		ID:          int(user.ID),
+		Username:    user.Username,
+		Email:       user.Email,
+		DisplayName: user.DisplayName,
+		AvatarURL:   user.AvatarURL,
+		Bio:         user.Bio,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLogin:   user.LastLoginAt.Format(time.RFC3339),
+	}, nil
 }
 
-func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (*model.User, error) {
+func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (dto.UserProfileResponse, error) {
 	// Find user by ID using repository
 	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	if user.Status == "suspended" {
-		return nil, apperrors.NewAccountSuspendedError()
+		return dto.UserProfileResponse{}, apperrors.NewAccountSuspendedError()
 	}
 
 	// Update fields
 	if req.DisplayName != nil {
 		user.DisplayName = *req.DisplayName
 	}
-	if req.AvatarURL != nil {
-		user.AvatarURL = *req.AvatarURL
+	// if req.AvatarURL != nil {
+	// 	user.AvatarURL = *req.AvatarURL
+	// }
+	if req.Bio != nil {
+		user.Bio = *req.Bio
 	}
 
 	user.UpdatedAt = time.Now()
 
 	// Use repository to update
 	if err := s.userRepo.Update(ctx, user); err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	// Zero out password hash before returning
 	user.PasswordHash = ""
 
-	return user, nil
+	return dto.UserProfileResponse{
+		ID:          int(user.ID),
+		Username:    user.Username,
+		Email:       user.Email,
+		DisplayName: user.DisplayName,
+		AvatarURL:   user.AvatarURL,
+		Bio:         user.Bio,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLogin:   user.LastLoginAt.Format(time.RFC3339),
+	}, nil
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, userID uint64, req dto.ChangePasswordRequest) error {
@@ -368,4 +394,37 @@ func (s *UserService) DeleteAccount(ctx context.Context, userID uint64, req dto.
 	}
 
 	return nil
+}
+
+func (s *UserService) UploadAvatar(ctx context.Context, userID uint64, file *multipart.FileHeader) (string, error) {
+	// log.Printf("[UploadAvatar] Starting avatar upload for userID: %d, filename: %s, size: %d bytes",
+	// 	userID, file.Filename, file.Size)
+
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+		// log.Printf("[UploadAvatar] Invalid file type: %s", ext)
+		return "", apperrors.NewInvalidFileTypeError("avatar")
+	}
+
+	avatarPath := fmt.Sprintf("uploads/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
+	// log.Printf("[UploadAvatar] Target path: %s", avatarPath)
+
+	// Save file to disk
+	if err := utils.SaveUploadedFile(file, avatarPath); err != nil {
+		// log.Printf("[UploadAvatar] ERROR: Failed to save file: %v", err)
+		// log.Printf("[UploadAvatar] ERROR Details - Type: %T, Error: %+v", err, err)
+		return "", apperrors.NewInternalServerError(err)
+	}
+
+	// log.Printf("[UploadAvatar] File saved successfully to: %s", avatarPath)
+
+	// Update user's avatar URL using repository
+	avatarURL := fmt.Sprintf("/static/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
+	if err := s.userRepo.UpdateAvatarURL(ctx, uint(userID), avatarURL); err != nil {
+		// log.Printf("[UploadAvatar] ERROR: Failed to update avatar URL in database: %v", err)
+		return "", err
+	}
+
+	// log.Printf("[UploadAvatar] Avatar uploaded successfully: %s", avatarURL)
+	return avatarURL, nil
 }
