@@ -188,16 +188,22 @@ func (r *userRepository) UpdateStatus(ctx context.Context, userID uint, status s
 // UpdateLastLogin implements UserRepository.
 func (r *userRepository) UpdateLastLogin(ctx context.Context, userID uint) error {
 	now := time.Now()
+	// log.Printf("[UpdateLastLogin] Updating last_login_at for userID: %d to %v", userID, now)
+
 	result := r.db.WithContext(ctx).
 		Model(&model.User{}).
 		Where("id = ? AND deleted_at IS NULL", userID).
 		Update("last_login_at", &now)
 	if result.Error != nil {
+		// log.Printf("[UpdateLastLogin] ERROR: %v", result.Error)
 		return apperrors.NewDatabaseError(result.Error)
 	}
 	if result.RowsAffected == 0 {
+		// log.Printf("[UpdateLastLogin] WARNING: No rows affected for userID: %d", userID)
 		return apperrors.NewUserNotFoundError()
 	}
+
+	// log.Printf("[UpdateLastLogin] Successfully updated %d row(s)", result.RowsAffected)
 	return nil
 }
 

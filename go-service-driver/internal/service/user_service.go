@@ -294,19 +294,19 @@ func (s *UserService) GetUserProfile(ctx context.Context, userID uint64) (dto.Us
 		Bio:         user.Bio,
 		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		LastLogin:   "",
+		LastLogin:   user.LastLoginAt.Format(time.RFC3339),
 	}, nil
 }
 
-func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (*model.User, error) {
+func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req dto.UpdateUserProfile) (dto.UserProfileResponse, error) {
 	// Find user by ID using repository
 	user, err := s.userRepo.FindByID(ctx, uint(userID))
 	if err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	if user.Status == "suspended" {
-		return nil, apperrors.NewAccountSuspendedError()
+		return dto.UserProfileResponse{}, apperrors.NewAccountSuspendedError()
 	}
 
 	// Update fields
@@ -324,13 +324,23 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, userID uint64, req 
 
 	// Use repository to update
 	if err := s.userRepo.Update(ctx, user); err != nil {
-		return nil, err
+		return dto.UserProfileResponse{}, err
 	}
 
 	// Zero out password hash before returning
 	user.PasswordHash = ""
 
-	return user, nil
+	return dto.UserProfileResponse{
+		ID:          int(user.ID),
+		Username:    user.Username,
+		Email:       user.Email,
+		DisplayName: user.DisplayName,
+		AvatarURL:   user.AvatarURL,
+		Bio:         user.Bio,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLogin:   user.LastLoginAt.Format(time.RFC3339),
+	}, nil
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, userID uint64, req dto.ChangePasswordRequest) error {
