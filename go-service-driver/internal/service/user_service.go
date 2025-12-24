@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -396,35 +397,48 @@ func (s *UserService) DeleteAccount(ctx context.Context, userID uint64, req dto.
 	return nil
 }
 
-func (s *UserService) UploadAvatar(ctx context.Context, userID uint64, file *multipart.FileHeader) (string, error) {
-	// log.Printf("[UploadAvatar] Starting avatar upload for userID: %d, filename: %s, size: %d bytes",
-	// 	userID, file.Filename, file.Size)
+func (s *UserService) UpdateAvatar(ctx context.Context, userID uint64, file *multipart.FileHeader) (string, error) {
+	user, err := s.userRepo.FindByID(ctx, uint(userID))
+	if err != nil {
+		return "", err
+	}
+
+	if user.Status == "suspended" {
+		return "", apperrors.NewAccountSuspendedError()
+	}
+
+	oldAvatar := user.AvatarURL
 
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
-		// log.Printf("[UploadAvatar] Invalid file type: %s", ext)
 		return "", apperrors.NewInvalidFileTypeError("avatar")
 	}
 
 	avatarPath := fmt.Sprintf("uploads/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
-	// log.Printf("[UploadAvatar] Target path: %s", avatarPath)
 
-	// Save file to disk
 	if err := utils.SaveUploadedFile(file, avatarPath); err != nil {
-		// log.Printf("[UploadAvatar] ERROR: Failed to save file: %v", err)
-		// log.Printf("[UploadAvatar] ERROR Details - Type: %T, Error: %+v", err, err)
 		return "", apperrors.NewInternalServerError(err)
 	}
-
-	// log.Printf("[UploadAvatar] File saved successfully to: %s", avatarPath)
-
-	// Update user's avatar URL using repository
 	avatarURL := fmt.Sprintf("/static/avatars/user_%d_%d%s", userID, time.Now().Unix(), ext)
 	if err := s.userRepo.UpdateAvatarURL(ctx, uint(userID), avatarURL); err != nil {
-		// log.Printf("[UploadAvatar] ERROR: Failed to update avatar URL in database: %v", err)
+		_ = os.Remove(avatarPath)
 		return "", err
 	}
 
-	// log.Printf("[UploadAvatar] Avatar uploaded successfully: %s", avatarURL)
+	s.deleteOldAvatarFile(oldAvatar)
+
 	return avatarURL, nil
+}
+
+func (s *UserService) deleteOldAvatarFile(avatarURL string) {
+	if avatarURL == "" || strings.Contains(avatarURL, "api.dicebear.com") {
+		return
+	}
+
+	if !strings.HasPrefix(avatarURL, "/static/avatars/") {
+		return
+	}
+
+	avatarPath := strings.Replace(avatarURL, "/static/", "uploads/", 1)
+	_ = os.Remove(avatarPath)
 }

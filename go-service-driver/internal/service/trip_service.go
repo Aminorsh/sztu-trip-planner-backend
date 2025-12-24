@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -458,21 +459,49 @@ func (s *TripService) UpdateTripCoverImage(ctx context.Context, tripID string, f
 	if err != nil {
 		return "", errors.NewInvalidRequestError("invalid trip ID")
 	}
+
+	trip, err := s.tripRepo.FindByID(ctx, int(id))
+	if err != nil {
+		return "", err
+	}
+	if trip == nil {
+		return "", errors.NewTripNotFoundError()
+	}
+
+	oldCover := trip.CoverImage
+
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
 		return "", errors.NewInvalidRequestError("unsupported image format")
 	}
 
-	coverImagePath := fmt.Sprintf("uploads/trip_covers/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
+	coverImagePath := fmt.Sprintf("uploads/trips/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
 
 	if err := utils.SaveUploadedFile(file, coverImagePath); err != nil {
 		return "", errors.NewInternalServerError(err)
 	}
 
-	coverImageURL := fmt.Sprintf("uploads/trip_covers/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
+	coverImageURL := fmt.Sprintf("/static/trips/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
 	if err := s.tripRepo.UpdateCoverImage(ctx, id, coverImagePath); err != nil {
+		_ = os.Remove(coverImagePath)
 		return "", err
 	}
 
+	s.deleteOldCoverFile(oldCover)
+
 	return coverImageURL, nil
+}
+
+func (s *TripService) deleteOldCoverFile(oldCover string) {
+	if oldCover == "" || strings.HasPrefix(oldCover, "/static/system/") {
+		return
+	}
+
+	if !strings.HasPrefix(oldCover, "/static/trips/") {
+		return
+	}
+
+	oldCoverPath := strings.Replace(oldCover, "/static/trips/", "/uploads/trips/", 1)
+
+	_ = os.Remove(oldCoverPath)
 }

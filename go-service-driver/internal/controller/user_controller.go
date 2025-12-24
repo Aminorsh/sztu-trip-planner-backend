@@ -233,8 +233,8 @@ func (uc *UserController) DeleteAccount(c *gin.Context) {
 	response.SuccessWithMessage(c, nil, "Account deleted successfully")
 }
 
-// POST /api/v2/users/upload-avatar
-func (uc *UserController) UploadAvatar(c *gin.Context) {
+// POST /api/v2/users/update-avatar
+func (uc *UserController) UpdateAvatar(c *gin.Context) {
 	userID := c.GetUint64("userID")
 
 	file, err := c.FormFile("avatar")
@@ -243,7 +243,7 @@ func (uc *UserController) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	avatarURL, err := uc.userService.UploadAvatar(c, userID, file)
+	avatarURL, err := uc.userService.UpdateAvatar(c, userID, file)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return
