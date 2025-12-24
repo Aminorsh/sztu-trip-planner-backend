@@ -35,7 +35,7 @@ func (ac *AssistantController) Chat(ctx *gin.Context) {
 		},
 	}
 
-	reply, err := ac.assistantService.Chat(ctx.Request.Context(), userID, req.Model, messages, req.Stream)
+	reply, err := ac.assistantService.Chat(ctx.Request.Context(), userID, messages, service.WithModel(req.Model), service.WithSummary(true))
 	if err != nil {
 		middleware.HandleError(ctx, err)
 		return

@@ -22,11 +22,12 @@ import (
 )
 
 type PlaceService struct {
-	amapAPIKey    string
-	amapAPIURL    string
-	redisClient   *redis.Client
-	placeRepo     repository.PlaceRepository
-	amapCacheRepo repository.AmapPoiCacheRepository
+	amapAPIKey       string
+	amapAPIURL       string
+	redisClient      *redis.Client
+	placeRepo        repository.PlaceRepository
+	amapCacheRepo    repository.AmapPoiCacheRepository
+	assistantService *AssistantService
 }
 
 func NewPlaceService(
@@ -34,13 +35,15 @@ func NewPlaceService(
 	redisClient *redis.Client,
 	placeRepo repository.PlaceRepository,
 	amapCacheRepo repository.AmapPoiCacheRepository,
+	assistantService *AssistantService,
 ) *PlaceService {
 	return &PlaceService{
-		amapAPIKey:    amapAPIKey,
-		amapAPIURL:    amapAPIURL,
-		redisClient:   redisClient,
-		placeRepo:     placeRepo,
-		amapCacheRepo: amapCacheRepo,
+		amapAPIKey:       amapAPIKey,
+		amapAPIURL:       amapAPIURL,
+		redisClient:      redisClient,
+		placeRepo:        placeRepo,
+		amapCacheRepo:    amapCacheRepo,
+		assistantService: assistantService,
 	}
 }
 
@@ -814,4 +817,61 @@ func (s *PlaceService) getNameVariants(name string) []string {
 	}
 
 	return result
+}
+
+// GenerateAIDescription 使用 AI 为地点生成描述并保存到数据库
+func (s *PlaceService) GenerateAIDescription(ctx context.Context, placeID string) (string, error) {
+	id, err := strconv.Atoi(placeID)
+	if err != nil {
+		return "", errors.NewInvalidRequestError("invalid place ID")
+	}
+
+	place, err := s.placeRepo.FindByID(ctx, uint(id))
+	if err != nil {
+		return "", err
+	}
+	if place == nil {
+		return "", errors.NewPlaceNotFoundError()
+	}
+
+	// 如果已经有描述，直接返回（可选：或者重新生成）
+	if place.Description != "" {
+		return place.Description, nil
+	}
+
+	// 构建提示词
+	prompt := fmt.Sprintf(
+		"请为以下景点生成一段简洁的介绍（100-150字）：\n名称：%s\n地址：%s\n类型：%s\n\n要求：\n1. 突出景点特色\n2. 包含历史文化或建筑特点\n3. 提及适合的游览人群\n4. 语言精炼，吸引人",
+		place.Name,
+		place.Address,
+		place.Category,
+	)
+
+	// 调用 AI 服务生成描述
+	messages := []dto.AssistantMessage{
+		{
+			Role:    "user",
+			Content: prompt,
+		},
+	}
+
+	description, err := s.assistantService.Chat(ctx, 0, messages)
+	if err != nil {
+		return "", err
+	}
+
+	description = strings.TrimSpace(description)
+	if description == "" {
+		return "", errors.NewInternalServerError(fmt.Errorf("AI generated empty description"))
+	}
+
+	// 保存到数据库
+	updates := map[string]any{
+		"description": description,
+	}
+	if err := s.placeRepo.UpdateFields(ctx, place.ID, updates); err != nil {
+		return "", err
+	}
+
+	return description, nil
 }

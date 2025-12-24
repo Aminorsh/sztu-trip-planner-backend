@@ -31,15 +31,52 @@ type AssistantService struct {
 	deepseekAPIURL string
 }
 
-func (s *AssistantService) Chat(ctx context.Context, userID uint64, model string, messages []dto.AssistantMessage, stream bool) (string, error) {
-	if model == "" {
-		model = "deepseek-chat"
+type chatOptions struct {
+	model        string
+	stream       bool
+	with_summary bool
+}
+
+type ChatOption func(*chatOptions)
+
+func WithModel(model string) ChatOption {
+	return func(co *chatOptions) {
+		co.model = model
+	}
+}
+
+func WithStream(stream bool) ChatOption {
+	return func(co *chatOptions) {
+		co.stream = stream
+	}
+}
+
+func WithSummary(with_summary bool) ChatOption {
+	return func(co *chatOptions) {
+		co.with_summary = with_summary
+	}
+}
+
+func (s *AssistantService) Chat(ctx context.Context, userID uint64, messages []dto.AssistantMessage, opts ...ChatOption) (string, error) {
+	co := &chatOptions{
+		model:        "deepseek-chat",
+		stream:       false,
+		with_summary: false,
+	}
+	for _, opt := range opts {
+		opt(co)
+	}
+	if co.model == "" {
+		co.model = "deepseek-chat"
 	}
 	if len(messages) == 0 {
 		return "", errors.NewInvalidRequestError("messages cannot be empty")
 	}
 
-	summary, _ := s.memoryRepo.GetSummary(ctx, userID)
+	summary := ""
+	if co.with_summary {
+		summary, _ = s.memoryRepo.GetSummary(ctx, userID)
+	}
 	systemPrompt := buildSystemPrompt(summary)
 	finalMessages := []dto.AssistantMessage{
 		{
@@ -49,20 +86,22 @@ func (s *AssistantService) Chat(ctx context.Context, userID uint64, model string
 	}
 	finalMessages = append(finalMessages, messages...)
 
-	reply, err := s.callDeepseek(model, finalMessages, stream)
+	reply, err := s.callDeepseek(co.model, finalMessages, co.stream)
 	if err != nil {
 		// to be implement...
 		return "", err
 	}
 
 	// if !config.IsTestMode() {
-	go s.updateSummary(
-		context.Background(),
-		userID,
-		summary,
-		messages[len(messages)-1].Content,
-		reply,
-	)
+	if co.with_summary {
+		go s.updateSummary(
+			context.Background(),
+			userID,
+			summary,
+			messages[len(messages)-1].Content,
+			reply,
+		)
+	}
 	// }
 
 	return reply, nil

@@ -23,12 +23,18 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	assistantRepo := repository.NewAssistantRepository(database.RedisClient)
 
 	userService := service.NewUserService(userRepo)
+	assistantService := service.NewAssistantService(
+		assistantRepo,
+		config.GetDeepseekAPIKey(),
+		config.GetDeepseekAPIURL(),
+	)
 	placeService := service.NewPlaceService(
 		config.GetAmapAPIKey(),
 		config.GetAmapAPIURL(),
 		database.RedisClient,
 		placeRepo,
 		amapCacheRepo,
+		assistantService,
 	)
 	routeService := service.NewRouteService(
 		routeRepo,
@@ -39,11 +45,6 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	tripService := service.NewTripService(
 		tripRepo,
 		placeRepo,
-	)
-	assistantService := service.NewAssistantService(
-		assistantRepo,
-		config.GetDeepseekAPIKey(),
-		config.GetDeepseekAPIURL(),
 	)
 
 	userController := controller.NewUserController(userService)
@@ -92,6 +93,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			{
 				places.GET("/search", placeController.SearchPlaces)
 				places.GET("/:placeId/detail", placeController.GetPlaceDetail)
+				places.POST("/:placeId/ai-description", placeController.GenerateAIDescription)
 			}
 
 			routes := v2.Group("/routes")
