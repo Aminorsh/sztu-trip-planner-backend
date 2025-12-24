@@ -33,7 +33,7 @@ func (pc *PlaceController) SearchPlaces(ctx *gin.Context) {
 
 	resp, err := pc.PlaceService.SearchPlaces(ctx.Request.Context(), &req)
 	if err != nil {
-		middleware.HandleError(ctx, errors.NewInternalServerError(err))
+		middleware.HandleError(ctx, err)
 		return
 	}
 
@@ -53,4 +53,22 @@ func (pc *PlaceController) GetPlaceDetail(ctx *gin.Context) {
 	}
 
 	response.Success(ctx, resp)
+}
+
+func (pc *PlaceController) GenerateAIDescription(ctx *gin.Context) {
+	placeID := ctx.Param("placeId")
+	if placeID == "" {
+		middleware.HandleError(ctx, errors.NewInvalidRequestError("place ID is required"))
+		return
+	}
+
+	description, err := pc.PlaceService.GenerateAIDescription(ctx.Request.Context(), placeID)
+	if err != nil {
+		middleware.HandleError(ctx, err)
+		return
+	}
+
+	response.Success(ctx, gin.H{
+		"description": description,
+	})
 }

@@ -1,5 +1,7 @@
 package dto
 
+import "encoding/json"
+
 type PlaceSearchRequest struct {
 	Keyword string `form:"keyword" binding:"required"`
 	// City     string `json:"city"`
@@ -8,6 +10,29 @@ type PlaceSearchRequest struct {
 	// Page       int    `json:"page" binding:"min=0"`
 	// PageSize   int    `json:"page_size" binding:"min=1,max=50"`
 	SortOrder string `form:"sort_order"`
+}
+
+// FlexibleString 用于处理高德API返回的字段，可能是字符串或空数组
+type FlexibleString string
+
+func (fs *FlexibleString) UnmarshalJSON(data []byte) error {
+	// 尝试解析为字符串
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		*fs = FlexibleString(s)
+		return nil
+	}
+
+	// 如果是数组（通常是空数组），设置为空字符串
+	var arr []interface{}
+	if err := json.Unmarshal(data, &arr); err == nil {
+		*fs = FlexibleString("")
+		return nil
+	}
+
+	// 其他情况设置为空字符串
+	*fs = FlexibleString("")
+	return nil
 }
 
 type Location struct {
@@ -44,30 +69,40 @@ type AmapSearchResponse struct {
 }
 
 type POI struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Type     string `json:"type"`
-	Typecode string `json:"typecode"`
-	Address  string `json:"address"`
-	Location string `json:"location"`
-	Pcode    string `json:"pcode"`
-	Pname    string `json:"pname"`
-	Citycode string `json:"citycode"`
-	Cityname string `json:"cityname"`
-	Adcode   string `json:"adcode"`
-	Adname   string `json:"adname"`
-	Tel      string `json:"tel"`
-	Photos   []struct {
-		URL string `json:"url"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Type         string         `json:"type"`
+	Typecode     string         `json:"typecode"`
+	Address      string         `json:"address"`
+	Location     string         `json:"location"`
+	Pcode        string         `json:"pcode"`
+	Pname        string         `json:"pname"`
+	Citycode     string         `json:"citycode"`
+	Cityname     string         `json:"cityname"`
+	Adcode       string         `json:"adcode"`
+	Adname       string         `json:"adname"`
+	Tel          FlexibleString `json:"tel"`          // 可能是字符串或空数组
+	Alias        FlexibleString `json:"alias"`        // 可能是字符串或空数组
+	Website      FlexibleString `json:"website"`      // 可能是字符串或空数组
+	Email        FlexibleString `json:"email"`        // 可能是字符串或空数组
+	Postcode     FlexibleString `json:"postcode"`     // 可能是字符串或空数组
+	Parking_type FlexibleString `json:"parking_type"` // 可能是字符串或空数组
+	Photos       []struct {
+		Title FlexibleString `json:"title"`
+		URL   string         `json:"url"`
 	} `json:"photos"`
 	// 额外字段（当extensions=all时返回）
 	Biz_ext struct {
-		Rating string `json:"rating"` // 评分，可能为空
-		Cost   string `json:"cost"`   // 人均消费
+		Rating          FlexibleString `json:"rating"`          // 评分
+		Cost            FlexibleString `json:"cost"`            // 人均消费
+		Meal_ordering   FlexibleString `json:"meal_ordering"`   // 是否可订餐（逐渐废弃）
+		Seat_ordering   FlexibleString `json:"seat_ordering"`   // 是否可选座（逐渐废弃）
+		Ticket_ordering FlexibleString `json:"ticket_ordering"` // 是否可订票（逐渐废弃）
+		Hotel_ordering  FlexibleString `json:"hotel_ordering"`  // 是否可订房（逐渐废弃）
 	} `json:"biz_ext"`
-	Opentime_desc string `json:"opentime_desc"` // 营业时间描述
-	Business_area string `json:"business_area"` // 商圈
-	Introduction  string `json:"introduction"`  // 简介
+	Business_area FlexibleString `json:"business_area"` // 商圈
+	Tag           FlexibleString `json:"tag"`           // 特色内容（如特色菜）
+	Biz_type      FlexibleString `json:"biz_type"`      // 行业类型
 }
 
 // AmapDetailResponse 高德POI详情API响应
