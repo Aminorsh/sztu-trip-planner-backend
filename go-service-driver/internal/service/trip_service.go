@@ -121,43 +121,21 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 
 	// 更新基本信息
 	updates := map[string]any{
-		"title":  req.Title,
-		"status": req.Status,
+		"title":       req.Title,
+		"description": req.Description,
+	}
+	if req.StartDate != nil {
+		updates["start_date"] = *req.StartDate
+	}
+	if req.EndDate != nil {
+		updates["end_date"] = *req.EndDate
+	}
+	if req.Status != "" {
+		updates["status"] = req.Status
 	}
 
 	if err := s.tripRepo.UpdateFields(ctx, id, updates); err != nil {
 		return err
-	}
-
-	// 更新行程项
-	// 先删除所有旧的行程项，再创建新的
-	for _, day := range req.Days {
-		// 删除该天的所有行程项
-		if err := s.tripRepo.DeleteTripItemsByDay(ctx, id, day.Day); err != nil {
-			return err
-		}
-
-		// 创建新的行程项
-		for i, item := range day.Items {
-			placeID, err := s.getOrCreatePlaceID(ctx, item)
-			if err != nil {
-				return err
-			}
-
-			tripItem := &model.TripItem{
-				TripID:    id,
-				PlaceID:   placeID,
-				DayNumber: day.Day,
-				Sequence:  i + 1,
-				StartTime: extractTime(item.Time),
-				EndTime:   extractTime(item.EndTime),
-				Note:      item.Note,
-			}
-
-			if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-				return err
-			}
-		}
 	}
 
 	return nil
@@ -173,7 +151,7 @@ func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem)
 
 	// Create new place
 	if item.Name == "" {
-		return 0, errors.NewInvalidRequestError("place name is required")
+		item.Name = "自定义地点"
 	}
 
 	lng := item.Lnglat[0]

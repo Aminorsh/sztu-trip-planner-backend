@@ -44,9 +44,12 @@ type TripItem struct {
 
 // 更新行程请求
 type UpdateTripRequest struct {
-	Title  string    `json:"title"`
-	Status string    `json:"status"`
-	Days   []TripDay `json:"days"`
+	Title       string     `json:"title"`
+	Status      string     `json:"status"`
+	Description string     `json:"description"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
+	// Days   []TripDay `json:"days"`
 }
 
 // 添加行程项请求
