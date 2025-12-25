@@ -185,7 +185,7 @@ func (c *TripController) AddTripDay(ctx *gin.Context) {
 		return
 	}
 
-	dayCount, err := c.tripService.AddTripDay(ctx, tripID, &req)
+	dayCount, err := c.tripService.AddTripDay(ctx.Request.Context(), tripID, &req)
 	if err != nil {
 		middleware.HandleError(ctx, err)
 		return

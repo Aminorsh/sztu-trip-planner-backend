@@ -66,7 +66,6 @@ type UpdateTripItemRequest struct {
 // 添加天数请求
 type AddTripDayRequest struct {
 	Day int `json:"day"`
-	// Items []TripItem `json:"items"`
 }
 
 type TripListResponse struct {
