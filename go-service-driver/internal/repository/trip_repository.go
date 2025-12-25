@@ -11,8 +11,12 @@ type tripRepository struct {
 	db *gorm.DB
 }
 
-func NewTripRepository(db *gorm.DB) TripRepository {
-	return &tripRepository{db: db}
+// UpdateCoverImage implements TripRepository.
+func (t *tripRepository) UpdateCoverImage(ctx context.Context, tripID uint64, coverImagePath string) error {
+	return t.db.WithContext(ctx).
+		Model(&model.Trip{}).
+		Where("id = ?", tripID).
+		Update("cover_image", coverImagePath).Error
 }
 
 // Create 创建新行程
@@ -128,3 +132,7 @@ func (t *tripRepository) DeleteTripItemsByDay(ctx context.Context, tripID uint64
 // 		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
 // 		Delete(&model.TripItem{}).Error
 // }
+
+func NewTripRepository(db *gorm.DB) TripRepository {
+	return &tripRepository{db: db}
+}

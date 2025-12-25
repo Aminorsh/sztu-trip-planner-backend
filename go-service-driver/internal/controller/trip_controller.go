@@ -248,3 +248,23 @@ func (c *TripController) DeleteTrip(ctx *gin.Context) {
 		"success": true,
 	})
 }
+
+func (c *TripController) UpdateTripCover(ctx *gin.Context) {
+	tripID := ctx.Param("tripId")
+
+	file, err := ctx.FormFile("cover_image")
+	if err != nil {
+		middleware.HandleError(ctx, errors.NewInvalidRequestError("failed to get cover image file"))
+		return
+	}
+
+	coverURL, err := c.tripService.UpdateTripCoverImage(ctx, tripID, file)
+	if err != nil {
+		middleware.HandleError(ctx, err)
+		return
+	}
+
+	response.Success(ctx, gin.H{
+		"cover_image_url": coverURL,
+	})
+}

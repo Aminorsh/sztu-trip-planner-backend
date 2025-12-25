@@ -13,6 +13,7 @@ type Trip struct {
 	Description string    `gorm:"type:text"`
 	StartDate   time.Time `gorm:"type:date"`
 	EndDate     time.Time `gorm:"type:date"`
+	CoverImage  string    `gorm:"type:text"`
 
 	// 简化字段
 	IsPublic bool   `gorm:"default:false"`

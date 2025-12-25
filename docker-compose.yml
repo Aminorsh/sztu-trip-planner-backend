@@ -10,6 +10,8 @@ services:
       - .env
     volumes:
       - ./config.yaml:/app/config.yaml # Mount config file
+      - ./uploads:/app/uploads
+      - ./assets:/app/assets:ro
     depends_on:
       - mysql
       - redis

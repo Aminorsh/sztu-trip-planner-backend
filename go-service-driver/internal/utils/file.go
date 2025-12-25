@@ -10,7 +10,7 @@ import (
 func SaveUploadedFile(fileData *multipart.FileHeader, dst string) error {
 	// Create directory if it doesn't exist
 	dir := filepath.Dir(dst)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
 

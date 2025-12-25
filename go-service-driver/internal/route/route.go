@@ -15,6 +15,10 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.CORS())
 	r.Static("/static/avatars", "./uploads/avatars")
+	r.Static("/static/trips", "./uploads/trips")
+
+	r.Static("/static/system/avatars", "./assets/avatars")
+	r.Static("/static/system/trips", "./assets/trips")
 
 	userRepo := repository.NewUserRepository(db)
 	placeRepo := repository.NewPlaceRepository(db)
@@ -88,7 +92,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				users.PUT("/profile", userController.UpdateUserProfile)
 				users.PUT("/change-password", userController.ChangePassword)
 				users.DELETE("/delete-account", userController.DeleteAccount)
-				users.POST("/upload-avatar", userController.UploadAvatar)
+				users.PUT("/update-avatar", userController.UpdateAvatar)
 			}
 
 			places := v2.Group("/places")
@@ -127,6 +131,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				trips.PUT("/:tripId/days/:dayId/items/:itemId", tripController.UpdateTripItem)
 				trips.POST("/:tripId/days", tripController.AddTripDay)
 				trips.DELETE("/:tripId/days/:dayId", tripController.DeleteTripDay)
+				trips.PUT("/:tripId/cover", tripController.UpdateTripCover)
 			}
 
 			assistants := v3.Group("/assistants")

@@ -3,13 +3,18 @@ package service
 import (
 	"context"
 	"fmt"
+	"mime/multipart"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/errors"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/model"
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/repository"
+	"github.com/Aminorsh/sztu-trip-planner-backend/internal/utils"
 )
 
 type TripService struct {
@@ -30,6 +35,7 @@ func (s *TripService) CreateTrip(ctx context.Context, userID uint64, req *dto.Cr
 		UserID:      userID,
 		Title:       req.Title,
 		Description: req.Description,
+		CoverImage:  "/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg",
 		Status:      "draft",
 	}
 
@@ -61,15 +67,16 @@ func (s *TripService) GetTrips(ctx context.Context, userID uint64, search string
 	for _, trip := range trips {
 		// 对于列表，只返回基本信息，不加载行程项
 		responses = append(responses, dto.TripResponse{
-			ID:          fmt.Sprintf("%d", trip.ID),
-			Title:       trip.Title,
-			Status:      trip.Status,
-			CreatedAt:   trip.CreatedAt,
-			LastSaved:   trip.UpdatedAt,
-			Description: trip.Description,
-			StartDate:   &trip.StartDate,
-			EndDate:     &trip.EndDate,
-			Days:        []dto.TripDay{}, // 空数组
+			ID:            fmt.Sprintf("%d", trip.ID),
+			Title:         trip.Title,
+			Status:        trip.Status,
+			CoverImageURL: trip.CoverImage,
+			CreatedAt:     trip.CreatedAt,
+			LastSaved:     trip.UpdatedAt,
+			Description:   trip.Description,
+			StartDate:     &trip.StartDate,
+			EndDate:       &trip.EndDate,
+			Days:          []dto.TripDay{}, // 空数组
 		})
 	}
 
@@ -374,15 +381,16 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 	}
 
 	return &dto.TripResponse{
-		ID:          fmt.Sprintf("%d", trip.ID),
-		Title:       trip.Title,
-		Status:      trip.Status,
-		Days:        days,
-		CreatedAt:   trip.CreatedAt,
-		LastSaved:   trip.UpdatedAt,
-		Description: trip.Description,
-		StartDate:   &trip.StartDate,
-		EndDate:     &trip.EndDate,
+		ID:            fmt.Sprintf("%d", trip.ID),
+		Title:         trip.Title,
+		Status:        trip.Status,
+		CoverImageURL: trip.CoverImage,
+		Days:          days,
+		CreatedAt:     trip.CreatedAt,
+		LastSaved:     trip.UpdatedAt,
+		Description:   trip.Description,
+		StartDate:     &trip.StartDate,
+		EndDate:       &trip.EndDate,
 	}
 }
 
@@ -444,4 +452,56 @@ func calculateDateTime(startDate time.Time, dayNumber int, timeStr string) strin
 	)
 
 	return fullDateTime.Format(time.RFC3339)
+}
+
+func (s *TripService) UpdateTripCoverImage(ctx context.Context, tripID string, file *multipart.FileHeader) (string, error) {
+	id, err := strconv.ParseUint(tripID, 10, 64)
+	if err != nil {
+		return "", errors.NewInvalidRequestError("invalid trip ID")
+	}
+
+	trip, err := s.tripRepo.FindByID(ctx, int(id))
+	if err != nil {
+		return "", err
+	}
+	if trip == nil {
+		return "", errors.NewTripNotFoundError()
+	}
+
+	oldCover := trip.CoverImage
+
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+		return "", errors.NewInvalidRequestError("unsupported image format")
+	}
+
+	coverImagePath := fmt.Sprintf("uploads/trips/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
+
+	if err := utils.SaveUploadedFile(file, coverImagePath); err != nil {
+		return "", errors.NewInternalServerError(err)
+	}
+
+	coverImageURL := fmt.Sprintf("/static/trips/trip_%s_%d%s", tripID, time.Now().Unix(), ext)
+	if err := s.tripRepo.UpdateCoverImage(ctx, id, coverImagePath); err != nil {
+		_ = os.Remove(coverImagePath)
+		return "", err
+	}
+
+	s.deleteOldCoverFile(oldCover)
+
+	return coverImageURL, nil
+}
+
+func (s *TripService) deleteOldCoverFile(oldCover string) {
+	if oldCover == "" || strings.HasPrefix(oldCover, "/static/system/") {
+		return
+	}
+
+	if !strings.HasPrefix(oldCover, "/static/trips/") {
+		return
+	}
+
+	oldCoverPath := strings.Replace(oldCover, "/static/trips/", "/uploads/trips/", 1)
+
+	_ = os.Remove(oldCoverPath)
 }
