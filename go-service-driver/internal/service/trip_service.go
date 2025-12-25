@@ -141,15 +141,20 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 	return nil
 }
 
-func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem) (uint64, error) {
+func (s *TripService) getOrCreatePlaceID(ctx context.Context, item *dto.AddTripItemRequest) (uint64, error) {
 	if item.ID != "" {
 		id, err := strconv.ParseUint(item.ID, 10, 64)
-		if err == nil && id > 0 {
-			return id, nil
+		if err != nil {
+			return 0, errors.NewInvalidRequestError("invalid place ID")
 		}
+		// Optionally verify place exists in repository
+		return id, nil
 	}
 
 	// Create new place
+	if len(item.Lnglat) != 2 {
+		return 0, errors.NewInvalidRequestError("coordinates required for custom place")
+	}
 	if item.Name == "" {
 		item.Name = "自定义地点"
 	}
@@ -175,46 +180,49 @@ func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem)
 }
 
 // AddTripItems 添加行程项
-func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber int, req *dto.AddTripItemRequest) ([]string, error) {
+func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber int, req *dto.AddTripItemRequest) (string, error) {
 	id, err := strconv.ParseUint(tripID, 10, 64)
 	if err != nil {
-		return nil, errors.NewInvalidRequestError("invalid trip ID")
+		return "", errors.NewInvalidRequestError("invalid trip ID")
 	}
 
 	trip, err := s.tripRepo.FindByID(ctx, int(id))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if trip == nil {
-		return nil, errors.NewTripNotFoundError()
+		return "", errors.NewTripNotFoundError()
 	}
 
-	itemIDs := make([]string, 0, len(req.Items))
-	for i, item := range req.Items {
-		placeID, err := s.getOrCreatePlaceID(ctx, item)
-		if err != nil {
-			return nil, err
+	// Get place ID (existing or create new)
+	placeID, err := s.getOrCreatePlaceID(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	// Calculate next sequence number automatically
+	maxSeq := 0
+	for _, item := range trip.Items {
+		if item.DayNumber == dayNumber && item.Sequence > maxSeq {
+			maxSeq = item.Sequence
 		}
-
-		tripItem := &model.TripItem{
-			TripID:    id,
-			PlaceID:   placeID,
-			DayNumber: dayNumber,
-			Sequence:  i + 1,
-			StartTime: extractTime(item.Time),
-			EndTime:   extractTime(item.EndTime),
-			Name:      item.Name,
-			Note:      item.Note,
-		}
-
-		if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-			return nil, err
-		}
-
-		itemIDs = append(itemIDs, fmt.Sprintf("%d", tripItem.ID))
 	}
 
-	return itemIDs, nil
+	tripItem := &model.TripItem{
+		TripID:    id,
+		PlaceID:   placeID,
+		DayNumber: dayNumber,
+		Sequence:  maxSeq + 1,
+		StartTime: extractTime(req.Time),
+		EndTime:   extractTime(req.EndTime),
+		Name:      req.Name,
+		Note:      req.Note,
+	}
+
+	if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%d", tripItem.ID), nil
 }
 
 // UpdateTripItem 更新行程项

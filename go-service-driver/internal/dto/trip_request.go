@@ -54,7 +54,13 @@ type UpdateTripRequest struct {
 
 // 添加行程项请求
 type AddTripItemRequest struct {
-	Items []TripItem `json:"items" binding:"required"`
+	// Single item fields
+	ID      string     `json:"id"`     // Place ID if known place, empty if custom
+	Name    string     `json:"name"`   // Required
+	Lnglat  [2]float64 `json:"lnglat"` // Required
+	Time    string     `json:"time,omitempty"`
+	EndTime string     `json:"endTime,omitempty"`
+	Note    string     `json:"note,omitempty"`
 }
 
 // 更新行程项请求
