@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"bytes"
-	"io"
 	"strconv"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/dto"
@@ -143,11 +141,6 @@ func (c *TripController) UpdateTripItem(ctx *gin.Context) {
 	dayID := ctx.Param("dayId")
 	itemID := ctx.Param("itemId")
 
-	// Read body for debugging
-	bodyBytes, _ := io.ReadAll(ctx.Request.Body)
-	// Restore body
-	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-
 	var req dto.UpdateTripItemRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		middleware.HandleError(ctx, errors.NewInvalidRequestError(err.Error()))
@@ -192,7 +185,7 @@ func (c *TripController) AddTripDay(ctx *gin.Context) {
 		return
 	}
 
-	dayCount, err := c.tripService.AddTripDay(ctx.Request.Context(), tripID, &req)
+	dayCount, err := c.tripService.AddTripDay(ctx, tripID, &req)
 	if err != nil {
 		middleware.HandleError(ctx, err)
 		return

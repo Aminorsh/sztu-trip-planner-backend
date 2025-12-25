@@ -308,27 +308,27 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 		dayNumber = maxDay + 1
 	}
 
-	// 创建行程项
-	for i, item := range req.Items {
-		placeID, err := s.getOrCreatePlaceID(ctx, item)
-		if err != nil {
-			return 0, err
-		}
+	// // 创建行程项
+	// for i, item := range req.Items {
+	// 	placeID, err := s.getOrCreatePlaceID(ctx, item)
+	// 	if err != nil {
+	// 		return 0, err
+	// 	}
 
-		tripItem := &model.TripItem{
-			TripID:    id,
-			PlaceID:   placeID,
-			DayNumber: dayNumber,
-			Sequence:  i + 1,
-			StartTime: extractTime(item.Time),
-			EndTime:   extractTime(item.EndTime),
-			Note:      item.Note,
-		}
+	// 	tripItem := &model.TripItem{
+	// 		TripID:    id,
+	// 		PlaceID:   placeID,
+	// 		DayNumber: dayNumber,
+	// 		Sequence:  i + 1,
+	// 		StartTime: extractTime(item.Time),
+	// 		EndTime:   extractTime(item.EndTime),
+	// 		Note:      item.Note,
+	// 	}
 
-		if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-			return 0, err
-		}
-	}
+	// 	if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
+	// 		return 0, err
+	// 	}
+	// }
 
 	return dayNumber, nil
 }
