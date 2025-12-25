@@ -92,7 +92,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				users.PUT("/profile", userController.UpdateUserProfile)
 				users.PUT("/change-password", userController.ChangePassword)
 				users.DELETE("/delete-account", userController.DeleteAccount)
-				users.POST("/update-avatar", userController.UpdateAvatar)
+				users.PUT("/update-avatar", userController.UpdateAvatar)
 			}
 
 			places := v2.Group("/places")
