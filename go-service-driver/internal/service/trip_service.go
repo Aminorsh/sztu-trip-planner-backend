@@ -143,12 +143,12 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 
 func (s *TripService) getOrCreatePlaceID(ctx context.Context, item *dto.AddTripItemRequest) (uint64, error) {
 	if item.ID != "" {
-		id, err := strconv.ParseUint(item.ID, 10, 64)
+		placeID, err := strconv.ParseUint(item.ID, 10, 64)
 		if err != nil {
 			return 0, errors.NewInvalidRequestError("invalid place ID")
 		}
 		// Optionally verify place exists in repository
-		return id, nil
+		return placeID, nil
 	}
 
 	// Create new place
@@ -156,14 +156,14 @@ func (s *TripService) getOrCreatePlaceID(ctx context.Context, item *dto.AddTripI
 		return 0, errors.NewInvalidRequestError("coordinates required for custom place")
 	}
 	if item.Name == "" {
-		item.Name = "自定义地点"
+		item.Name = "未知地点"
 	}
 
 	lng := item.Lnglat[0]
 	lat := item.Lnglat[1]
 
 	newPlace := &model.Place{
-		Name:       item.Name,
+		Name:       "（自定义）" + item.Name,
 		Category:   model.PlaceCategoryOther,
 		Address:    "自定义地点",
 		Longitude:  &lng,
@@ -240,12 +240,56 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 		return errors.NewTripItemNotFoundError()
 	}
 
-	// 更新字段
-	item.StartTime = req.Time
-	item.EndTime = req.EndTime
-	item.Note = req.Note
+	// 只在提供了 ID 或 Lnglat 时才更新 placeID
+	if req.ID != nil || req.Lnglat != nil {
+		// 如果提供了 ID 或 Lnglat，必须至少提供其中一个
+		if (req.ID == nil || *req.ID == "") && req.Lnglat == nil {
+			return errors.NewInvalidRequestError("either place ID or coordinates must be provided to update place")
+		}
+
+		var placeIDStr string
+		var lnglat [2]float64
+		if req.ID != nil {
+			placeIDStr = *req.ID
+		}
+		if req.Lnglat != nil {
+			lnglat = *req.Lnglat
+		}
+
+		placeID, err := s.getOrCreatePlaceID(ctx, &dto.AddTripItemRequest{
+			ID:     placeIDStr,
+			Name:   getStringValue(req.Name),
+			Lnglat: lnglat,
+		})
+		if err != nil {
+			return err
+		}
+		item.PlaceID = placeID
+	}
+
+	// 只更新提供的字段
+	if req.Name != nil {
+		item.Name = *req.Name
+	}
+	if req.Time != nil {
+		item.StartTime = extractTime(*req.Time)
+	}
+	if req.EndTime != nil {
+		item.EndTime = extractTime(*req.EndTime)
+	}
+	if req.Note != nil {
+		item.Note = *req.Note
+	}
 
 	return s.tripRepo.UpdateTripItem(ctx, item)
+}
+
+// getStringValue 获取字符串指针的值，如果为nil则返回空字符串
+func getStringValue(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
 
 // DeleteTripItem 删除行程项
@@ -323,7 +367,7 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 		tripItem := dto.TripItem{
 			ID:       fmt.Sprintf("%d", item.ID),
-			Name:     item.Place.Name,
+			Name:     item.Name,
 			Time:     calculateDateTime(trip.StartDate, item.DayNumber, item.StartTime),
 			EndTime:  calculateDateTime(trip.StartDate, item.DayNumber, item.EndTime),
 			Note:     item.Note,
@@ -336,7 +380,15 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 	// 转换为有序的天数数组
 	days := make([]dto.TripDay, 0)
-	for dayNum := 1; dayNum <= len(dayMap); dayNum++ {
+	// 找到最大天数
+	maxDay := 0
+	for dayNum := range dayMap {
+		if dayNum > maxDay {
+			maxDay = dayNum
+		}
+	}
+	// 遍历从第1天到最大天数
+	for dayNum := 1; dayNum <= maxDay; dayNum++ {
 		if items, ok := dayMap[dayNum]; ok {
 			days = append(days, dto.TripDay{
 				Day:   dayNum,
