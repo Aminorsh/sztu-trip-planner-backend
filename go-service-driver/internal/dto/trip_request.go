@@ -44,29 +44,39 @@ type TripItem struct {
 
 // 更新行程请求
 type UpdateTripRequest struct {
-	Title  string    `json:"title"`
-	Status string    `json:"status"`
-	Days   []TripDay `json:"days"`
+	Title       string     `json:"title"`
+	Status      string     `json:"status"`
+	Description string     `json:"description"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
+	// Days   []TripDay `json:"days"`
 }
 
 // 添加行程项请求
 type AddTripItemRequest struct {
-	Items []TripItem `json:"items" binding:"required"`
+	// Single item fields
+	ID      string     `json:"id"`   // Place ID if known place, empty if custom
+	Name    string     `json:"name"` // Required
+	Lnglat  [2]float64 `json:"lnglat"`
+	Time    string     `json:"time,omitempty"`
+	EndTime string     `json:"end_time,omitempty"`
+	Note    string     `json:"note,omitempty"`
 }
 
 // 更新行程项请求
 type UpdateTripItemRequest struct {
-	Name     string `json:"name"`
-	Time     string `json:"time"`
-	EndTime  string `json:"end_time"`
-	Note     string `json:"note"`
-	Priority string `json:"priority"`
+	// Single item fields
+	ID      *string     `json:"id"` // Place ID if known place, nil to keep unchanged
+	Name    *string     `json:"name"`
+	Lnglat  *[2]float64 `json:"lnglat"`
+	Time    *string     `json:"time"`
+	EndTime *string     `json:"end_time"`
+	Note    *string     `json:"note"`
 }
 
 // 添加天数请求
 type AddTripDayRequest struct {
-	Day   int        `json:"day"`
-	Items []TripItem `json:"items"`
+	Day int `json:"day"`
 }
 
 type TripListResponse struct {

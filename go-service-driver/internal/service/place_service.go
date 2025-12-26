@@ -93,6 +93,10 @@ func (s *PlaceService) SearchPlaces(ctx context.Context, req *dto.PlaceSearchReq
 		}
 	}
 
+	// 过滤掉用户自定义地点（只在搜索结果中显示高德API的地点）
+	places = s.filterOutCustomPlaces(places)
+	total = len(places)
+
 	// 应用筛选（在获取缓存数据后）
 	if req.FilterType != "" {
 		places = s.filterPlaces(places, req.FilterType)
@@ -536,6 +540,32 @@ func (s *PlaceService) filterPlaces(places []dto.PlaceResponse, filterType strin
 	filtered := make([]dto.PlaceResponse, 0)
 	for _, place := range places {
 		if place.Type == filterType {
+			filtered = append(filtered, place)
+		}
+	}
+	return filtered
+}
+
+// filterOutCustomPlaces 过滤掉用户自定义的地点（只保留高德API数据）
+func (s *PlaceService) filterOutCustomPlaces(places []dto.PlaceResponse) []dto.PlaceResponse {
+	filtered := make([]dto.PlaceResponse, 0, len(places))
+	for _, place := range places {
+		// 过滤掉ID以 "custom_" 开头的自定义地点
+		// 自定义地点只在用户的行程中显示，不在搜索结果中出现
+		placeID, err := strconv.Atoi(place.ID)
+		if err != nil {
+			continue
+		}
+
+		// 从数据库验证地点来源
+		ctx := context.Background()
+		dbPlace, err := s.placeRepo.FindByID(ctx, uint(placeID))
+		if err != nil || dbPlace == nil {
+			continue
+		}
+
+		// 只保留非用户创建的地点
+		if dbPlace.DataSource != model.DataSourceUserCreated {
 			filtered = append(filtered, place)
 		}
 	}

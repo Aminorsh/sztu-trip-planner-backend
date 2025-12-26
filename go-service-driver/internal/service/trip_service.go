@@ -121,66 +121,49 @@ func (s *TripService) UpdateTrip(ctx context.Context, tripID string, req *dto.Up
 
 	// 更新基本信息
 	updates := map[string]any{
-		"title":  req.Title,
-		"status": req.Status,
+		"title":       req.Title,
+		"description": req.Description,
+	}
+	if req.StartDate != nil {
+		updates["start_date"] = *req.StartDate
+	}
+	if req.EndDate != nil {
+		updates["end_date"] = *req.EndDate
+	}
+	if req.Status != "" {
+		updates["status"] = req.Status
 	}
 
 	if err := s.tripRepo.UpdateFields(ctx, id, updates); err != nil {
 		return err
 	}
 
-	// 更新行程项
-	// 先删除所有旧的行程项，再创建新的
-	for _, day := range req.Days {
-		// 删除该天的所有行程项
-		if err := s.tripRepo.DeleteTripItemsByDay(ctx, id, day.Day); err != nil {
-			return err
-		}
-
-		// 创建新的行程项
-		for i, item := range day.Items {
-			placeID, err := s.getOrCreatePlaceID(ctx, item)
-			if err != nil {
-				return err
-			}
-
-			tripItem := &model.TripItem{
-				TripID:    id,
-				PlaceID:   placeID,
-				DayNumber: day.Day,
-				Sequence:  i + 1,
-				StartTime: extractTime(item.Time),
-				EndTime:   extractTime(item.EndTime),
-				Note:      item.Note,
-			}
-
-			if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-				return err
-			}
-		}
-	}
-
 	return nil
 }
 
-func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem) (uint64, error) {
+func (s *TripService) getOrCreatePlaceID(ctx context.Context, item *dto.AddTripItemRequest) (uint64, error) {
 	if item.ID != "" {
-		id, err := strconv.ParseUint(item.ID, 10, 64)
-		if err == nil && id > 0 {
-			return id, nil
+		placeID, err := strconv.ParseUint(item.ID, 10, 64)
+		if err != nil {
+			return 0, errors.NewInvalidRequestError("invalid place ID")
 		}
+		// Optionally verify place exists in repository
+		return placeID, nil
 	}
 
 	// Create new place
+	if len(item.Lnglat) != 2 {
+		return 0, errors.NewInvalidRequestError("coordinates required for custom place")
+	}
 	if item.Name == "" {
-		return 0, errors.NewInvalidRequestError("place name is required")
+		item.Name = "未知地点"
 	}
 
 	lng := item.Lnglat[0]
 	lat := item.Lnglat[1]
 
 	newPlace := &model.Place{
-		Name:       item.Name,
+		Name:       "（自定义）" + item.Name,
 		Category:   model.PlaceCategoryOther,
 		Address:    "自定义地点",
 		Longitude:  &lng,
@@ -197,45 +180,49 @@ func (s *TripService) getOrCreatePlaceID(ctx context.Context, item dto.TripItem)
 }
 
 // AddTripItems 添加行程项
-func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber int, req *dto.AddTripItemRequest) ([]string, error) {
+func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber int, req *dto.AddTripItemRequest) (string, error) {
 	id, err := strconv.ParseUint(tripID, 10, 64)
 	if err != nil {
-		return nil, errors.NewInvalidRequestError("invalid trip ID")
+		return "", errors.NewInvalidRequestError("invalid trip ID")
 	}
 
 	trip, err := s.tripRepo.FindByID(ctx, int(id))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if trip == nil {
-		return nil, errors.NewTripNotFoundError()
+		return "", errors.NewTripNotFoundError()
 	}
 
-	itemIDs := make([]string, 0, len(req.Items))
-	for i, item := range req.Items {
-		placeID, err := s.getOrCreatePlaceID(ctx, item)
-		if err != nil {
-			return nil, err
+	// Get place ID (existing or create new)
+	placeID, err := s.getOrCreatePlaceID(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	// Calculate next sequence number automatically
+	maxSeq := 0
+	for _, item := range trip.Items {
+		if item.DayNumber == dayNumber && item.Sequence > maxSeq {
+			maxSeq = item.Sequence
 		}
-
-		tripItem := &model.TripItem{
-			TripID:    id,
-			PlaceID:   placeID,
-			DayNumber: dayNumber,
-			Sequence:  i + 1,
-			StartTime: extractTime(item.Time),
-			EndTime:   extractTime(item.EndTime),
-			Note:      item.Note,
-		}
-
-		if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-			return nil, err
-		}
-
-		itemIDs = append(itemIDs, fmt.Sprintf("%d", tripItem.ID))
 	}
 
-	return itemIDs, nil
+	tripItem := &model.TripItem{
+		TripID:    id,
+		PlaceID:   placeID,
+		DayNumber: dayNumber,
+		Sequence:  maxSeq + 1,
+		StartTime: extractTime(req.Time),
+		EndTime:   extractTime(req.EndTime),
+		Name:      req.Name,
+		Note:      req.Note,
+	}
+
+	if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%d", tripItem.ID), nil
 }
 
 // UpdateTripItem 更新行程项
@@ -253,12 +240,56 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 		return errors.NewTripItemNotFoundError()
 	}
 
-	// 更新字段
-	item.StartTime = req.Time
-	item.EndTime = req.EndTime
-	item.Note = req.Note
+	// 只在提供了 ID 或 Lnglat 时才更新 placeID
+	if req.ID != nil || req.Lnglat != nil {
+		// 如果提供了 ID 或 Lnglat，必须至少提供其中一个
+		if (req.ID == nil || *req.ID == "") && req.Lnglat == nil {
+			return errors.NewInvalidRequestError("either place ID or coordinates must be provided to update place")
+		}
+
+		var placeIDStr string
+		var lnglat [2]float64
+		if req.ID != nil {
+			placeIDStr = *req.ID
+		}
+		if req.Lnglat != nil {
+			lnglat = *req.Lnglat
+		}
+
+		placeID, err := s.getOrCreatePlaceID(ctx, &dto.AddTripItemRequest{
+			ID:     placeIDStr,
+			Name:   getStringValue(req.Name),
+			Lnglat: lnglat,
+		})
+		if err != nil {
+			return err
+		}
+		item.PlaceID = placeID
+	}
+
+	// 只更新提供的字段
+	if req.Name != nil {
+		item.Name = *req.Name
+	}
+	if req.Time != nil {
+		item.StartTime = extractTime(*req.Time)
+	}
+	if req.EndTime != nil {
+		item.EndTime = extractTime(*req.EndTime)
+	}
+	if req.Note != nil {
+		item.Note = *req.Note
+	}
 
 	return s.tripRepo.UpdateTripItem(ctx, item)
+}
+
+// getStringValue 获取字符串指针的值，如果为nil则返回空字符串
+func getStringValue(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
 
 // DeleteTripItem 删除行程项
@@ -308,28 +339,6 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 		dayNumber = maxDay + 1
 	}
 
-	// 创建行程项
-	for i, item := range req.Items {
-		placeID, err := s.getOrCreatePlaceID(ctx, item)
-		if err != nil {
-			return 0, err
-		}
-
-		tripItem := &model.TripItem{
-			TripID:    id,
-			PlaceID:   placeID,
-			DayNumber: dayNumber,
-			Sequence:  i + 1,
-			StartTime: extractTime(item.Time),
-			EndTime:   extractTime(item.EndTime),
-			Note:      item.Note,
-		}
-
-		if err := s.tripRepo.CreateTripItem(ctx, tripItem); err != nil {
-			return 0, err
-		}
-	}
-
 	return dayNumber, nil
 }
 
@@ -358,7 +367,7 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 		tripItem := dto.TripItem{
 			ID:       fmt.Sprintf("%d", item.ID),
-			Name:     item.Place.Name,
+			Name:     item.Name,
 			Time:     calculateDateTime(trip.StartDate, item.DayNumber, item.StartTime),
 			EndTime:  calculateDateTime(trip.StartDate, item.DayNumber, item.EndTime),
 			Note:     item.Note,
@@ -371,7 +380,15 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 
 	// 转换为有序的天数数组
 	days := make([]dto.TripDay, 0)
-	for dayNum := 1; dayNum <= len(dayMap); dayNum++ {
+	// 找到最大天数
+	maxDay := 0
+	for dayNum := range dayMap {
+		if dayNum > maxDay {
+			maxDay = dayNum
+		}
+	}
+	// 遍历从第1天到最大天数
+	for dayNum := 1; dayNum <= maxDay; dayNum++ {
 		if items, ok := dayMap[dayNum]; ok {
 			days = append(days, dto.TripDay{
 				Day:   dayNum,
