@@ -132,6 +132,8 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 				trips.POST("/:tripId/days", tripController.AddTripDay)
 				trips.DELETE("/:tripId/days/:dayId", tripController.DeleteTripDay)
 				trips.PUT("/:tripId/cover", tripController.UpdateTripCover)
+				trips.PUT("/:tripId/days/:dayId/items/:itemId/checkout", tripController.CheckoutTripItem)
+				trips.PUT("/:tripId/days/:dayId/items/:itemId/uncheckout", tripController.UncheckoutTripItem)
 			}
 
 			assistants := v3.Group("/assistants")

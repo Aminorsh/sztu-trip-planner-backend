@@ -261,3 +261,39 @@ func (c *TripController) UpdateTripCover(ctx *gin.Context) {
 		"cover_image_url": coverURL,
 	})
 }
+
+// CheckoutTripItem 打卡行程项（标记为已完成）
+// POST /api/trips/:tripId/days/:dayId/items/:itemId/checkout
+func (c *TripController) CheckoutTripItem(ctx *gin.Context) {
+	tripID := ctx.Param("tripId")
+	dayID := ctx.Param("dayId")
+	itemID := ctx.Param("itemId")
+
+	if err := c.tripService.CheckoutTripItem(ctx.Request.Context(), tripID, dayID, itemID); err != nil {
+		middleware.HandleError(ctx, err)
+		return
+	}
+
+	response.Success(ctx, gin.H{
+		"success": true,
+		"message": "打卡成功",
+	})
+}
+
+// UncheckoutTripItem 取消打卡行程项（标记为未完成）
+// POST /api/trips/:tripId/days/:dayId/items/:itemId/uncheckout
+func (c *TripController) UncheckoutTripItem(ctx *gin.Context) {
+	tripID := ctx.Param("tripId")
+	dayID := ctx.Param("dayId")
+	itemID := ctx.Param("itemId")
+
+	if err := c.tripService.UncheckoutTripItem(ctx.Request.Context(), tripID, dayID, itemID); err != nil {
+		middleware.HandleError(ctx, err)
+		return
+	}
+
+	response.Success(ctx, gin.H{
+		"success": true,
+		"message": "已取消打卡",
+	})
+}

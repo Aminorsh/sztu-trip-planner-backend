@@ -194,26 +194,37 @@ func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber
 		return "", errors.NewTripNotFoundError()
 	}
 
+	// 确保 Day 存在
+	day, err := s.tripRepo.FindDayByTripAndNumber(ctx, id, dayNumber)
+	if err != nil {
+		return "", err
+	}
+	if day == nil {
+		return "", errors.NewInvalidRequestError(fmt.Sprintf("day %d does not exist for this trip", dayNumber))
+	}
+
 	// Get place ID (existing or create new)
 	placeID, err := s.getOrCreatePlaceID(ctx, req)
 	if err != nil {
 		return "", err
 	}
+
 	// Calculate next sequence number automatically
 	maxSeq := 0
-	for _, item := range trip.Items {
-		if item.DayNumber == dayNumber && item.Sequence > maxSeq {
+	for _, item := range day.Items {
+		if item.Sequence > maxSeq {
 			maxSeq = item.Sequence
 		}
 	}
 
 	tripItem := &model.TripItem{
 		TripID:    id,
+		DayID:     day.ID,
 		PlaceID:   placeID,
 		DayNumber: dayNumber,
 		Sequence:  maxSeq + 1,
+		Priority:  req.Priority,
 		StartTime: extractTime(req.Time),
-		EndTime:   extractTime(req.EndTime),
 		Name:      req.Name,
 		Note:      req.Note,
 	}
@@ -274,9 +285,6 @@ func (s *TripService) UpdateTripItem(ctx context.Context, tripID, dayID, itemID 
 	if req.Time != nil {
 		item.StartTime = extractTime(*req.Time)
 	}
-	if req.EndTime != nil {
-		item.EndTime = extractTime(*req.EndTime)
-	}
 	if req.Note != nil {
 		item.Note = *req.Note
 	}
@@ -331,12 +339,33 @@ func (s *TripService) AddTripDay(ctx context.Context, tripID string, req *dto.Ad
 	// 如果没有指定天数，找到最大天数+1
 	if dayNumber == 0 {
 		maxDay := 0
-		for _, item := range trip.Items {
-			if item.DayNumber > maxDay {
-				maxDay = item.DayNumber
+		for _, day := range trip.Days {
+			if day.DayNumber > maxDay {
+				maxDay = day.DayNumber
 			}
 		}
 		dayNumber = maxDay + 1
+	}
+
+	// 检查该天是否已存在
+	existingDay, err := s.tripRepo.FindDayByTripAndNumber(ctx, id, dayNumber)
+	if err != nil {
+		return 0, err
+	}
+	if existingDay != nil {
+		return dayNumber, nil // 已存在，直接返回
+	}
+
+	// 创建新的 Day 记录
+	date := trip.StartDate.AddDate(0, 0, dayNumber-1)
+	newDay := &model.Day{
+		TripID:    id,
+		DayNumber: dayNumber,
+		Date:      date,
+	}
+
+	if err := s.tripRepo.CreateDay(ctx, newDay); err != nil {
+		return 0, err
 	}
 
 	return dayNumber, nil
@@ -349,52 +378,53 @@ func (s *TripService) DeleteTripDay(ctx context.Context, tripID string, dayNumbe
 		return errors.NewInvalidRequestError("invalid trip ID")
 	}
 
-	return s.tripRepo.DeleteTripItemsByDay(ctx, id, dayNumber)
+	// 查找要删除的 Day
+	day, err := s.tripRepo.FindDayByTripAndNumber(ctx, id, dayNumber)
+	if err != nil {
+		return err
+	}
+	if day == nil {
+		return errors.NewInvalidRequestError(fmt.Sprintf("day %d not found", dayNumber))
+	}
+
+	// 删除 Day（会级联删除关联的 TripItems）
+	return s.tripRepo.DeleteDay(ctx, day.ID)
 }
 
 // buildTripResponse 构建行程响应
 func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
-	// 组织按天分组的行程项
-	dayMap := make(map[int][]dto.TripItem)
-	for _, item := range trip.Items {
-		var lng, lat float64
-		if item.Place.Longitude != nil {
-			lng = *item.Place.Longitude
-		}
-		if item.Place.Latitude != nil {
-			lat = *item.Place.Latitude
+	// 使用 trip.Days 构建响应
+	days := make([]dto.TripDay, 0, len(trip.Days))
+
+	for _, day := range trip.Days {
+		items := make([]dto.TripItem, 0, len(day.Items))
+
+		for _, item := range day.Items {
+			var lng, lat float64
+			if item.Place.Longitude != nil {
+				lng = *item.Place.Longitude
+			}
+			if item.Place.Latitude != nil {
+				lat = *item.Place.Latitude
+			}
+
+			tripItem := dto.TripItem{
+				ID:        fmt.Sprintf("%d", item.ID),
+				Name:      item.Name,
+				Time:      calculateDateTime(trip.StartDate, day.DayNumber, item.StartTime),
+				Note:      item.Note,
+				Priority:  item.Priority, // 默认优先级
+				IsChecked: item.IsChecked,
+				Lnglat:    [2]float64{lng, lat},
+			}
+
+			items = append(items, tripItem)
 		}
 
-		tripItem := dto.TripItem{
-			ID:       fmt.Sprintf("%d", item.ID),
-			Name:     item.Name,
-			Time:     calculateDateTime(trip.StartDate, item.DayNumber, item.StartTime),
-			EndTime:  calculateDateTime(trip.StartDate, item.DayNumber, item.EndTime),
-			Note:     item.Note,
-			Priority: "medium", // 默认优先级
-			Lnglat:   [2]float64{lng, lat},
-		}
-
-		dayMap[item.DayNumber] = append(dayMap[item.DayNumber], tripItem)
-	}
-
-	// 转换为有序的天数数组
-	days := make([]dto.TripDay, 0)
-	// 找到最大天数
-	maxDay := 0
-	for dayNum := range dayMap {
-		if dayNum > maxDay {
-			maxDay = dayNum
-		}
-	}
-	// 遍历从第1天到最大天数
-	for dayNum := 1; dayNum <= maxDay; dayNum++ {
-		if items, ok := dayMap[dayNum]; ok {
-			days = append(days, dto.TripDay{
-				Day:   dayNum,
-				Items: items,
-			})
-		}
+		days = append(days, dto.TripDay{
+			Day:   day.DayNumber,
+			Items: items,
+		})
 	}
 
 	return &dto.TripResponse{
@@ -521,4 +551,54 @@ func (s *TripService) deleteOldCoverFile(oldCover string) {
 	oldCoverPath := strings.Replace(oldCover, "/static/trips/", "/uploads/trips/", 1)
 
 	_ = os.Remove(oldCoverPath)
+}
+
+// CheckoutTripItem 打卡行程项（标记为已完成）
+func (s *TripService) CheckoutTripItem(ctx context.Context, tripID, dayID, itemID string) error {
+	id, err := strconv.ParseUint(itemID, 10, 64)
+	if err != nil {
+		return errors.NewInvalidRequestError("invalid item ID")
+	}
+
+	item, err := s.tripRepo.FindTripItemByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if item == nil {
+		return errors.NewTripItemNotFoundError()
+	}
+
+	if item.IsChecked {
+		return nil // 已经是已完成状态，直接返回
+	}
+
+	// 标记为已完成
+	item.IsChecked = true
+
+	return s.tripRepo.UpdateTripItem(ctx, item)
+}
+
+// UncheckoutTripItem 取消打卡行程项（标记为未完成）
+func (s *TripService) UncheckoutTripItem(ctx context.Context, tripID, dayID, itemID string) error {
+	id, err := strconv.ParseUint(itemID, 10, 64)
+	if err != nil {
+		return errors.NewInvalidRequestError("invalid item ID")
+	}
+
+	item, err := s.tripRepo.FindTripItemByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if item == nil {
+		return errors.NewTripItemNotFoundError()
+	}
+
+	if !item.IsChecked {
+		return nil // 已经是未完成状态，直接返回
+	}
+
+	// 标记为未完成
+	item.IsChecked = false
+
+	return s.tripRepo.UpdateTripItem(ctx, item)
 }
