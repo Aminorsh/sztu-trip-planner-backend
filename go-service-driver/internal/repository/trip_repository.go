@@ -28,10 +28,13 @@ func (t *tripRepository) Create(ctx context.Context, trip *model.Trip) error {
 func (t *tripRepository) FindByID(ctx context.Context, id int) (*model.Trip, error) {
 	var trip model.Trip
 	err := t.db.WithContext(ctx).
-		Preload("Items", func(db *gorm.DB) *gorm.DB {
-			return db.Order("day_number ASC, sequence ASC")
+		Preload("Days", func(db *gorm.DB) *gorm.DB {
+			return db.Order("day_number ASC")
 		}).
-		Preload("Items.Place"). // 预加载行程项和关联的地点
+		Preload("Days.Items", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sequence ASC")
+		}).
+		Preload("Days.Items.Place").
 		Where("id = ?  AND deleted_at IS NULL", id).
 		First(&trip).Error
 
@@ -126,12 +129,42 @@ func (t *tripRepository) DeleteTripItemsByDay(ctx context.Context, tripID uint64
 		Delete(&model.TripItem{}).Error
 }
 
-// // DeleteTripDay 删除指定某天
-// func (t *tripRepository) DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error {
-// 	return t.db.WithContext(ctx).
-// 		Where("trip_id = ? AND day_number = ?", tripID, dayNumber).
-// 		Delete(&model.TripItem{}).Error
-// }
+// CreateDay 创建新的一天
+func (t *tripRepository) CreateDay(ctx context.Context, day *model.Day) error {
+	return t.db.WithContext(ctx).Create(day).Error
+}
+
+// FindDayByTripAndNumber 根据行程ID和天数查找Day
+func (t *tripRepository) FindDayByTripAndNumber(ctx context.Context, tripID uint64, dayNumber int) (*model.Day, error) {
+	var day model.Day
+	err := t.db.WithContext(ctx).
+		Where("trip_id = ? AND day_number = ? AND deleted_at IS NULL", tripID, dayNumber).
+		First(&day).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &day, nil
+}
+
+// DeleteDay 删除指定的Day（会级联删除关联的TripItems）
+func (t *tripRepository) DeleteDay(ctx context.Context, dayID uint64) error {
+	return t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 先删除该天的所有行程项
+		if err := tx.Where("day_id = ?", dayID).Delete(&model.TripItem{}).Error; err != nil {
+			return err
+		}
+		// 再删除Day记录
+		return tx.Delete(&model.Day{}, dayID).Error
+	})
+}
+
+// DeleteDaysByTripID 删除行程的所有Day
+func (t *tripRepository) DeleteDaysByTripID(ctx context.Context, tripID uint64) error {
+	return t.db.WithContext(ctx).Where("trip_id = ?", tripID).Delete(&model.Day{}).Error
+}
 
 func NewTripRepository(db *gorm.DB) TripRepository {
 	return &tripRepository{db: db}

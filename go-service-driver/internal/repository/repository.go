@@ -60,8 +60,13 @@ type TripRepository interface {
 	UpdateTripItem(ctx context.Context, item *model.TripItem) error
 	DeleteTripItem(ctx context.Context, itemID uint64) error
 	DeleteTripItemsByDay(ctx context.Context, tripID uint64, dayNumber int) error
-	// DeleteTripDay(ctx context.Context, tripID uint64, dayNumber int) error
 	UpdateCoverImage(ctx context.Context, tripID uint64, coverImagePath string) error
+
+	// Day 相关方法
+	CreateDay(ctx context.Context, day *model.Day) error
+	FindDayByTripAndNumber(ctx context.Context, tripID uint64, dayNumber int) (*model.Day, error)
+	DeleteDay(ctx context.Context, dayID uint64) error
+	DeleteDaysByTripID(ctx context.Context, tripID uint64) error
 }
 
 type AssistantRepository interface {

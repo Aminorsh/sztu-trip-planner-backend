@@ -27,6 +27,7 @@ type Trip struct {
 	EstimatedDuration int     `gorm:"-"` // 非数据库字段，行程总时长，单位分钟
 
 	// 关联关系
+	Days  []Day      `gorm:"foreignKey:TripID"`
 	Items []TripItem `gorm:"foreignKey:TripID"`
 }
 
