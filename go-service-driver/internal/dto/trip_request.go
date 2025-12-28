@@ -33,12 +33,13 @@ type TripDay struct {
 }
 
 type TripItem struct {
-	ID       string     `json:"id"`
-	Name     string     `json:"name"`
-	Time     string     `json:"time"` // 格式: "15:04" 或 RFC3339
-	Note     string     `json:"note,omitempty"`
-	Priority string     `json:"priority,omitempty"`
-	Lnglat   [2]float64 `json:"lnglat,omitempty"`
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	Time      string     `json:"time"` // 格式: "15:04" 或 RFC3339
+	Note      string     `json:"note,omitempty"`
+	Priority  string     `json:"priority,omitempty"`
+	IsChecked bool       `json:"is_checked"`
+	Lnglat    [2]float64 `json:"lnglat,omitempty"`
 }
 
 // 更新行程请求
@@ -54,11 +55,12 @@ type UpdateTripRequest struct {
 // 添加行程项请求
 type AddTripItemRequest struct {
 	// Single item fields
-	ID     string     `json:"id"`   // Place ID if known place, empty if custom
-	Name   string     `json:"name"` // Required
-	Lnglat [2]float64 `json:"lnglat"`
-	Time   string     `json:"time,omitempty"`
-	Note   string     `json:"note,omitempty"`
+	ID       string     `json:"id"`   // Place ID if known place, empty if custom
+	Name     string     `json:"name"` // Required
+	Priority string     `json:"priority,omitempty"`
+	Lnglat   [2]float64 `json:"lnglat"`
+	Time     string     `json:"time,omitempty"`
+	Note     string     `json:"note,omitempty"`
 }
 
 // 更新行程项请求

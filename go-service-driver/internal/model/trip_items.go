@@ -21,7 +21,8 @@ type TripItem struct {
 	Name      string `gorm:"type:varchar(255)"` // 名称
 	Note      string `gorm:"type:text"`
 
-	IsChecked bool `gorm:"default:false"` // 是否已完成
+	IsChecked bool   `gorm:"default:false"`                     // 是否已完成
+	Priority  string `gorm:"type:varchar(20);default:'medium'"` // 优先级: low/medium/high
 
 	ItemType string `gorm:"type:varchar(20)"` // scenic/restaurant/hotel
 

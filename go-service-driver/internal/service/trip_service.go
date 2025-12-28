@@ -223,6 +223,7 @@ func (s *TripService) AddTripItems(ctx context.Context, tripID string, dayNumber
 		PlaceID:   placeID,
 		DayNumber: dayNumber,
 		Sequence:  maxSeq + 1,
+		Priority:  req.Priority,
 		StartTime: extractTime(req.Time),
 		Name:      req.Name,
 		Note:      req.Note,
@@ -408,12 +409,13 @@ func (s *TripService) buildTripResponse(trip *model.Trip) *dto.TripResponse {
 			}
 
 			tripItem := dto.TripItem{
-				ID:       fmt.Sprintf("%d", item.ID),
-				Name:     item.Name,
-				Time:     calculateDateTime(trip.StartDate, day.DayNumber, item.StartTime),
-				Note:     item.Note,
-				Priority: "medium", // 默认优先级
-				Lnglat:   [2]float64{lng, lat},
+				ID:        fmt.Sprintf("%d", item.ID),
+				Name:      item.Name,
+				Time:      calculateDateTime(trip.StartDate, day.DayNumber, item.StartTime),
+				Note:      item.Note,
+				Priority:  item.Priority, // 默认优先级
+				IsChecked: item.IsChecked,
+				Lnglat:    [2]float64{lng, lat},
 			}
 
 			items = append(items, tripItem)
@@ -566,21 +568,8 @@ func (s *TripService) CheckoutTripItem(ctx context.Context, tripID, dayID, itemI
 		return errors.NewTripItemNotFoundError()
 	}
 
-	// 验证参数一致性
-	tripIDUint, err := strconv.ParseUint(tripID, 10, 64)
-	if err != nil {
-		return errors.NewInvalidRequestError("invalid trip ID")
-	}
-	if item.TripID != tripIDUint {
-		return errors.NewInvalidRequestError("item does not belong to this trip")
-	}
-
-	dayIDUint, err := strconv.ParseUint(dayID, 10, 64)
-	if err != nil {
-		return errors.NewInvalidRequestError("invalid day ID")
-	}
-	if item.DayID != dayIDUint {
-		return errors.NewInvalidRequestError("item does not belong to this day")
+	if item.IsChecked {
+		return nil // 已经是已完成状态，直接返回
 	}
 
 	// 标记为已完成
@@ -604,21 +593,8 @@ func (s *TripService) UncheckoutTripItem(ctx context.Context, tripID, dayID, ite
 		return errors.NewTripItemNotFoundError()
 	}
 
-	// 验证参数一致性
-	tripIDUint, err := strconv.ParseUint(tripID, 10, 64)
-	if err != nil {
-		return errors.NewInvalidRequestError("invalid trip ID")
-	}
-	if item.TripID != tripIDUint {
-		return errors.NewInvalidRequestError("item does not belong to this trip")
-	}
-
-	dayIDUint, err := strconv.ParseUint(dayID, 10, 64)
-	if err != nil {
-		return errors.NewInvalidRequestError("invalid day ID")
-	}
-	if item.DayID != dayIDUint {
-		return errors.NewInvalidRequestError("item does not belong to this day")
+	if !item.IsChecked {
+		return nil // 已经是未完成状态，直接返回
 	}
 
 	// 标记为未完成
