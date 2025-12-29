@@ -1647,7 +1647,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "{{BASE_URL}}/api/v2/places/search?keyword=东方明珠",
+											"raw": "{{BASE_URL}}/api/v2/places/search?keyword=天安门",
 											"host": [
 												"{{BASE_URL}}"
 											],
@@ -1670,7 +1670,7 @@
 												},
 												{
 													"key": "keyword",
-													"value": "东方明珠"
+													"value": "天安门"
 												}
 											]
 										}
@@ -1768,7 +1768,7 @@
 											"variable": [
 												{
 													"key": "placeId",
-													"value": "1"
+													"value": "45"
 												}
 											]
 										}
@@ -1857,7 +1857,7 @@
 											"variable": [
 												{
 													"key": "placeId",
-													"value": "1"
+													"value": "45"
 												}
 											]
 										}
@@ -2050,7 +2050,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"description\": \"第一次去日本，很期待！\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\",\n    \"is_public\": false,\n    \"origin_address\": \"上海浦东国际机场\",\n    \"destination_address\": \"东京羽田机场\",\n    \"destination_city\": \"东京\",\n    \"destination_country\": \"日本\"\n}",
+											"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -2077,7 +2077,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"description\": \"第一次去日本，很期待！\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\",\n    \"is_public\": false,\n    \"origin_address\": \"上海浦东国际机场\",\n    \"destination_address\": \"东京羽田机场\",\n    \"destination_city\": \"东京\",\n    \"destination_country\": \"日本\"\n}",
+													"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\"\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -2122,15 +2122,15 @@
 												},
 												{
 													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:18:30 GMT"
+													"value": "Fri, 26 Dec 2025 09:22:54 GMT"
 												},
 												{
 													"key": "Content-Length",
-													"value": "368"
+													"value": "318"
 												}
 											],
 											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"2\",\n        \"title\": \"日本东京7日游\",\n        \"status\": \"draft\",\n        \"cover_image_url\": \"/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg\",\n        \"days\": [],\n        \"createdAt\": \"2025-12-26T07:18:30.712Z\",\n        \"lastSaved\": \"2025-12-26T07:18:30.712Z\",\n        \"description\": \"第一次去日本，很期待！\",\n        \"startDate\": \"2024-04-01T00:00:00Z\",\n        \"endDate\": \"2024-04-07T00:00:00Z\"\n    }\n}"
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"3\",\n        \"title\": \"日本东京7日游\",\n        \"status\": \"draft\",\n        \"cover_image_url\": \"/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg\",\n        \"days\": [],\n        \"createdAt\": \"2025-12-26T09:22:54.813Z\",\n        \"lastSaved\": \"2025-12-26T09:22:54.813Z\",\n        \"startDate\": \"2024-04-01T00:00:00Z\",\n        \"endDate\": \"2024-04-07T00:00:00Z\"\n    }\n}"
 										}
 									]
 								},
@@ -2152,7 +2152,7 @@
 											"query": [
 												{
 													"key": "search",
-													"value": "东京",
+													"value": "日本",
 													"disabled": true
 												}
 											]
@@ -2226,9 +2226,101 @@
 									"request": {
 										"method": "DELETE",
 										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "3"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Delete Trip",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "3"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 09:25:29 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Trip",
+									"request": {
+										"method": "PUT",
+										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"description\": \"第一次去日本，很期待！\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\",\n    \"is_public\": false,\n    \"origin_address\": \"上海浦东国际机场\",\n    \"destination_address\": \"东京羽田机场\",\n    \"destination_city\": \"东京\",\n    \"destination_country\": \"日本\"\n}"
+											"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
 										},
 										"url": {
 											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
@@ -2244,20 +2336,25 @@
 											"variable": [
 												{
 													"key": "tripId",
-													"value": "2"
+													"value": "3"
 												}
 											]
 										}
 									},
 									"response": [
 										{
-											"name": "Delete Trip",
+											"name": "Update Trip",
 											"originalRequest": {
-												"method": "DELETE",
+												"method": "PUT",
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"description\": \"第一次去日本，很期待！\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\",\n    \"is_public\": false,\n    \"origin_address\": \"上海浦东国际机场\",\n    \"destination_address\": \"东京羽田机场\",\n    \"destination_city\": \"东京\",\n    \"destination_country\": \"日本\"\n}"
+													"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
 												},
 												"url": {
 													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
@@ -2273,6 +2370,370 @@
 													"variable": [
 														{
 															"key": "tripId",
+															"value": "3"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 09:24:37 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "68"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"行程已保存\",\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Get Detail",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Get Detail",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:13:00 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "318"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"5\",\n        \"title\": \"日本东京7日游\",\n        \"status\": \"draft\",\n        \"cover_image_url\": \"/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg\",\n        \"days\": [],\n        \"createdAt\": \"2025-12-28T13:12:43.651Z\",\n        \"lastSaved\": \"2025-12-28T13:12:43.651Z\",\n        \"startDate\": \"2024-04-01T00:00:00Z\",\n        \"endDate\": \"2024-04-07T00:00:00Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "New Day",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"day\": 2\n}"
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Day",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"day\": 1\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:14:25 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "53"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"dayCount\": 1,\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "New Item",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"附近逛\",\n    \"priority\": \"medium\"\n}"
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Item Custom",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"浅草寺\",\n    \"time\": \"09:00\",\n    \"end_time\": \"10:00\",\n    \"note\": \"记得买御守\",\n    \"priority\": \"medium\",\n    \"lnglat\": [139.7967, 35.7148]\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:19:32 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "52"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 49,\n        \"success\": true\n    }\n}"
+										},
+										{
+											"name": "New Item PlaceId",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"附近逛\",\n    \"priority\": \"medium\"\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
 															"value": "2"
 														}
 													]
@@ -2304,405 +2765,7 @@
 												},
 												{
 													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:18:43 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "40"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
-										}
-									]
-								},
-								{
-									"name": "Get Detail",
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
-											"host": [
-												"{{BASE_URL}}"
-											],
-											"path": [
-												"api",
-												"v3",
-												"trips",
-												":tripId"
-											],
-											"variable": [
-												{
-													"key": "tripId",
-													"value": "1"
-												}
-											]
-										}
-									},
-									"response": [
-										{
-											"name": "Get Detail",
-											"originalRequest": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:48:55 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "902"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"1\",\n        \"title\": \"东京大阪7日游\",\n        \"status\": \"in_progress\",\n        \"cover_image_url\": \"uploads/trips/trip_1_1766643727.jpg\",\n        \"days\": [\n            {\n                \"day\": 1,\n                \"items\": [\n                    {\n                        \"id\": \"4\",\n                        \"name\": \"广州塔参观\",\n                        \"time\": \"2025-04-01T09:00:00Z\",\n                        \"end_time\": \"2025-04-01T00:00:00Z\",\n                        \"note\": \"旁边看看有没有小吃\",\n                        \"priority\": \"medium\",\n                        \"lnglat\": [\n                            113.324521,\n                            23.106428\n                        ]\n                    },\n                    {\n                        \"id\": \"5\",\n                        \"name\": \"浅草寺\",\n                        \"time\": \"2025-04-01T09:00:00Z\",\n                        \"end_time\": \"2025-04-01T00:00:00Z\",\n                        \"note\": \"记得买御守\",\n                        \"priority\": \"medium\",\n                        \"lnglat\": [\n                            139.7967,\n                            35.7148\n                        ]\n                    }\n                ]\n            },\n            {\n                \"day\": 2,\n                \"items\": [\n                    {\n                        \"id\": \"1\",\n                        \"name\": \"浅草寺参观\",\n                        \"time\": \"2025-04-02T09:00:00Z\",\n                        \"end_time\": \"2025-04-02T00:00:00Z\",\n                        \"note\": \"记得买御守\",\n                        \"priority\": \"medium\",\n                        \"lnglat\": [\n                            139.7967,\n                            35.7148\n                        ]\n                    }\n                ]\n            }\n        ],\n        \"createdAt\": \"2025-12-25T06:19:40.461Z\",\n        \"lastSaved\": \"2025-12-26T07:21:50.741Z\",\n        \"description\": \"这次去大阪玩\",\n        \"startDate\": \"2025-04-01T00:00:00Z\",\n        \"endDate\": \"2025-04-07T00:00:00Z\"\n    }\n}"
-										}
-									]
-								},
-								{
-									"name": "Update Trip",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"status\": \"in_progress\",\n    \"description\": \"这次去大阪玩\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
-											"host": [
-												"{{BASE_URL}}"
-											],
-											"path": [
-												"api",
-												"v3",
-												"trips",
-												":tripId"
-											],
-											"variable": [
-												{
-													"key": "tripId",
-													"value": "1"
-												}
-											]
-										}
-									},
-									"response": [
-										{
-											"name": "Update Trip",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"status\": \"in_progress\",\n    \"description\": \"这次去大阪玩\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:21:50 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "68"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"行程已保存\",\n        \"success\": true\n    }\n}"
-										}
-									]
-								},
-								{
-									"name": "New Day",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"day\": 2\n}"
-										},
-										"url": {
-											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
-											"host": [
-												"{{BASE_URL}}"
-											],
-											"path": [
-												"api",
-												"v3",
-												"trips",
-												":tripId",
-												"days"
-											],
-											"variable": [
-												{
-													"key": "tripId",
-													"value": "1"
-												}
-											]
-										}
-									},
-									"response": [
-										{
-											"name": "New Day",
-											"originalRequest": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"day\": 1\n}"
-												},
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId",
-														"days"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:20:28 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "53"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"dayCount\": 1,\n        \"success\": true\n    }\n}"
-										}
-									]
-								},
-								{
-									"name": "New Item",
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n    \"name\": \"浅草寺\",\n    \"time\": \"09:00\",\n    \"end_time\": \"10:00\",\n    \"note\": \"记得买御守\",\n    \"priority\": \"medium\",\n    \"lnglat\": [139.7967, 35.7148]\n}"
-										},
-										"url": {
-											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
-											"host": [
-												"{{BASE_URL}}"
-											],
-											"path": [
-												"api",
-												"v3",
-												"trips",
-												":tripId",
-												"days",
-												":dayId",
-												"items"
-											],
-											"variable": [
-												{
-													"key": "tripId",
-													"value": "1"
-												},
-												{
-													"key": "dayId",
-													"value": "1"
-												}
-											]
-										}
-									},
-									"response": [
-										{
-											"name": "New Item PlaceId",
-											"originalRequest": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔参观\",\n    \"time\": \"09:00\",\n    \"end_time\": \"10:00\",\n    \"note\": \"旁边看看有没有小吃\",\n    \"priority\": \"medium\"\n}"
-												},
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId",
-														"days",
-														":dayId",
-														"items"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														},
-														{
-															"key": "dayId",
-															"value": "1"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:46:31 GMT"
+													"value": "Sun, 28 Dec 2025 13:35:42 GMT"
 												},
 												{
 													"key": "Content-Length",
@@ -2710,78 +2773,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 52,\n        \"success\": true\n    }\n}"
-										},
-										{
-											"name": "New Item Custom",
-											"originalRequest": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"name\": \"浅草寺\",\n    \"time\": \"09:00\",\n    \"end_time\": \"10:00\",\n    \"note\": \"记得买御守\",\n    \"priority\": \"medium\",\n    \"lnglat\": [139.7967, 35.7148]\n}"
-												},
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId",
-														"days",
-														":dayId",
-														"items"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														},
-														{
-															"key": "dayId",
-															"value": "1"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 07:48:23 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "52"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 53,\n        \"success\": true\n    }\n}"
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 49,\n        \"success\": true\n    }\n}"
 										}
 									]
 								},
@@ -2917,11 +2909,11 @@
 											"variable": [
 												{
 													"key": "tripId",
-													"value": "1"
+													"value": "5"
 												},
 												{
 													"key": "dayId",
-													"value": "1"
+													"value": "5"
 												}
 											]
 										}
@@ -3002,7 +2994,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"end_time\": \"12:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\",\n    \"lnglat\": [\n        113.324521,\n        23.106428\n    ]\n}",
+											"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3027,7 +3019,7 @@
 											"variable": [
 												{
 													"key": "tripId",
-													"value": "1"
+													"value": "5"
 												},
 												{
 													"key": "dayId",
@@ -3035,93 +3027,12 @@
 												},
 												{
 													"key": "itemId",
-													"value": "4"
+													"value": "10"
 												}
 											]
 										}
 									},
 									"response": [
-										{
-											"name": "Update Item PlaceId",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n    \"id\": \"2\",\n    \"name\": \"浅草寺\",\n    \"time\": \"08:00\",\n    \"end_time\": \"11:00\",\n    \"note\": \"记得买御守\",\n    \"priority\": \"medium\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
-													"host": [
-														"{{BASE_URL}}"
-													],
-													"path": [
-														"api",
-														"v3",
-														"trips",
-														":tripId",
-														"days",
-														":dayId",
-														"items",
-														":itemId"
-													],
-													"variable": [
-														{
-															"key": "tripId",
-															"value": "1"
-														},
-														{
-															"key": "dayId",
-															"value": "1"
-														},
-														{
-															"key": "itemId",
-															"value": "4"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": null,
-											"header": [
-												{
-													"key": "Access-Control-Allow-Credentials",
-													"value": "true"
-												},
-												{
-													"key": "Access-Control-Allow-Headers",
-													"value": "Content-Type, Authorization"
-												},
-												{
-													"key": "Access-Control-Allow-Methods",
-													"value": "GET, POST, PUT, DELETE, OPTIONS"
-												},
-												{
-													"key": "Access-Control-Allow-Origin",
-													"value": "http://localhost:5173"
-												},
-												{
-													"key": "Content-Type",
-													"value": "application/json; charset=utf-8"
-												},
-												{
-													"key": "Date",
-													"value": "Fri, 26 Dec 2025 08:02:22 GMT"
-												},
-												{
-													"key": "Content-Length",
-													"value": "40"
-												}
-											],
-											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
-										},
 										{
 											"name": "Update Item Custom",
 											"originalRequest": {
@@ -3202,62 +3113,23 @@
 											],
 											"cookie": [],
 											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
-										}
-									]
-								},
-								{
-									"name": "Update Cover",
-									"request": {
-										"method": "PUT",
-										"header": [],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "cover_image",
-													"type": "file",
-													"src": "XzqwxPJhF/ian-dooley-3NCA3tbaE5I-unsplash.jpg"
-												}
-											]
 										},
-										"url": {
-											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/cover",
-											"host": [
-												"{{BASE_URL}}"
-											],
-											"path": [
-												"api",
-												"v3",
-												"trips",
-												":tripId",
-												"cover"
-											],
-											"variable": [
-												{
-													"key": "tripId",
-													"value": "1"
-												}
-											]
-										}
-									},
-									"response": [
 										{
-											"name": "New Request",
+											"name": "Update Item PlaceId",
 											"originalRequest": {
 												"method": "PUT",
 												"header": [],
 												"body": {
-													"mode": "formdata",
-													"formdata": [
-														{
-															"key": "cover_image",
-															"type": "file",
-															"src": "XzqwxPJhF/ian-dooley-3NCA3tbaE5I-unsplash.jpg"
+													"mode": "raw",
+													"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
 														}
-													]
+													}
 												},
 												"url": {
-													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/cover",
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
 													"host": [
 														"{{BASE_URL}}"
 													],
@@ -3266,12 +3138,23 @@
 														"v3",
 														"trips",
 														":tripId",
-														"cover"
+														"days",
+														":dayId",
+														"items",
+														":itemId"
 													],
 													"variable": [
 														{
 															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
 															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "10"
 														}
 													]
 												}
@@ -3302,15 +3185,241 @@
 												},
 												{
 													"key": "Date",
-													"value": "Thu, 25 Dec 2025 06:22:07 GMT"
+													"value": "Sun, 28 Dec 2025 13:37:29 GMT"
 												},
 												{
 													"key": "Content-Length",
-													"value": "81"
+													"value": "40"
 												}
 											],
 											"cookie": [],
-											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"cover_image_url\": \"/static/trips/trip_1_1766643727.jpg\"\n    }\n}"
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Checkout",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/checkout",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId",
+												"checkout"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "8"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/checkout",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId",
+														"checkout"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "8"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 14:13:40 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "65"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"打卡成功\",\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Uncheckout",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/uncheckout",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId",
+												"uncheckout"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "8"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/uncheckout",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId",
+														"uncheckout"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "8"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 14:14:45 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "68"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"已取消打卡\",\n        \"success\": true\n    }\n}"
 										}
 									]
 								}
