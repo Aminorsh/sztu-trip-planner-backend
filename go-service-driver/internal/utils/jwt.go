@@ -1,13 +1,25 @@
 package utils
 
 import (
+	"sync"
 	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtPrivateKey = []byte(config.GetJWTKey())
+var (
+	jwtPrivateKey []byte
+	once          sync.Once
+)
+
+// getJWTKey lazily initializes and returns the JWT private key
+func getJWTKey() []byte {
+	once.Do(func() {
+		jwtPrivateKey = []byte(config.GetJWTKey())
+	})
+	return jwtPrivateKey
+}
 
 type Claims struct {
 	UserID uint64
@@ -25,14 +37,14 @@ func GenerateToken(userID uint64) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtPrivateKey)
+	return token.SignedString(getJWTKey())
 }
 
 func ParseToken(tokenStr string) (*Claims, error) {
 	claims := &Claims{}
 
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
-		return jwtPrivateKey, nil
+		return getJWTKey(), nil
 	})
 
 	if err != nil {
