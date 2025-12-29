@@ -31,11 +31,7 @@ func (c *TripController) CreateTrip(ctx *gin.Context) {
 	}
 
 	// 从上下文获取用户ID（需要auth middleware）
-	userID := ctx.GetUint64("user_id")
-	// if !exists {
-	// 	middleware.HandleError(ctx, errors.NewUnauthorizedError())
-	// 	return
-	// }
+	userID := ctx.GetUint64("userID")
 
 	trip, err := c.tripService.CreateTrip(ctx.Request.Context(), userID, &req)
 	if err != nil {
@@ -49,13 +45,7 @@ func (c *TripController) CreateTrip(ctx *gin.Context) {
 // GetTrips 获取用户的行程列表
 // GET /api/trips
 func (c *TripController) GetTrips(ctx *gin.Context) {
-	// 从上下文获取用户ID
-	// userID, exists := ctx.Get("user_id")
-	// if !exists {
-	// 	middleware.HandleError(ctx, errors.NewUnauthorizedError())
-	// 	return
-	// }
-	userID := ctx.GetUint64("user_id")
+	userID := ctx.GetUint64("userID")
 
 	search := ctx.Query("search")
 
@@ -223,14 +213,7 @@ func (c *TripController) DeleteTripDay(ctx *gin.Context) {
 // DELETE /api/trips/:tripId
 func (c *TripController) DeleteTrip(ctx *gin.Context) {
 	tripID := ctx.Param("tripId")
-
-	// 从上下文获取用户ID
-	// userID, exists := ctx.Get("user_id")
-	// if !exists {
-	// 	middleware.HandleError(ctx, errors.NewUnauthorizedError())
-	// 	return
-	// }
-	userID := ctx.GetUint64("user_id")
+	userID := ctx.GetUint64("userID")
 
 	if err := c.tripService.DeleteTrip(ctx.Request.Context(), tripID, userID); err != nil {
 		middleware.HandleError(ctx, err)
