@@ -35,6 +35,7 @@ const (
 	ErrInvalidCredentials = "INVALID_CREDENTIALS"
 	ErrAccountSuspended   = "ACCOUNT_SUSPENDED"
 	ErrInvalidVerifyCode  = "INVALID_VERIFY_CODE"
+	ErrFailToGenerateCode = "CODE_GENERATION_FAILED"
 	ErrVerifyCodeExpired  = "VERIFY_CODE_EXPIRED"
 	ErrPasswordTooWeak    = "PASSWORD_TOO_WEAK"
 	ErrIncorrectPassword  = "INCORRECT_PASSWORD"

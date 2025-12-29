@@ -32,7 +32,10 @@ func NewUserService(userRepo repository.UserRepository) *UserService {
 
 func (s *UserService) SendVerificationCode(ctx context.Context, email string) error {
 	// Generate verification code
-	code := utils.GenerateVerificationCode()
+	code, err := utils.GenerateVerificationCode()
+	if err != nil {
+		return err
+	}
 
 	// Store code in Redis with expiration
 	key := fmt.Sprintf("verify:%s", email)
@@ -190,7 +193,10 @@ func (s *UserService) SendForgetPasswordCode(ctx context.Context, email string) 
 	}
 
 	// Generate verification code
-	code := utils.GenerateVerificationCode()
+	code, err := utils.GenerateVerificationCode()
+	if err != nil {
+		return err
+	}
 
 	// Store code in Redis with expiration
 	key := fmt.Sprintf("forget_password:%s", email)
@@ -219,7 +225,10 @@ func (s *UserService) SendForgetPasswordCodeByUsername(ctx context.Context, user
 	}
 
 	// Generate verification code
-	code := utils.GenerateVerificationCode()
+	code, err := utils.GenerateVerificationCode()
+	if err != nil {
+		return err
+	}
 
 	// Store code in Redis with expiration
 	key := fmt.Sprintf("forget_password:%s", user.Email)

@@ -156,9 +156,9 @@ func (s *AssistantService) updateSummary(
 	userID uint64,
 	oldSummary string,
 	userMessage string,
-	assassistantReply string,
+	assistantReply string,
 ) {
-	prompt := buildSummaryPrompt(oldSummary, userMessage, assassistantReply)
+	prompt := buildSummaryPrompt(oldSummary, userMessage, assistantReply)
 
 	newSummary, err := s.callDeepseek(
 		"deepseek-chat",

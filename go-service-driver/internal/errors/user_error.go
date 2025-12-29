@@ -2,6 +2,15 @@ package errors
 
 import "net/http"
 
+func NewFailToGenerateCodeError(err error) *AppError {
+	return &AppError{
+		Code:     ErrFailToGenerateCode,
+		Message:  "Failed to generate verification code",
+		Status:   http.StatusInternalServerError,
+		Internal: err,
+	}
+}
+
 func NewUserNotFoundError() *AppError {
 	return &AppError{
 		Code:    ErrUserNotFound,

@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/config"
+	"github.com/Aminorsh/sztu-trip-planner-backend/internal/errors"
 	"github.com/resend/resend-go/v2"
 )
 
@@ -29,21 +30,21 @@ const (
 )
 
 // GenerateVerificationCode generates a 6-digit verification code
-func GenerateVerificationCode() string {
+func GenerateVerificationCode() (string, error) {
 	const codeLength = 6
 	const charset = "0123456789"
 
 	b := make([]byte, codeLength)
 	_, err := rand.Read(b)
 	if err != nil {
-		panic(err)
+		return "", errors.NewFailToGenerateCodeError(err)
 	}
 
-	for i := range codeLength {
+	for i := range b {
 		b[i] = charset[int(b[i])%len(charset)]
 	}
 
-	return string(b)
+	return string(b), nil
 }
 
 // SendEmail sends an email based on the email type
