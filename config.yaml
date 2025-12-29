@@ -1,0 +1,16 @@
+app:
+  name: "Sztu Trip Planner"
+  version: "1.0.0"
+
+server:
+  port: ":8080"
+
+cors:
+  allowed_origins:
+    - "http://localhost:5173"
+
+database:
+  dsn: ""
+
+jwt:
+  key: ""

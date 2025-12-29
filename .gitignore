@@ -1,0 +1,27 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.test
+*.out
+*.bak
+
+*.db
+
+.vscode/
+.vs/
+
+*.log
+
+/bin/
+/build/
+/dist/
+vendor/
+
+.env
+node_modules/
+.env
+uploads/
+
+# Go build artifacts
+go-service-driver/server

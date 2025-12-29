@@ -1,0 +1,3655 @@
+{
+	"info": {
+		"_postman_id": "5a4c89da-a817-4ed4-a041-ab436d672966",
+		"name": "SZTU Trip Planner Backend Go",
+		"description": "Golang + Gin 后端服务\n\n提供注册登录、行程管理、路线规划等 RESTful API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46795840",
+		"_collection_link": "https://aminorsh-2029.postman.co/workspace/default~d9156f59-4dba-4d70-b308-724e5fe6bb03/collection/46795840-5a4c89da-a817-4ed4-a041-ab436d672966?action=share&source=collection_link&creator=46795840"
+	},
+	"item": [
+		{
+			"name": "API",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Send Code",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response success is true\", function () {",
+											"  const json = pm.response.json();",
+											"  pm.expect(json.success).to.eql(true);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/send-code",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"send-code"
+									]
+								},
+								"description": "向指定邮箱发送验证码（用于注册）"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/send-code",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"send-code"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 15:46:51 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "36"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Verification code sent\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Register",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"var json = pm.response.json();",
+											"if (json.token) {",
+											"    pm.environment.set(\"JWT_TOKEN\", json.token);",
+											"}",
+											"pm.test(\"token exists\", function () {",
+											"    pm.expect(json.token).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"599077\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/register",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								},
+								"description": "使用邮箱 + 验证码注册，注册后返回 JWT"
+							},
+							"response": [
+								{
+									"name": "201 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"password\": \"{{TEST_PASSWORD}}\",\n\t\"code\": \"547272\",\n\t\"username\": \"{{TEST_USERNAME}}\",\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/register?Content-Type=application/json",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"register"
+											],
+											"query": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:09:26 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "337"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"User registered successfully\",\n    \"user\": {\n        \"id\": 2,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"aminorsh\",\n        \"avatar_url\": \"https://api.dicebear.com/6.x/initials/svg?seed=aminorsh\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMjk2Nn0._gp3fmVLMZysEKC4SAtvh6S70R-F5Ek1E2BtvxO2fP8\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"var json = pm.response.json();",
+											"if (json.token) {",
+											"    pm.environment.set(\"JWT_TOKEN\", json.token);",
+											"}",
+											"pm.test(\"token exists\", function () {",
+											"    pm.expect(json.token).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"{{TEST_USERNAME}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								},
+								"description": "使用用户名和密码登录"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"{{TEST_USERNAME}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/login",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:24:12 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "132"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzg1Mn0.Q5kIs9gkVQO_QFW8uOcQBSaIoeW7uhyX0_znHpq-OV8\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Login Email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"status is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"var json = pm.response.json();",
+											"if (json.token) {",
+											"    pm.environment.set(\"JWT_TOKEN\", json.token);",
+											"}",
+											"pm.test(\"token exists\", function () {",
+											"    pm.expect(json.token).to.be.a('string');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/login-email",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login-email"
+									]
+								},
+								"description": "使用邮箱和密码登录"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\",\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/login-email",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"login-email"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:19:42 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "132"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsImV4cCI6MTc2MzIyMzU4Mn0.kOK0xlMjysmooa1rJzCsN4iqN2NVal2FCD9j69W_Noo\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Send Forget Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response success is true\", function () {",
+											"  const json = pm.response.json();",
+											"  pm.expect(json.success).to.eql(true);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/send-forget-code",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"send-forget-code"
+									]
+								},
+								"description": "向指定邮箱发送验证码（用于重置密码）"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"{{TEST_EMAIL}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/send-forget-code",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"send-forget-code"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:38:06 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "39"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Forget password code sent\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Send Forget Code by Username",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response success is true\", function () {",
+											"  const json = pm.response.json();",
+											"  pm.expect(json.success).to.eql(true);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"{{TEST_USERNAME}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/send-forget-code-by-username",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"send-forget-code-by-username"
+									]
+								},
+								"description": "向指定用户名的邮箱发送验证码（用于重置密码）"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"username\": \"{{TEST_USERNAME}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/send-forget-code-by-username",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"send-forget-code-by-username"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:41:13 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "39"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Forget password code sent\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Verify Forget Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response success is true\", function () {",
+											"  const json = pm.response.json();",
+											"  pm.expect(json.success).to.eql(true);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"new_password\": \"{{TEST_NEWPASSWORD}}\",\n\t\"code\": \"230158\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/auth/verify-forget-password",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"verify-forget-password"
+									]
+								},
+								"description": "检查验证码，验证成功后重置密码"
+							},
+							"response": [
+								{
+									"name": "200 OK - Success Example",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"email\": \"{{TEST_EMAIL}}\",\n\t\"new_password\": \"{{TEST_NEWPASSWORD}}\",\n\t\"code\": \"230158\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/auth/verify-forget-password",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"verify-forget-password"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Fri, 14 Nov 2025 16:38:41 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "41"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"Password reset successfully\"\n}"
+								}
+							]
+						}
+					],
+					"description": "提供注册、登录及重置密码等API"
+				},
+				{
+					"name": "V2",
+					"item": [
+						{
+							"name": "Users",
+							"item": [
+								{
+									"name": "Get Profile",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/users/profile",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"users",
+												"profile"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Get Profile",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/users/profile",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"users",
+														"profile"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Wed, 24 Dec 2025 12:16:56 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "322"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"Arinos\",\n        \"avatar_url\": \"/static/avatars/user_1_1766577471.png\",\n        \"bio\": \"相思最苦长安月，不照离人夜半床\",\n        \"created_at\": \"2025-12-24T02:53:20Z\",\n        \"updated_at\": \"2025-12-24T12:16:48Z\",\n        \"last_login\": \"2025-12-24T12:06:45Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Profile",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\",\n    \"bio\": \"相思最苦长安月，不照离人夜半床\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/users/profile",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"users",
+												"profile"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Update Profile",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"display_name\": \"{{TEST_DISPLAYNAME}}\",\n    \"bio\": \"相思最苦长安月，不照离人夜半床\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/users/profile",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"users",
+														"profile"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Wed, 24 Dec 2025 12:16:48 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "322"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"aminorsh\",\n        \"email\": \"aminorsh@gmail.com\",\n        \"display_name\": \"Arinos\",\n        \"avatar_url\": \"/static/avatars/user_1_1766577471.png\",\n        \"bio\": \"相思最苦长安月，不照离人夜半床\",\n        \"created_at\": \"2025-12-24T02:53:20Z\",\n        \"updated_at\": \"2025-12-24T12:16:48Z\",\n        \"last_login\": \"2025-12-24T12:06:45Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Change Password",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/users/change-password",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"users",
+												"change-password"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"old_password\": \"{{TEST_PASSWORD}}\",\n    \"new_password\": \"{{TEST_NEWPASSWORD}}\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/users/change-password",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"users",
+														"change-password"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "Text",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 30 Nov 2025 07:51:15 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "43"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"message\": \"Password changed successfully\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Account",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/users/delete-account",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"users",
+												"delete-account"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"password\": \"{{TEST_PASSWORD}}\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/users/delete-account",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"users",
+														"delete-account"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "Text",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 30 Nov 2025 07:51:44 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "42"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"message\": \"Account deleted successfully\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Avatar",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "avatar",
+													"type": "file",
+													"src": "XtZM5o4nZ/Merry_Aristnas.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/users/update-avatar",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"users",
+												"update-avatar"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Update Avatar",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "avatar",
+															"type": "file",
+															"src": "XtZM5o4nZ/Merry_Aristnas.png"
+														}
+													]
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/users/update-avatar",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"users",
+														"update-avatar"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 25 Dec 2025 06:25:36 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "78"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"avatar_url\": \"/static/avatars/user_1_1766643936.png\"\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Routes",
+							"item": [
+								{
+									"name": "Route Plan",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"trip_id\": 1,\n    \"origin\": {\n      \"place_id\": 1,\n      \"lng\": 114.057868,\n      \"lat\": 22.543099\n    },\n    \"destination\":  {\n      \"place_id\":  5,\n      \"lng\": 114.067868,\n      \"lat\": 22.553099\n    },\n    \"waypoints\": [],\n    \"strategy\": \"0\",\n    \"travel_mode\": \"driving\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/routes/plan",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"routes",
+												"plan"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Route Plan",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"trip_id\": 1,\n    \"origin\": {\n      \"place_id\": 1,\n      \"lng\": 114.057868,\n      \"lat\": 22.543099\n    },\n    \"destination\":  {\n      \"place_id\":  5,\n      \"lng\": 114.067868,\n      \"lat\": 22.553099\n    },\n    \"waypoints\": [],\n    \"strategy\": \"0\",\n    \"travel_mode\": \"driving\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/routes/plan",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"routes",
+														"plan"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 11 Dec 2025 02:43:25 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "1092"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"route_id\": 4,\n        \"trip_id\": 1,\n        \"total_distance\": 2.399,\n        \"total_duration\": 7,\n        \"path_count\": 1,\n        \"paths\": [\n            {\n                \"distance\": 2.399,\n                \"duration\": 7,\n                \"strategy\": \"未知策略\",\n                \"steps\": [\n                    {\n                        \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                        \"road\": \"福中三路\",\n                        \"distance\": 123,\n                        \"duration\": 39,\n                        \"action\": \"向右前方行驶\"\n                    },\n                    {\n                        \"instruction\": \"沿益田路向西北行驶52米右转\",\n                        \"road\": \"益田路\",\n                        \"distance\": 52,\n                        \"duration\": 14,\n                        \"action\": \"右转\"\n                    },\n                    {\n                        \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                        \"road\": \"益田路\",\n                        \"distance\": 555,\n                        \"duration\": 130,\n                        \"action\": \"向右前方行驶\"\n                    },\n                    {\n                        \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                        \"road\": \"红荔路\",\n                        \"distance\": 51,\n                        \"duration\": 16,\n                        \"action\": \"右转\"\n                    },\n                    {\n                        \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                        \"road\": \"红荔路\",\n                        \"distance\": 1140,\n                        \"duration\": 198,\n                        \"action\": \"左转\"\n                    },\n                    {\n                        \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                        \"road\": \"彩田路\",\n                        \"distance\": 478,\n                        \"duration\": 43,\n                        \"action\": \"\"\n                    }\n                ],\n                \"polyline\": \"\"\n            }\n        ],\n        \"optimized_order\": [\n            1,\n            5\n        ],\n        \"created_at\": \"0001-01-01T00:00:00Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Route Get",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/routes?trip_id=1",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"routes"
+											],
+											"query": [
+												{
+													"key": "trip_id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/routes?trip_id=1",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"routes"
+													],
+													"query": [
+														{
+															"key": "trip_id",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 11 Dec 2025 02:55:09 GMT"
+												},
+												{
+													"key": "Transfer-Encoding",
+													"value": "chunked"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 4,\n            \"trip_id\": 1,\n            \"origin_place_id\": 1,\n            \"origin_lng\": 114.057868,\n            \"origin_lat\": 22.543099,\n            \"destination_place_id\": 5,\n            \"destination_lng\": 114.067868,\n            \"destination_lat\": 22.553099,\n            \"waypoints\": {},\n            \"optimized_order\": null,\n            \"travel_mode\": \"driving\",\n            \"strategy\": \"0\",\n            \"total_distance\": 2.4,\n            \"total_duration\": 7,\n            \"path_data\": null,\n            \"polyline\": \"\",\n            \"amap_route_id\": \"\",\n            \"api_response_cache\": {\n                \"count\": \"1\",\n                \"info\": \"OK\",\n                \"route\": {\n                    \"destination\": \"114.067868,22.553099\",\n                    \"origin\": \"114.057868,22.543099\",\n                    \"paths\": [\n                        {\n                            \"distance\": \"2399\",\n                            \"duration\": \"440\",\n                            \"polyline\": \"\",\n                            \"steps\": [\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"123\",\n                                    \"duration\": \"39\",\n                                    \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.057878,22.542704;114.05722,22.54269;114.056689,22.542684\",\n                                    \"road\": \"福中三路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"52\",\n                                    \"duration\": \"14\",\n                                    \"instruction\": \"沿益田路向西北行驶52米右转\",\n                                    \"polyline\": \"114.056689,22.542684;114.056534,22.542738;114.056448,22.542797;114.056303,22.542985\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"555\",\n                                    \"duration\": \"130\",\n                                    \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.056303,22.542985;114.056303,22.543253;114.056292,22.543762;114.056292,22.543945;114.056292,22.544079;114.056292,22.544175;114.056298,22.544551;114.056298,22.54468;114.056281,22.545066;114.056281,22.545334;114.056255,22.546225;114.05626,22.546589;114.056255,22.546654;114.056228,22.547603;114.056212,22.548065\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"51\",\n                                    \"duration\": \"16\",\n                                    \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                                    \"polyline\": \"114.056212,22.548065;114.056276,22.54821;114.056356,22.548274;114.056523,22.548419\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": \"左转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"1140\",\n                                    \"duration\": \"198\",\n                                    \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                                    \"polyline\": \"114.056523,22.548419;114.058046,22.548456;114.0584,22.548461;114.05899,22.548472;114.059055,22.548472;114.059436,22.548478;114.060058,22.548494;114.06008,22.548494;114.060278,22.548494;114.06045,22.548499;114.060611,22.548505;114.060664,22.548505;114.06134,22.548515;114.062435,22.548521;114.062901,22.548542;114.06303,22.548542;114.063341,22.548547;114.063733,22.548558;114.064022,22.548558;114.064087,22.548558;114.064983,22.548569;114.06532,22.548574;114.065412,22.548574;114.066651,22.548596;114.06716,22.548596;114.067311,22.548596;114.067724,22.548596\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": [],\n                                    \"assistant_action\": \"到达目的地\",\n                                    \"distance\": \"478\",\n                                    \"duration\": \"43\",\n                                    \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                                    \"polyline\": \"114.067944,22.548767;114.067922,22.549116;114.067885,22.549577;114.067885,22.54969;114.067874,22.549931;114.067842,22.551181;114.067826,22.551616;114.06781,22.552141;114.067826,22.552474;114.067815,22.552973;114.067813,22.553098\",\n                                    \"road\": \"彩田路\"\n                                }\n                            ],\n                            \"strategy\": \"速度最快\"\n                        }\n                    ]\n                },\n                \"status\": \"1\"\n            },\n            \"is_active\": true,\n            \"created_at\": \"2025-12-11T02:43:25Z\",\n            \"updated_at\": \"2025-12-11T02:43:25Z\"\n        },\n        {\n            \"id\": 3,\n            \"trip_id\": 1,\n            \"origin_place_id\": 1,\n            \"origin_lng\": 114.057868,\n            \"origin_lat\": 22.543099,\n            \"destination_place_id\": 5,\n            \"destination_lng\": 114.067868,\n            \"destination_lat\": 22.553099,\n            \"waypoints\": {},\n            \"optimized_order\": null,\n            \"travel_mode\": \"driving\",\n            \"strategy\": \"0\",\n            \"total_distance\": 2.4,\n            \"total_duration\": 8,\n            \"path_data\": null,\n            \"polyline\": \"\",\n            \"amap_route_id\": \"\",\n            \"api_response_cache\": {\n                \"count\": \"1\",\n                \"info\": \"OK\",\n                \"route\": {\n                    \"destination\": \"114.067868,22.553099\",\n                    \"origin\": \"114.057868,22.543099\",\n                    \"paths\": [\n                        {\n                            \"distance\": \"2399\",\n                            \"duration\": \"485\",\n                            \"polyline\": \"\",\n                            \"steps\": [\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"123\",\n                                    \"duration\": \"38\",\n                                    \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.057878,22.542704;114.05722,22.54269;114.056689,22.542684\",\n                                    \"road\": \"福中三路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"52\",\n                                    \"duration\": \"14\",\n                                    \"instruction\": \"沿益田路向西北行驶52米右转\",\n                                    \"polyline\": \"114.056689,22.542684;114.056534,22.542738;114.056448,22.542797;114.056303,22.542985\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"555\",\n                                    \"duration\": \"130\",\n                                    \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.056303,22.542985;114.056303,22.543253;114.056292,22.543762;114.056292,22.543945;114.056292,22.544079;114.056292,22.544175;114.056298,22.544551;114.056298,22.54468;114.056281,22.545066;114.056281,22.545334;114.056255,22.546225;114.05626,22.546589;114.056255,22.546654;114.056228,22.547603;114.056212,22.548065\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"51\",\n                                    \"duration\": \"13\",\n                                    \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                                    \"polyline\": \"114.056212,22.548065;114.056276,22.54821;114.056356,22.548274;114.056523,22.548419\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": \"左转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"1140\",\n                                    \"duration\": \"250\",\n                                    \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                                    \"polyline\": \"114.056523,22.548419;114.058046,22.548456;114.0584,22.548461;114.05899,22.548472;114.059055,22.548472;114.059436,22.548478;114.060058,22.548494;114.06008,22.548494;114.060278,22.548494;114.06045,22.548499;114.060611,22.548505;114.060664,22.548505;114.06134,22.548515;114.062435,22.548521;114.062901,22.548542;114.06303,22.548542;114.063341,22.548547;114.063733,22.548558;114.064022,22.548558;114.064087,22.548558;114.064983,22.548569;114.06532,22.548574;114.065412,22.548574;114.066651,22.548596;114.06716,22.548596;114.067311,22.548596;114.067724,22.548596\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": [],\n                                    \"assistant_action\": \"到达目的地\",\n                                    \"distance\": \"478\",\n                                    \"duration\": \"40\",\n                                    \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                                    \"polyline\": \"114.067944,22.548767;114.067922,22.549116;114.067885,22.549577;114.067885,22.54969;114.067874,22.549931;114.067842,22.551181;114.067826,22.551616;114.06781,22.552141;114.067826,22.552474;114.067815,22.552973;114.067813,22.553098\",\n                                    \"road\": \"彩田路\"\n                                }\n                            ],\n                            \"strategy\": \"速度最快\"\n                        }\n                    ]\n                },\n                \"status\": \"1\"\n            },\n            \"is_active\": false,\n            \"created_at\": \"2025-12-11T02:31:01Z\",\n            \"updated_at\": \"2025-12-11T02:43:25Z\"\n        },\n        {\n            \"id\": 2,\n            \"trip_id\": 1,\n            \"origin_place_id\": 1,\n            \"origin_lng\": 114.057868,\n            \"origin_lat\": 22.543099,\n            \"destination_place_id\": 5,\n            \"destination_lng\": 114.067868,\n            \"destination_lat\": 22.553099,\n            \"waypoints\": {},\n            \"optimized_order\": null,\n            \"travel_mode\": \"driving\",\n            \"strategy\": \"0\",\n            \"total_distance\": 2.4,\n            \"total_duration\": 8,\n            \"path_data\": null,\n            \"polyline\": \"\",\n            \"amap_route_id\": \"\",\n            \"api_response_cache\": {\n                \"count\": \"1\",\n                \"info\": \"OK\",\n                \"route\": {\n                    \"destination\": \"114.067868,22.553099\",\n                    \"origin\": \"114.057868,22.543099\",\n                    \"paths\": [\n                        {\n                            \"distance\": \"2399\",\n                            \"duration\": \"497\",\n                            \"polyline\": \"\",\n                            \"steps\": [\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"123\",\n                                    \"duration\": \"41\",\n                                    \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.057878,22.542704;114.05722,22.54269;114.056689,22.542684\",\n                                    \"road\": \"福中三路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"52\",\n                                    \"duration\": \"14\",\n                                    \"instruction\": \"沿益田路向西北行驶52米右转\",\n                                    \"polyline\": \"114.056689,22.542684;114.056534,22.542738;114.056448,22.542797;114.056303,22.542985\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"555\",\n                                    \"duration\": \"132\",\n                                    \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.056303,22.542985;114.056303,22.543253;114.056292,22.543762;114.056292,22.543945;114.056292,22.544079;114.056292,22.544175;114.056298,22.544551;114.056298,22.54468;114.056281,22.545066;114.056281,22.545334;114.056255,22.546225;114.05626,22.546589;114.056255,22.546654;114.056228,22.547603;114.056212,22.548065\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"51\",\n                                    \"duration\": \"12\",\n                                    \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                                    \"polyline\": \"114.056212,22.548065;114.056276,22.54821;114.056356,22.548274;114.056523,22.548419\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": \"左转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"1140\",\n                                    \"duration\": \"257\",\n                                    \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                                    \"polyline\": \"114.056523,22.548419;114.058046,22.548456;114.0584,22.548461;114.05899,22.548472;114.059055,22.548472;114.059436,22.548478;114.060058,22.548494;114.06008,22.548494;114.060278,22.548494;114.06045,22.548499;114.060611,22.548505;114.060664,22.548505;114.06134,22.548515;114.062435,22.548521;114.062901,22.548542;114.06303,22.548542;114.063341,22.548547;114.063733,22.548558;114.064022,22.548558;114.064087,22.548558;114.064983,22.548569;114.06532,22.548574;114.065412,22.548574;114.066651,22.548596;114.06716,22.548596;114.067311,22.548596;114.067724,22.548596\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": [],\n                                    \"assistant_action\": \"到达目的地\",\n                                    \"distance\": \"478\",\n                                    \"duration\": \"41\",\n                                    \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                                    \"polyline\": \"114.067944,22.548767;114.067922,22.549116;114.067885,22.549577;114.067885,22.54969;114.067874,22.549931;114.067842,22.551181;114.067826,22.551616;114.06781,22.552141;114.067826,22.552474;114.067815,22.552973;114.067813,22.553098\",\n                                    \"road\": \"彩田路\"\n                                }\n                            ],\n                            \"strategy\": \"速度最快\"\n                        }\n                    ]\n                },\n                \"status\": \"1\"\n            },\n            \"is_active\": false,\n            \"created_at\": \"2025-12-11T02:30:52Z\",\n            \"updated_at\": \"2025-12-11T02:43:25Z\"\n        },\n        {\n            \"id\": 1,\n            \"trip_id\": 1,\n            \"origin_place_id\": 1,\n            \"origin_lng\": 114.057868,\n            \"origin_lat\": 22.543099,\n            \"destination_place_id\": 5,\n            \"destination_lng\": 114.067868,\n            \"destination_lat\": 22.553099,\n            \"waypoints\": {},\n            \"optimized_order\": null,\n            \"travel_mode\": \"driving\",\n            \"strategy\": \"0\",\n            \"total_distance\": 2.4,\n            \"total_duration\": 8,\n            \"path_data\": null,\n            \"polyline\": \"\",\n            \"amap_route_id\": \"\",\n            \"api_response_cache\": {\n                \"count\": \"1\",\n                \"info\": \"OK\",\n                \"route\": {\n                    \"destination\": \"114.067868,22.553099\",\n                    \"origin\": \"114.057868,22.543099\",\n                    \"paths\": [\n                        {\n                            \"distance\": \"2399\",\n                            \"duration\": \"497\",\n                            \"polyline\": \"\",\n                            \"steps\": [\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"123\",\n                                    \"duration\": \"41\",\n                                    \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.057878,22.542704;114.05722,22.54269;114.056689,22.542684\",\n                                    \"road\": \"福中三路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"52\",\n                                    \"duration\": \"14\",\n                                    \"instruction\": \"沿益田路向西北行驶52米右转\",\n                                    \"polyline\": \"114.056689,22.542684;114.056534,22.542738;114.056448,22.542797;114.056303,22.542985\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"向右前方行驶\",\n                                    \"assistant_action\": \"进入右转专用道\",\n                                    \"distance\": \"555\",\n                                    \"duration\": \"132\",\n                                    \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                                    \"polyline\": \"114.056303,22.542985;114.056303,22.543253;114.056292,22.543762;114.056292,22.543945;114.056292,22.544079;114.056292,22.544175;114.056298,22.544551;114.056298,22.54468;114.056281,22.545066;114.056281,22.545334;114.056255,22.546225;114.05626,22.546589;114.056255,22.546654;114.056228,22.547603;114.056212,22.548065\",\n                                    \"road\": \"益田路\"\n                                },\n                                {\n                                    \"action\": \"右转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"51\",\n                                    \"duration\": \"12\",\n                                    \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                                    \"polyline\": \"114.056212,22.548065;114.056276,22.54821;114.056356,22.548274;114.056523,22.548419\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": \"左转\",\n                                    \"assistant_action\": [],\n                                    \"distance\": \"1140\",\n                                    \"duration\": \"257\",\n                                    \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                                    \"polyline\": \"114.056523,22.548419;114.058046,22.548456;114.0584,22.548461;114.05899,22.548472;114.059055,22.548472;114.059436,22.548478;114.060058,22.548494;114.06008,22.548494;114.060278,22.548494;114.06045,22.548499;114.060611,22.548505;114.060664,22.548505;114.06134,22.548515;114.062435,22.548521;114.062901,22.548542;114.06303,22.548542;114.063341,22.548547;114.063733,22.548558;114.064022,22.548558;114.064087,22.548558;114.064983,22.548569;114.06532,22.548574;114.065412,22.548574;114.066651,22.548596;114.06716,22.548596;114.067311,22.548596;114.067724,22.548596\",\n                                    \"road\": \"红荔路\"\n                                },\n                                {\n                                    \"action\": [],\n                                    \"assistant_action\": \"到达目的地\",\n                                    \"distance\": \"478\",\n                                    \"duration\": \"41\",\n                                    \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                                    \"polyline\": \"114.067944,22.548767;114.067922,22.549116;114.067885,22.549577;114.067885,22.54969;114.067874,22.549931;114.067842,22.551181;114.067826,22.551616;114.06781,22.552141;114.067826,22.552474;114.067815,22.552973;114.067813,22.553098\",\n                                    \"road\": \"彩田路\"\n                                }\n                            ],\n                            \"strategy\": \"速度最快\"\n                        }\n                    ]\n                },\n                \"status\": \"1\"\n            },\n            \"is_active\": false,\n            \"created_at\": \"2025-12-11T02:30:33Z\",\n            \"updated_at\": \"2025-12-11T02:43:25Z\"\n        }\n    ]\n}"
+										}
+									]
+								},
+								{
+									"name": "Route Get by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/routes/:id",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"routes",
+												":id"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/routes/:id",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"routes",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Thu, 11 Dec 2025 02:56:20 GMT"
+												},
+												{
+													"key": "Transfer-Encoding",
+													"value": "chunked"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"trip_id\": 1,\n        \"origin_place_id\": 1,\n        \"origin_lng\": 114.057868,\n        \"origin_lat\": 22.543099,\n        \"destination_place_id\": 5,\n        \"destination_lng\": 114.067868,\n        \"destination_lat\": 22.553099,\n        \"waypoints\": {},\n        \"optimized_order\": null,\n        \"travel_mode\": \"driving\",\n        \"strategy\": \"0\",\n        \"total_distance\": 2.4,\n        \"total_duration\": 8,\n        \"path_data\": null,\n        \"polyline\": \"\",\n        \"amap_route_id\": \"\",\n        \"api_response_cache\": {\n            \"count\": \"1\",\n            \"info\": \"OK\",\n            \"route\": {\n                \"destination\": \"114.067868,22.553099\",\n                \"origin\": \"114.057868,22.543099\",\n                \"paths\": [\n                    {\n                        \"distance\": \"2399\",\n                        \"duration\": \"497\",\n                        \"polyline\": \"\",\n                        \"steps\": [\n                            {\n                                \"action\": \"向右前方行驶\",\n                                \"assistant_action\": \"进入右转专用道\",\n                                \"distance\": \"123\",\n                                \"duration\": \"41\",\n                                \"instruction\": \"沿福中三路向西行驶123米向右前方行驶进入右转专用道\",\n                                \"polyline\": \"114.057878,22.542704;114.05722,22.54269;114.056689,22.542684\",\n                                \"road\": \"福中三路\"\n                            },\n                            {\n                                \"action\": \"右转\",\n                                \"assistant_action\": [],\n                                \"distance\": \"52\",\n                                \"duration\": \"14\",\n                                \"instruction\": \"沿益田路向西北行驶52米右转\",\n                                \"polyline\": \"114.056689,22.542684;114.056534,22.542738;114.056448,22.542797;114.056303,22.542985\",\n                                \"road\": \"益田路\"\n                            },\n                            {\n                                \"action\": \"向右前方行驶\",\n                                \"assistant_action\": \"进入右转专用道\",\n                                \"distance\": \"555\",\n                                \"duration\": \"132\",\n                                \"instruction\": \"沿益田路向北行驶555米向右前方行驶进入右转专用道\",\n                                \"polyline\": \"114.056303,22.542985;114.056303,22.543253;114.056292,22.543762;114.056292,22.543945;114.056292,22.544079;114.056292,22.544175;114.056298,22.544551;114.056298,22.54468;114.056281,22.545066;114.056281,22.545334;114.056255,22.546225;114.05626,22.546589;114.056255,22.546654;114.056228,22.547603;114.056212,22.548065\",\n                                \"road\": \"益田路\"\n                            },\n                            {\n                                \"action\": \"右转\",\n                                \"assistant_action\": [],\n                                \"distance\": \"51\",\n                                \"duration\": \"12\",\n                                \"instruction\": \"沿红荔路向东北行驶51米右转\",\n                                \"polyline\": \"114.056212,22.548065;114.056276,22.54821;114.056356,22.548274;114.056523,22.548419\",\n                                \"road\": \"红荔路\"\n                            },\n                            {\n                                \"action\": \"左转\",\n                                \"assistant_action\": [],\n                                \"distance\": \"1140\",\n                                \"duration\": \"257\",\n                                \"instruction\": \"沿红荔路向东行驶1.1千米左转\",\n                                \"polyline\": \"114.056523,22.548419;114.058046,22.548456;114.0584,22.548461;114.05899,22.548472;114.059055,22.548472;114.059436,22.548478;114.060058,22.548494;114.06008,22.548494;114.060278,22.548494;114.06045,22.548499;114.060611,22.548505;114.060664,22.548505;114.06134,22.548515;114.062435,22.548521;114.062901,22.548542;114.06303,22.548542;114.063341,22.548547;114.063733,22.548558;114.064022,22.548558;114.064087,22.548558;114.064983,22.548569;114.06532,22.548574;114.065412,22.548574;114.066651,22.548596;114.06716,22.548596;114.067311,22.548596;114.067724,22.548596\",\n                                \"road\": \"红荔路\"\n                            },\n                            {\n                                \"action\": [],\n                                \"assistant_action\": \"到达目的地\",\n                                \"distance\": \"478\",\n                                \"duration\": \"41\",\n                                \"instruction\": \"沿彩田路向北行驶478米到达目的地\",\n                                \"polyline\": \"114.067944,22.548767;114.067922,22.549116;114.067885,22.549577;114.067885,22.54969;114.067874,22.549931;114.067842,22.551181;114.067826,22.551616;114.06781,22.552141;114.067826,22.552474;114.067815,22.552973;114.067813,22.553098\",\n                                \"road\": \"彩田路\"\n                            }\n                        ],\n                        \"strategy\": \"速度最快\"\n                    }\n                ]\n            },\n            \"status\": \"1\"\n        },\n        \"is_active\": false,\n        \"created_at\": \"2025-12-11T02:30:33Z\",\n        \"updated_at\": \"2025-12-11T02:43:25Z\"\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Places",
+							"item": [
+								{
+									"name": "Search",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/places/search?keyword=天安门",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"places",
+												"search"
+											],
+											"query": [
+												{
+													"key": "filterType",
+													"value": "scenic",
+													"disabled": true
+												},
+												{
+													"key": "sortOrder",
+													"value": "rating",
+													"disabled": true
+												},
+												{
+													"key": "keyword",
+													"value": "天安门"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Search",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/places/search?keyword=广州塔",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"places",
+														"search"
+													],
+													"query": [
+														{
+															"key": "filterType",
+															"value": "scenic",
+															"disabled": true
+														},
+														{
+															"key": "sortOrder",
+															"value": "rating",
+															"disabled": true
+														},
+														{
+															"key": "keyword",
+															"value": "广州塔"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Wed, 24 Dec 2025 02:52:01 GMT"
+												},
+												{
+													"key": "Transfer-Encoding",
+													"value": "chunked"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"places\": [\n            {\n                \"id\": \"1\",\n                \"name\": \"广州塔\",\n                \"address\": \"赤岗街道新鸿社区滨江东路222号\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/d5b56df50d024cbd33e4e1a16f77d419\",\n                \"rating\": 4.9,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324521,\n                    \"lat\": 23.106428\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/d5b56df50d024cbd33e4e1a16f77d419\",\n                    \"http://store.is.autonavi.com/showpic/548caf7e81c63a843faae5d1a9be968c\",\n                    \"http://store.is.autonavi.com/showpic/d4bb7a5b77ff1de082bb50452c61657c\"\n                ]\n            },\n            {\n                \"id\": \"2\",\n                \"name\": \"广州塔(地铁站)\",\n                \"address\": \"3号线;APM线\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/BV10015731/comment/content_media_external_file_89081_ss__1763165595809_63160208.jpg\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.323464,\n                    \"lat\": 23.106483\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/BV10015731/comment/content_media_external_file_89081_ss__1763165595809_63160208.jpg\",\n                    \"https://aos-comment.amap.com/BV10015731/comment/content_media_external_images_media_100003319_1756642160699_06534488.jpg\",\n                    \"https://aos-comment.amap.com/BV10015731/comment/content_media_external_file_1000019545_ss__1758071908207_97157383.jpg\"\n                ]\n            },\n            {\n                \"id\": \"3\",\n                \"name\": \"广州塔广场\",\n                \"address\": \"广州塔路8号(广州塔地铁站出入口步行140米)\",\n                \"description\": \"\",\n                \"image\": \"https://store.is.autonavi.com/showpic/78605bae8b486aee6e0b132313f5d42a\",\n                \"rating\": 4.7,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.32452,\n                    \"lat\": 23.105442\n                },\n                \"photos\": [\n                    \"https://store.is.autonavi.com/showpic/78605bae8b486aee6e0b132313f5d42a\",\n                    \"https://store.is.autonavi.com/showpic/7397092f793a6dd7ae0d04d83665ac79\",\n                    \"https://aos-comment.amap.com/B0JRSRL01Q/comment/content_media_external_file_63094_ss__1763892374597_87580514.jpg\"\n                ]\n            },\n            {\n                \"id\": \"4\",\n                \"name\": \"广州塔观光区西登塔\",\n                \"address\": \"赤岗街道阅江西路222号广州塔30层/E区观光层\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/6a966a951d47bc277d5484375c1de31b\",\n                \"rating\": 3.8,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.32389,\n                    \"lat\": 23.105933\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/6a966a951d47bc277d5484375c1de31b\",\n                    \"http://store.is.autonavi.com/showpic/23708a1d8b8a2b4d2d58bcfab4e60ddf\",\n                    \"http://store.is.autonavi.com/showpic/311ef28b976a9cd1587b6db5bfd60ab1\"\n                ]\n            },\n            {\n                \"id\": \"5\",\n                \"name\": \"广州塔码头\",\n                \"address\": \"阅江西路222号广州塔东北侧珠江堤岸边\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/a03aee12236352ee4a7a509d99d138c7\",\n                \"rating\": 4.7,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.327096,\n                    \"lat\": 23.107407\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/a03aee12236352ee4a7a509d99d138c7\",\n                    \"http://store.is.autonavi.com/showpic/521845a5ddb1e0d19b2b9b36014dbb74\",\n                    \"http://store.is.autonavi.com/showpic/acdb42bf999417b7a350c60385c8ff68\"\n                ]\n            },\n            {\n                \"id\": \"6\",\n                \"name\": \"广州塔-塔顶游乐区\",\n                \"address\": \"阅江西路222号广州塔内(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/2505976730353991f202f6379ccb3940\",\n                \"rating\": 3.5,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324507,\n                    \"lat\": 23.106439\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/2505976730353991f202f6379ccb3940\",\n                    \"http://store.is.autonavi.com/showpic/a6e46c0dca7632e72412aec6a3ae5236\",\n                    \"http://store.is.autonavi.com/showpic/dfaeed61b532d2ce60add20b3d51d149\"\n                ]\n            },\n            {\n                \"id\": \"7\",\n                \"name\": \"广州塔旅游区游客中心\",\n                \"address\": \"阅江西路222号(广州塔地铁站出入口步行110米)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0FFGLFCKH/comment/content_media_external_file_100006977_1761750916094_39772392.jpg\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324212,\n                    \"lat\": 23.106001\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0FFGLFCKH/comment/content_media_external_file_100006977_1761750916094_39772392.jpg\",\n                    \"https://aos-comment.amap.com/B0FFGLFCKH/comment/content_media_external_file_100006977_1761750916093_65064098.jpg\",\n                    \"http://store.is.autonavi.com/showpic/2f354a2945d0969f2931e71fff16b968\"\n                ]\n            },\n            {\n                \"id\": \"8\",\n                \"name\": \"OMG!广州塔·沉浸式探索空间\",\n                \"address\": \"广州塔广场L1层103铺\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0L66SHE7E/comment/67F06614_B098_44B9_9379_0E7D551758E0_L0_001_2000_150_1763598620870_76649299.jpg\",\n                \"rating\": 4.5,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.325269,\n                    \"lat\": 23.103511\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0L66SHE7E/comment/67F06614_B098_44B9_9379_0E7D551758E0_L0_001_2000_150_1763598620870_76649299.jpg\",\n                    \"https://aos-comment.amap.com/B0L66SHE7E/comment/content_media_external_images_media_105585_ss__1759242747571_78705634.jpg\",\n                    \"https://aos-comment.amap.com/B0L66SHE7E/comment/content_media_external_file_1000023662_ss__1764906250229_19336863.jpg\"\n                ]\n            },\n            {\n                \"id\": \"9\",\n                \"name\": \"广州塔西售票处\",\n                \"address\": \"阅江西路222号广州塔(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B00141W8ED/comment/174080458392_1740804626905_99373077.jpg\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324264,\n                    \"lat\": 23.106066\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B00141W8ED/comment/174080458392_1740804626905_99373077.jpg\",\n                    \"https://aos-comment.amap.com/B00141W8ED/comment/12b5890276d069c13601345df2c3a4f4_2048_2048_80.jpg\",\n                    \"https://aos-comment.amap.com/B00141W8ED/comment/174080460237_1740804626905_01889131.jpg\"\n                ]\n            },\n            {\n                \"id\": \"10\",\n                \"name\": \"广州塔A区\",\n                \"address\": \"阅江西路222号广州塔内(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0FFG22DR7/comment/4C7649E6_E70C_4F3C_AAB8_91278E0BEE81_L0_001_1126_200_1763338788334_80177638.jpg\",\n                \"rating\": 3.8,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324437,\n                    \"lat\": 23.106349\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0FFG22DR7/comment/4C7649E6_E70C_4F3C_AAB8_91278E0BEE81_L0_001_1126_200_1763338788334_80177638.jpg\",\n                    \"https://aos-comment.amap.com/B0FFG22DR7/comment/8A7085A8_C476_4A5E_8242_AE6982E45C96_L0_001_1500_200_1763358487134_64532919.jpg\",\n                    \"https://aos-comment.amap.com/B0FFG22DR7/comment/F39866A9_7365_44D0_AE3D_5C29DC65FC6F_L0_001_1500_200_1763338788343_25673744.jpg\"\n                ]\n            },\n            {\n                \"id\": \"11\",\n                \"name\": \"广州塔-东售票处\",\n                \"address\": \"阅江西路222号(广州塔地铁站出入口步行320米)\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/3717673b6e785d54020db2bd32895b7a\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.325406,\n                    \"lat\": 23.106366\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/3717673b6e785d54020db2bd32895b7a\"\n                ]\n            },\n            {\n                \"id\": \"12\",\n                \"name\": \"广州塔剧场\",\n                \"address\": \"广州塔路8号首层168铺\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0JD0MTVCG/comment/content_media_external_file_1000041155_ss__1764808183947_95848785.jpg\",\n                \"rating\": 4.6,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.325411,\n                    \"lat\": 23.105213\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0JD0MTVCG/comment/content_media_external_file_1000041155_ss__1764808183947_95848785.jpg\",\n                    \"https://aos-comment.amap.com/B0JD0MTVCG/comment/content_media_external_file_1000087385_ss__1758368572362_68519687.jpg\",\n                    \"https://aos-comment.amap.com/B0JD0MTVCG/comment/content_media_external_file_1000087384_ss__1758368572362_88665174.jpg\"\n                ]\n            },\n            {\n                \"id\": \"13\",\n                \"name\": \"广州塔广场地下停车场\",\n                \"address\": \"广州塔路8号广州塔广场\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/ca22753bec98d962bbbaf955f2dc4af9\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.325022,\n                    \"lat\": 23.104488\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/ca22753bec98d962bbbaf955f2dc4af9\",\n                    \"https://aos-comment.amap.com/B0L66GGW53/comment/8642AA37_3247_4961_9304_6A5B79744E66_L0_001_IMG_760_1754611530458_32253619.jpg\",\n                    \"http://store.is.autonavi.com/showpic/37c55d5287c7814e0daf014bd480cebd\"\n                ]\n            },\n            {\n                \"id\": \"14\",\n                \"name\": \"珠江夜游广州塔码头售票处\",\n                \"address\": \"广州塔码头(广州塔地铁站出入口步行360米)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0HK6Z2IVQ/comment/content_media_external_images_media_10309_1742874983819_00391016.jpg\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.326668,\n                    \"lat\": 23.107448\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0HK6Z2IVQ/comment/content_media_external_images_media_10309_1742874983819_00391016.jpg\",\n                    \"http://store.is.autonavi.com/showpic/fb98d4b8ca530d062a56192ed4b002c0\",\n                    \"https://aos-comment.amap.com/B0HK6Z2IVQ/comment/92f65747c929e64945a8e6960b91ac19_2048_2048_80.jpg\"\n                ]\n            },\n            {\n                \"id\": \"15\",\n                \"name\": \"广州塔A区-登塔大厅\",\n                \"address\": \"阅江西路222号广州塔A区内(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0FFG22Q0J/comment/313df98a82c26c827b3e62fba205eecd_2048_2048_80.jpg\",\n                \"rating\": 3.8,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.3245,\n                    \"lat\": 23.106431\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0FFG22Q0J/comment/313df98a82c26c827b3e62fba205eecd_2048_2048_80.jpg\"\n                ]\n            },\n            {\n                \"id\": \"16\",\n                \"name\": \"广州塔-摩天轮\",\n                \"address\": \"阅江西路222号广州塔塔顶平台(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/e66b848e4e269a0657912b3604489df8\",\n                \"rating\": 4.2,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324588,\n                    \"lat\": 23.106469\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/e66b848e4e269a0657912b3604489df8\",\n                    \"http://store.is.autonavi.com/showpic/ce4b7e0c5b1b3b018a38edbac892e087\",\n                    \"http://store.is.autonavi.com/showpic/c01d7dadf9bf969fb06b55a40478cdc9\"\n                ]\n            },\n            {\n                \"id\": \"17\",\n                \"name\": \"广州塔旅游区广州塔停车点\",\n                \"address\": \"广州塔E区(广州塔地铁站出入口步行150米)\",\n                \"description\": \"\",\n                \"image\": \"http://store.is.autonavi.com/showpic/bc58f0ae57ee1f7a488de06a878ef6c7\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.324678,\n                    \"lat\": 23.105345\n                },\n                \"photos\": [\n                    \"http://store.is.autonavi.com/showpic/bc58f0ae57ee1f7a488de06a878ef6c7\",\n                    \"https://aos-comment.amap.com/B0KB4CT28U/comment/content_media_external_file_1000759567_ss__1759621345962_08668692.jpg\",\n                    \"http://store.is.autonavi.com/showpic/7932b094d6928a7560a43249d517e153\"\n                ]\n            },\n            {\n                \"id\": \"18\",\n                \"name\": \"广州塔总站(公交站)\",\n                \"address\": \"观光巴士城市新中轴夜景线;观光巴士城市新中轴线\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/BV11284488/comment/6B7A090B_9601_4FAF_9B50_A2D88305AF5E_L0_001_1500_200_1764138397241_69189888.jpg\",\n                \"rating\": 0,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.323433,\n                    \"lat\": 23.104019\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/BV11284488/comment/6B7A090B_9601_4FAF_9B50_A2D88305AF5E_L0_001_1500_200_1764138397241_69189888.jpg\",\n                    \"https://aos-comment.amap.com/BV11284488/comment/84F0A22D_AD83_4C18_988C_124E122E13E8_L0_001_1500_200_1764138397195_48731197.jpg\",\n                    \"https://aos-comment.amap.com/BV11284488/comment/46E93096_9DA4_4B3F_9F45_732C50C6490E_L0_001_2000_150_1764138397239_50465904.jpg\"\n                ]\n            },\n            {\n                \"id\": \"19\",\n                \"name\": \"广州塔E区\",\n                \"address\": \"艺苑路(广州塔地铁站出入口旁)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B0KB4CT28T/comment/09C0ECE4_CEB0_45CE_B401_E2016DF3F230_L0_001_880_600_1731982559803_43186325.jpg\",\n                \"rating\": 4.3,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.323999,\n                    \"lat\": 23.106842\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B0KB4CT28T/comment/09C0ECE4_CEB0_45CE_B401_E2016DF3F230_L0_001_880_600_1731982559803_43186325.jpg\",\n                    \"https://aos-comment.amap.com/B0KB4CT28T/comment/content_media_external_images_media_100002018_1734077731176_65564739.jpg\",\n                    \"https://aos-comment.amap.com/B0KB4CT28T/comment/content_media_external_images_media_100002018_1734077731177_85647143.jpg\"\n                ]\n            },\n            {\n                \"id\": \"20\",\n                \"name\": \"广州塔-西广场\",\n                \"address\": \"赤岗街道阅江西路222号广州塔内(西侧)\",\n                \"description\": \"\",\n                \"image\": \"https://aos-comment.amap.com/B00141Y6BI/comment/504d5e3ee88b0ca9ce9521dd91c0af80_2048_2048_80.jpg\",\n                \"rating\": 4.3,\n                \"distance\": 0,\n                \"openingHours\": \"\",\n                \"added\": false,\n                \"expanded\": false,\n                \"location\": {\n                    \"lng\": 113.323538,\n                    \"lat\": 23.106169\n                },\n                \"photos\": [\n                    \"https://aos-comment.amap.com/B00141Y6BI/comment/504d5e3ee88b0ca9ce9521dd91c0af80_2048_2048_80.jpg\",\n                    \"https://aos-comment.amap.com/B00141Y6BI/comment/content_media_external_file_240382_ss__1764900113366_30253903.jpg\",\n                    \"https://aos-comment.amap.com/B00141Y6BI/comment/content_media_external_file_1000028594_ss__1757323030508_59509624.jpg\"\n                ]\n            }\n        ],\n        \"total\": 20\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Detail",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/places/:placeId/detail",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"places",
+												":placeId",
+												"detail"
+											],
+											"variable": [
+												{
+													"key": "placeId",
+													"value": "45"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Detail",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/places/:placeId/detail",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"places",
+														":placeId",
+														"detail"
+													],
+													"variable": [
+														{
+															"key": "placeId",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Wed, 24 Dec 2025 02:53:38 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "568"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"1\",\n        \"name\": \"广州塔\",\n        \"address\": \"赤岗街道新鸿社区滨江东路222号\",\n        \"description\": \"\",\n        \"image\": \"http://store.is.autonavi.com/showpic/d5b56df50d024cbd33e4e1a16f77d419\",\n        \"rating\": 4.9,\n        \"distance\": 0,\n        \"openingHours\": \"\",\n        \"added\": false,\n        \"expanded\": true,\n        \"type\": \"scenic\",\n        \"location\": {\n            \"lng\": 113.324521,\n            \"lat\": 23.106428\n        },\n        \"photos\": [\n            \"http://store.is.autonavi.com/showpic/d5b56df50d024cbd33e4e1a16f77d419\",\n            \"http://store.is.autonavi.com/showpic/548caf7e81c63a843faae5d1a9be968c\",\n            \"http://store.is.autonavi.com/showpic/d4bb7a5b77ff1de082bb50452c61657c\"\n        ]\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "AI Description",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/places/:placeId/ai-description",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"places",
+												":placeId",
+												"ai-description"
+											],
+											"variable": [
+												{
+													"key": "placeId",
+													"value": "45"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v2/places/:placeId/ai-description",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v2",
+														"places",
+														":placeId",
+														"ai-description"
+													],
+													"variable": [
+														{
+															"key": "placeId",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Wed, 24 Dec 2025 03:18:45 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "543"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"description\": \"广州塔，又称“小蛮腰”，坐落于广州市海珠区滨江东路222号，是城市地标性建筑。塔身高达600米，以独特的镂空螺旋结构著称，展现了现代建筑美学与力学设计的完美结合。游客可登上观景台俯瞰珠江全景，或在世界最高的横向摩天轮中体验云端浪漫。这里不仅是摄影爱好者和城市探索者的打卡胜地，也适合家庭游客感受科技与自然的交融，是领略广州现代魅力的必到之处。\"\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Health",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v2/health",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"health"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Health",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v2/health",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"health"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "Text",
+									"header": [
+										{
+											"key": "Access-Control-Allow-Credentials",
+											"value": "true"
+										},
+										{
+											"key": "Access-Control-Allow-Headers",
+											"value": "Content-Type, Authorization"
+										},
+										{
+											"key": "Access-Control-Allow-Methods",
+											"value": "GET, POST, PUT, DELETE, OPTIONS"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "http://localhost:5173"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sun, 30 Nov 2025 07:36:40 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "15"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"ok\"\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{TOKEN}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "V3",
+					"item": [
+						{
+							"name": "Trips",
+							"item": [
+								{
+									"name": "Create Trip",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Create Trip",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"title\": \"日本东京7日游\",\n    \"start_date\": \"2024-04-01T00:00:00Z\",\n    \"end_date\": \"2024-04-07T00:00:00Z\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips"
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 09:22:54 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "318"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"3\",\n        \"title\": \"日本东京7日游\",\n        \"status\": \"draft\",\n        \"cover_image_url\": \"/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg\",\n        \"days\": [],\n        \"createdAt\": \"2025-12-26T09:22:54.813Z\",\n        \"lastSaved\": \"2025-12-26T09:22:54.813Z\",\n        \"startDate\": \"2024-04-01T00:00:00Z\",\n        \"endDate\": \"2024-04-07T00:00:00Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "List",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips"
+											],
+											"query": [
+												{
+													"key": "search",
+													"value": "日本",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "List",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips"
+													],
+													"query": [
+														{
+															"key": "search",
+															"value": "东京",
+															"disabled": true
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 07:18:02 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "364"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"total\": 1,\n        \"data\": [\n            {\n                \"id\": \"1\",\n                \"title\": \"日本东京7日游\",\n                \"status\": \"draft\",\n                \"cover_image_url\": \"uploads/trips/trip_1_1766643727.jpg\",\n                \"days\": [],\n                \"createdAt\": \"2025-12-25T06:19:40.461Z\",\n                \"lastSaved\": \"2025-12-25T06:22:07.713Z\",\n                \"description\": \"第一次去日本，很期待！\",\n                \"startDate\": \"2024-04-01T00:00:00Z\",\n                \"endDate\": \"2024-04-07T00:00:00Z\"\n            }\n        ]\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Trip",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "3"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Delete Trip",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "3"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 09:25:29 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Trip",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "3"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Update Trip",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"title\": \"东京大阪7日游\",\n    \"start_date\": \"2025-04-01T00:00:00Z\",\n    \"end_date\": \"2025-04-07T00:00:00Z\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "3"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 09:24:37 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "68"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"行程已保存\",\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Get Detail",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Get Detail",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:13:00 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "318"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"5\",\n        \"title\": \"日本东京7日游\",\n        \"status\": \"draft\",\n        \"cover_image_url\": \"/static/system/trips/joshua-hibbert-gwzj_ftMpWM-unsplash.jpg\",\n        \"days\": [],\n        \"createdAt\": \"2025-12-28T13:12:43.651Z\",\n        \"lastSaved\": \"2025-12-28T13:12:43.651Z\",\n        \"startDate\": \"2024-04-01T00:00:00Z\",\n        \"endDate\": \"2024-04-07T00:00:00Z\"\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "New Day",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"day\": 2\n}"
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Day",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"day\": 1\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:14:25 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "53"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"dayCount\": 1,\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "New Item",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"附近逛\",\n    \"priority\": \"medium\"\n}"
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Item Custom",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"浅草寺\",\n    \"time\": \"09:00\",\n    \"end_time\": \"10:00\",\n    \"note\": \"记得买御守\",\n    \"priority\": \"medium\",\n    \"lnglat\": [139.7967, 35.7148]\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:19:32 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "52"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 49,\n        \"success\": true\n    }\n}"
+										},
+										{
+											"name": "New Item PlaceId",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"附近逛\",\n    \"priority\": \"medium\"\n}"
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "2"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:35:42 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "52"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"itemId\": 49,\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Item",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "1"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "3"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Delete Item",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "1"
+														},
+														{
+															"key": "dayId",
+															"value": "2"
+														},
+														{
+															"key": "itemId",
+															"value": "2"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 19 Dec 2025 08:07:26 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete Day",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Delete Day",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "1"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 07:31:42 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Update Item",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Update Item Custom",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"end_time\": \"12:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\",\n    \"lnglat\": [\n        113.324521,\n        23.106428\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "1"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "4"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Fri, 26 Dec 2025 08:03:21 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										},
+										{
+											"name": "Update Item PlaceId",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"id\": \"1\",\n    \"name\": \"广州塔\",\n    \"time\": \"09:00\",\n    \"note\": \"去附近看看\",\n    \"priority\": \"medium\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "10"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 13:37:29 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "40"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Checkout",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/checkout",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId",
+												"checkout"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "8"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/checkout",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId",
+														"checkout"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "8"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 14:13:40 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "65"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"打卡成功\",\n        \"success\": true\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "Uncheckout",
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/uncheckout",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"trips",
+												":tripId",
+												"days",
+												":dayId",
+												"items",
+												":itemId",
+												"uncheckout"
+											],
+											"variable": [
+												{
+													"key": "tripId",
+													"value": "5"
+												},
+												{
+													"key": "dayId",
+													"value": "1"
+												},
+												{
+													"key": "itemId",
+													"value": "8"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "PUT",
+												"header": [],
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/trips/:tripId/days/:dayId/items/:itemId/uncheckout",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"trips",
+														":tripId",
+														"days",
+														":dayId",
+														"items",
+														":itemId",
+														"uncheckout"
+													],
+													"variable": [
+														{
+															"key": "tripId",
+															"value": "5"
+														},
+														{
+															"key": "dayId",
+															"value": "1"
+														},
+														{
+															"key": "itemId",
+															"value": "8"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "",
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Sun, 28 Dec 2025 14:14:45 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "68"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": {\n        \"message\": \"已取消打卡\",\n        \"success\": true\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Assistants",
+							"item": [
+								{
+									"name": "Chat",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"model\": \"deepseek-chat\",\n    \"messages\": \"那它附近有什么好玩的\",\n    \"stream\": false\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/v3/assistants/chat",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"v3",
+												"assistants",
+												"chat"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "New Request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"model\": \"deepseek-chat\",\n    \"messages\": \"那它附近有什么好玩的\",\n    \"stream\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASE_URL}}/api/v3/assistants/chat",
+													"host": [
+														"{{BASE_URL}}"
+													],
+													"path": [
+														"api",
+														"v3",
+														"assistants",
+														"chat"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": null,
+											"header": [
+												{
+													"key": "Access-Control-Allow-Credentials",
+													"value": "true"
+												},
+												{
+													"key": "Access-Control-Allow-Headers",
+													"value": "Content-Type, Authorization"
+												},
+												{
+													"key": "Access-Control-Allow-Methods",
+													"value": "GET, POST, PUT, DELETE, OPTIONS"
+												},
+												{
+													"key": "Access-Control-Allow-Origin",
+													"value": "http://localhost:5173"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json; charset=utf-8"
+												},
+												{
+													"key": "Date",
+													"value": "Tue, 23 Dec 2025 03:18:07 GMT"
+												},
+												{
+													"key": "Content-Length",
+													"value": "1761"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"success\": true,\n    \"data\": \"广州塔附近有不少值得一游的景点和活动，以下是几个推荐：\\n\\n1. **花城广场**  \\n   - **亮点**：城市中轴线上的大型广场，适合散步、拍照，夜晚有灯光秀，可欣赏珠江新城天际线。  \\n   - **距离**：步行约10分钟。\\n\\n2. **海心沙亚运公园**  \\n   - **亮点**：2010年亚运会开幕式场地，临江视野开阔，常有文化活动和展览。  \\n   - **距离**：步行约15分钟。\\n\\n3. **珠江夜游码头（广州塔码头）**  \\n   - **亮点**：紧邻广州塔，可乘船夜游珠江，欣赏两岸灯光璀璨的夜景。  \\n   - **提示**：建议提前订票，傍晚时段最受欢迎。\\n\\n4. **广东省博物馆**  \\n   - **亮点**：建筑造型独特，馆藏丰富（自然、历史、艺术展），免费参观（需预约）。  \\n   - **距离**：从花城广场步行约5分钟。\\n\\n5. **广州图书馆**  \\n   - **亮点**：现代感十足的建筑，内部空间开阔，适合静坐阅读或打卡拍照。  \\n   - **距离**：位于花城广场内。\\n\\n6. **APM线观光体验**  \\n   - **亮点**：无人驾驶地铁线路，连接广州塔、珠江新城等站，车厢透明车头可体验“隧道穿梭”。  \\n   - **提示**：可用地铁卡或扫码乘坐。\\n\\n7. **猎德大桥与临江大道**  \\n   - **亮点**：傍晚沿江散步或骑行，欣赏珠江夜景和广州塔倒影，猎德大桥造型现代，适合摄影。\\n\\n**建议路线**：  \\n下午参观广东省博物馆 → 花城广场漫步 → 广州塔登塔观景 → 傍晚珠江夜游 → 海心沙看灯光夜景。  \\n\\n如果需要更具体的推荐（如餐饮、季节活动等），可以告诉我你的兴趣偏好哦！ 🌆\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Health",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/v3/health",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"v3",
+										"health"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{TOKEN}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/health",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Health",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL}}/api/health",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"health"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "http://localhost:5173"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 30 Nov 2025 07:36:14 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "15"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"ok\"\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}

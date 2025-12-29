@@ -1,0 +1,98 @@
+package config
+
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+	"gopkg.in/yaml.v3"
+)
+
+type Config struct {
+	Server struct {
+		Port string `yaml:"port"`
+	} `yaml:"server"`
+	Database struct {
+		DSN string `yaml:"dsn"`
+	} `yaml:"database"`
+	JWT struct {
+		Key string `yaml:"key"`
+	} `yaml:"jwt"`
+	Cors struct {
+		AllowedOrigins []string `yaml:"allowed_origins"`
+	} `yaml:"cors"`
+}
+
+var AppConfig *Config
+
+func LoadConfig() *Config {
+	var cfg Config
+
+	yamlFile, err := os.ReadFile("config.yaml")
+	if err != nil {
+		log.Fatalf("读取配置文件失败: %v", err)
+	}
+	if err := yaml.Unmarshal(yamlFile, &cfg); err != nil {
+		log.Fatalf("解析配置文件失败: %v", err)
+	}
+
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("加载 .env 文件失败: %v", err)
+	}
+
+	AppConfig = &cfg
+	return &cfg
+}
+
+func GetDSN() string {
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	name := os.Getenv("DB_NAME")
+
+	return user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + name + "?charset=utf8mb4&parseTime=True&loc=Local"
+}
+
+func GetRedisAddr() string {
+	host := os.Getenv("REDIS_HOST")
+	port := os.Getenv("REDIS_PORT")
+	return host + ":" + port
+}
+
+func GetJWTKey() []byte {
+	return []byte(os.Getenv("JWT_KEY"))
+}
+
+func GetMailAPIKey() string {
+	return os.Getenv("MAIL_API_KEY")
+}
+
+func GetDomain() string {
+	return os.Getenv("DOMAIN")
+}
+
+func GetJWTExpirationDuration() int64 {
+	return 24 // 24 hours
+}
+
+func GetAmapAPIKey() string {
+	return os.Getenv("AMAP_API_KEY")
+}
+
+func GetAmapAPIURL() string {
+	return os.Getenv("AMAP_API_URL")
+}
+
+func IsTestMode() bool {
+	return os.Getenv("TEST_MODE") == "true"
+}
+
+func GetDeepseekAPIKey() string {
+	return os.Getenv("DEEPSEEK_API_KEY")
+}
+
+func GetDeepseekAPIURL() string {
+	return os.Getenv("DEEPSEEK_API_URL")
+}
