@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -577,31 +578,21 @@ func (s *PlaceService) sortPlaces(places []dto.PlaceResponse, sortOrder string) 
 	switch sortOrder {
 	case "rating":
 		// 按评分降序
-		for i := 0; i < len(places)-1; i++ {
-			for j := i + 1; j < len(places); j++ {
-				if places[i].Rating < places[j].Rating {
-					places[i], places[j] = places[j], places[i]
-				}
-			}
-		}
+		sort.SliceStable(places, func(i, j int) bool {
+			return places[i].Rating > places[j].Rating
+		})
 	case "distance":
 		// 按距离升序
-		for i := 0; i < len(places)-1; i++ {
-			for j := i + 1; j < len(places); j++ {
-				if places[i].Distance > places[j].Distance {
-					places[i], places[j] = places[j], places[i]
-				}
-			}
-		}
+		sort.SliceStable(places, func(i, j int) bool {
+			return places[i].Distance < places[j].Distance
+		})
 	case "name":
 		// 按名称字母顺序
-		for i := 0; i < len(places)-1; i++ {
-			for j := i + 1; j < len(places); j++ {
-				if places[i].Name > places[j].Name {
-					places[i], places[j] = places[j], places[i]
-				}
-			}
-		}
+		sort.SliceStable(places, func(i, j int) bool {
+			return places[i].Name < places[j].Name
+		})
+	default:
+		// 默认不排序
 	}
 }
 

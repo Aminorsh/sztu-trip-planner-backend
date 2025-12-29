@@ -44,7 +44,7 @@ func (s *UserService) SendVerificationCode(ctx context.Context, email string) er
 	}
 
 	// Send verification email
-	if err := utils.NewEmailService().SendEmail(email, code, 0); err != nil {
+	if err := utils.NewEmailService().SendEmail(email, code, utils.VerificationEmail); err != nil {
 		_ = database.RedisClient.Del(ctx, key).Err()
 		return err
 	}
@@ -205,7 +205,7 @@ func (s *UserService) SendForgetPasswordCode(ctx context.Context, email string) 
 	}
 
 	// Send verification email
-	if err := utils.NewEmailService().SendEmail(email, code, 1); err != nil {
+	if err := utils.NewEmailService().SendEmail(email, code, utils.PasswordResetEmail); err != nil {
 		_ = database.RedisClient.Del(ctx, key).Err()
 		return apperrors.NewInternalServerError(err)
 	}
@@ -237,7 +237,7 @@ func (s *UserService) SendForgetPasswordCodeByUsername(ctx context.Context, user
 	}
 
 	// Send verification email
-	if err := utils.NewEmailService().SendEmail(user.Email, code, 1); err != nil {
+	if err := utils.NewEmailService().SendEmail(user.Email, code, utils.PasswordResetEmail); err != nil {
 		_ = database.RedisClient.Del(ctx, key).Err()
 		return apperrors.NewInternalServerError(err)
 	}
