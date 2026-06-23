@@ -2,9 +2,15 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/Aminorsh/sztu-trip-planner-backend/internal/model"
 )
+
+type AssistantTurn struct {
+	User      string `json:"user"`
+	Assistant string `json:"assistant"`
+}
 
 type UserRepository interface {
 	Create(ctx context.Context, user *model.User) error
@@ -72,4 +78,8 @@ type TripRepository interface {
 type AssistantRepository interface {
 	GetSummary(ctx context.Context, userID uint64) (string, error)
 	SetSummary(ctx context.Context, userID uint64, summary string) error
+	AppendTurn(ctx context.Context, userID uint64, turn AssistantTurn, limit int) error
+	GetRecentTurns(ctx context.Context, userID uint64, limit int) ([]AssistantTurn, error)
+	AcquireSummaryLock(ctx context.Context, userID uint64, token string, ttl time.Duration) (bool, error)
+	ReleaseSummaryLock(ctx context.Context, userID uint64, token string) error
 }
